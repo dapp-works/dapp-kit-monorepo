@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { sum } from "@acme/kit";
+
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 
@@ -75,6 +77,7 @@ export function PostList() {
 
   return (
     <div className="w-full max-w-2xl">
+      {sum(1, 2)}
       {posts.length === 0 ? (
         <span>There are no posts!</span>
       ) : (
