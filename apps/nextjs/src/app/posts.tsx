@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-import { sum } from "@acme/kit";
-
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 
@@ -37,37 +35,16 @@ export function CreatePostForm() {
         } catch {
           // noop
         }
-      }}
-    >
-      <input
-        className="mb-2 rounded bg-white/10 p-2 text-white"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-      />
-      {error?.data?.zodError?.fieldErrors.title && (
-        <span className="mb-2 text-red-500">
-          {error.data.zodError.fieldErrors.title}
-        </span>
-      )}
-      <input
-        className="mb-2 rounded bg-white/10 p-2 text-white"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Content"
-      />
-      {error?.data?.zodError?.fieldErrors.content && (
-        <span className="mb-2 text-red-500">
-          {error.data.zodError.fieldErrors.content}
-        </span>
-      )}
+      }}>
+      <input className="mb-2 rounded bg-white/10 p-2 text-white" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
+      {error?.data?.zodError?.fieldErrors.title && <span className="mb-2 text-red-500">{error.data.zodError.fieldErrors.title}</span>}
+      <input className="mb-2 rounded bg-white/10 p-2 text-white" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Content" />
+      {error?.data?.zodError?.fieldErrors.content && <span className="mb-2 text-red-500">{error.data.zodError.fieldErrors.content}</span>}
       {}
       <button type="submit" className="rounded bg-pink-400 p-2 font-bold">
         Create
       </button>
-      {error?.data?.code === "UNAUTHORIZED" && (
-        <span className="mt-2 text-red-500">You must be logged in to post</span>
-      )}
+      {error?.data?.code === "UNAUTHORIZED" && <span className="mt-2 text-red-500">You must be logged in to post</span>}
     </form>
   );
 }
@@ -109,8 +86,7 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
           onClick={async () => {
             await deletePost.mutateAsync(props.post.id);
             await context.post.all.invalidate();
-          }}
-        >
+          }}>
           Delete
         </button>
       </div>

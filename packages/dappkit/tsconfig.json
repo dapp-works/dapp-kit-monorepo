@@ -1,4 +1,18 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["index.ts"]
+  "include": [
+    "*.ts",
+    "*.tsx"
+  ],
+  "compilerOptions": {
+    "strict": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+    },
+  }
 }
