@@ -1,17 +1,17 @@
 import React, { lazy, Suspense } from "react";
-import dynamic from "next/dynamic";
-import { toJS } from "mobx";
-import { PromiseState } from "../../store/standard/PromiseState";
+import JSONEditor from "@dappkit/components/JSONEditor";
 import axios from "axios";
-import RootStore from "../../store/root";
-import { StoragePlugin } from "./Storage";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
+
 import { Input } from "../../components/ui/input";
-import { ToastPlugin } from "../Toast/Toast";
 import { helper } from "../../lib/helper";
 import { _ } from "../../lib/lodash";
+import RootStore from "../../store/root";
 import { Store } from "../../store/standard/base";
-import JSONEditor from "../../components/JSONEditor";
+import { PromiseState } from "../../store/standard/PromiseState";
+import { ToastPlugin } from "../Toast/Toast";
+import { StoragePlugin } from "./Storage";
 
 export class AsyncStorage implements Store {
   sid = "AsyncStorage";
@@ -23,7 +23,9 @@ export class AsyncStorage implements Store {
     context: this,
     value: {},
     function: async () => {
-      const res = await axios.get(this.url, { params: { forceUpdate: this.forceUpdate } });
+      const res = await axios.get(this.url, {
+        params: { forceUpdate: this.forceUpdate },
+      });
       //@ts-ignore
       return { ...this.data.value, ...res.data };
     },
@@ -49,10 +51,18 @@ export class AsyncStorage implements Store {
       {
         title: "AsyncStorage",
         render: observer(() => {
-          const jwt = StoragePlugin.Get({ key: "asyncStorage.token", value: "", engine: StoragePlugin.engines.localStorage });
+          const jwt = StoragePlugin.Get({
+            key: "asyncStorage.token",
+            value: "",
+            engine: StoragePlugin.engines.localStorage,
+          });
           return (
-            <div className="w-full h-full overflow-auto">
-              <Input placeholder="Please enter your asyncStorage token here" value={jwt.value} onChange={(e) => jwt.set(e.target.value)} />
+            <div className="h-full w-full overflow-auto">
+              <Input
+                placeholder="Please enter your asyncStorage token here"
+                value={jwt.value}
+                onChange={(e) => jwt.set(e.target.value)}
+              />
               <JSONEditor
                 className="h-full"
                 initialJson={JSON.stringify(toJS(this.data.value), null, 2)}
@@ -63,10 +73,14 @@ export class AsyncStorage implements Store {
                 }}
                 onSubmit={async (data) => {
                   if (!jwt.value) {
-                    RootStore.Get(ToastPlugin).error("Please enter your asyncStorage token first");
+                    RootStore.Get(ToastPlugin).error(
+                      "Please enter your asyncStorage token first",
+                    );
                   } else {
                     if (!process.env.NEXT_PUBLIC_PROJECT_ID) {
-                      RootStore.Get(ToastPlugin).error("Please set your project id first");
+                      RootStore.Get(ToastPlugin).error(
+                        "Please set your project id first",
+                      );
                     }
                     await axios.post(
                       "/api/upsertAsyncData",
@@ -78,7 +92,7 @@ export class AsyncStorage implements Store {
                         headers: {
                           Authorization: `${jwt.value}`,
                         },
-                      }
+                      },
                     );
                   }
                   this.forceUpdate = true;
@@ -109,7 +123,13 @@ export class AsyncStorage implements Store {
     _.remove(this.data.value, key);
   }
 
-  onNewStore = ({ rootStore, store }: { rootStore: RootStore; store: Store }) => {
+  onNewStore = ({
+    rootStore,
+    store,
+  }: {
+    rootStore: RootStore;
+    store: Store;
+  }) => {
     if (store.autoAsyncable) {
       this.makeAutoAsyncAble(store);
     }

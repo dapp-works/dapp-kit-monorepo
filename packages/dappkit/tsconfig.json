@@ -1,18 +1,15 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
+    "src",
     "*.ts",
     "*.tsx"
   ],
   "compilerOptions": {
-    "strict": false,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "baseUrl": ".",
     "paths": {
-      "@/*": [
+      "@dappkit/*": [
         "./*"
-      ],
-    },
+      ]
+    }
   }
 }

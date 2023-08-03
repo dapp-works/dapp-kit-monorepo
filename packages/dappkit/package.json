@@ -2,7 +2,7 @@
   "name": "@dappworks/kit",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "directories": {
     "lib": "lib"
   },

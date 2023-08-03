@@ -20,7 +20,7 @@
     "jsx": "preserve",
     "incremental": true,
     "noUncheckedIndexedAccess": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
   "include": [
     "prettier.config.mjs"
