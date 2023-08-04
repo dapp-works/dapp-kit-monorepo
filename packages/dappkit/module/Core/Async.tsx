@@ -1,9 +1,9 @@
 import React, { lazy, Suspense } from "react";
-import JSONEditor from "@dappkit/components/JSONEditor";
 import axios from "axios";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 
+import JSONEditor from "../../components/JSONEditor";
 import { Input } from "../../components/ui/input";
 import { helper } from "../../lib/helper";
 import { _ } from "../../lib/lodash";

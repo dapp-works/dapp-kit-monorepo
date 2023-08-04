@@ -3,6 +3,8 @@
 import { AppProvider } from "@dappworks/kit/module/Core/AppProvider";
 import { HeaderStore } from "@dappworks/kit/module/Layout/header";
 
+import "~/store/index";
+
 import RootStore from "@dappworks/kit/store/root";
 
 export default function HomePage() {

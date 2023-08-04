@@ -100,7 +100,7 @@ export class PromiseState<
   }
 
   // devtool plugin
-  debug: { name: string; input: Record<string, any> };
+  debug: { name: string; input: Record<string, any> } = null;
 
   constructor(args: Partial<PromiseState<T, U>> = {}) {
     Object.assign(this, args);
