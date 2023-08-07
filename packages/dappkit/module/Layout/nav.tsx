@@ -13,6 +13,7 @@ export class NavStore implements Store {
     { text: "Playgorund", href: "/playgorund" },
     { text: "Settings", href: "/settings" },
   ];
+
   userNavs: UserNav[] = [
     {
       text: "Profile",

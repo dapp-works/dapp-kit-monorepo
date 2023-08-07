@@ -1,7 +1,8 @@
 import React from "react";
 
+import { DesktopNav } from "../../components/Layout/DesktopNav";
 import { Logo } from "../../components/Layout/Logo";
-import { MainNav } from "../../components/Layout/MainNav";
+import { MobileNav } from "../../components/Layout/MobileNav";
 import Nav from "../../components/Layout/Nav";
 import { UserNav } from "../../components/Layout/UserNav";
 import { Store } from "../../store/standard/base";
@@ -21,8 +22,12 @@ export class HeaderStore implements Store {
     return <Logo {...props} />;
   };
 
-  MainNav = (props) => {
-    return <MainNav {...props} />;
+  DesktopNav = (props) => {
+    return <DesktopNav {...props} />;
+  };
+
+  MobileNav = (props) => {
+    return <MobileNav {...props} />;
   };
 
   UserNav = (props) => {
