@@ -1,4 +1,6 @@
 import { createRef, LegacyRef, Ref } from "react";
+import { helper } from "@dappkit/lib/helper";
+import { ButtonProps } from "@nextui-org/react";
 import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv6";
@@ -8,7 +10,8 @@ import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { PaginationState } from "./PaginationState";
 
 export class JSONSchemaFormState<T, U = UiSchema> {
-  formRef: LegacyRef<Form<any, RJSFSchema, any>> & Ref<Form<any, RJSFSchema, any>>;
+  formRef: LegacyRef<Form<any, RJSFSchema, any>> &
+    Ref<Form<any, RJSFSchema, any>>;
   value: JSONValue<T> = new JSONValue();
   schema: RJSFSchema;
   uiSchema: U;
@@ -114,7 +117,7 @@ export class JSONModalValue extends JSONSchemaValue<{
 }
 
 export type ActionButtonType = {
-  props: { className?: string; onClick?: (e: any) => void };
+  props: ButtonProps;
   text: string;
 };
 export type Column<T = any> = {

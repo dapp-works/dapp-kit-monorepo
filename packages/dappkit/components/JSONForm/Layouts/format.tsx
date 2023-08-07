@@ -1,11 +1,21 @@
-import { Button } from "@tremor/react";
-import { FormDataOfKey, FormKey, JSONFormProps } from "..";
-import { JSONSchemaFormState, JSONValue } from "../../../store/standard/JSONSchemaState";
-import { UiSchema } from "@rjsf/utils";
 import React from "react";
+import { Button } from "@nextui-org/react";
+import { UiSchema } from "@rjsf/utils";
 
-export const getFormState = <T, L>(props: JSONFormProps<T, L>, formLayout: { [x: string]: { fieldLayout?: any[] } } = {}) => {
-  const { uiSize, formData, formConfig, onSubmit, onSet } = props;
+import { FormDataOfKey, FormKey, JSONFormProps } from "..";
+import CheckboxWidget from "../../../components/JSONFormWidgets/CheckboxWidget";
+import InputWidget from "../../../components/JSONFormWidgets/InputWidget";
+import SelectWidget from "../../../components/JSONFormWidgets/SelectWidget";
+import {
+  JSONSchemaFormState,
+  JSONValue,
+} from "../../../store/standard/JSONSchemaState";
+
+export const getFormState = <T, L>(
+  props: JSONFormProps<T, L>,
+  formLayout: { [x: string]: { fieldLayout?: any[] } } = {},
+) => {
+  const { formData, formConfig, onSubmit, onSet } = props;
 
   const formStates: {
     [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>;
@@ -19,25 +29,52 @@ export const getFormState = <T, L>(props: JSONFormProps<T, L>, formLayout: { [x:
     const required = [];
     const properties = Object.entries(metadata).reduce((p, c: any) => {
       const [k, v] = c;
+      const type = typeof v;
       p[k] = {
-        type: typeof v,
+        type,
       };
+      if (!formConfigData[k]) {
+        formConfigData[k] = {};
+      }
+      if (type === "string" || type === "number") {
+        if (formConfigData[k]?.selectOptions) {
+          formConfigData[k]["ui:widget"] = SelectWidget;
+          p[k].selectOptions = formConfigData[k].selectOptions;
+        } else {
+          if (!formConfigData[k]["ui:widget"]) {
+            formConfigData[k]["ui:widget"] = InputWidget;
+            formConfigData[k]["ui:options"] = {
+              labelPlacement: "inside",
+              size: "sm",
+            };
+            if (type === "number") {
+              p[k].inputType = "number";
+            }
+          }
+        }
+      }
+      if (type === "boolean") {
+        formConfigData[k]["ui:widget"] = CheckboxWidget;
+        formConfigData[k]["ui:options"] = {
+          size: "sm",
+        };
+      }
+      if (formConfigData[k]?.inputType) {
+        p[k].inputType = formConfigData[k].inputType;
+      }
       if (formConfigData[k]?.title) {
-        p[k].title = formConfigData[k]?.title || k;
+        p[k].title = formConfigData[k].title || k;
       }
-      if (formConfigData[k]?.selectOptions) {
-        p[k].enum = formConfigData[k].selectOptions.map((i) => i.value);
-        p[k].enumNames = formConfigData[k].selectOptions.map((i) => i.label);
+      if (formConfigData[k]?.description) {
+        p[k].description = formConfigData[k].description;
       }
+      // if (formConfigData[k]?.selectOptions) {
+      //   p[k].enum = formConfigData[k].selectOptions.map((i) => i.value);
+      //   p[k].enumNames = formConfigData[k].selectOptions.map((i) => i.label);
+      // }
       if (formConfigData[k]?.required) {
         //@ts-ignore
         required.push(k);
-      }
-      if (uiSize) {
-        if (!formConfigData[k]) {
-          formConfigData[k] = {};
-        }
-        formConfigData[k]["ui:size"] = uiSize;
       }
       value[k] = v;
       return p;
@@ -84,7 +121,9 @@ export const getFormState = <T, L>(props: JSONFormProps<T, L>, formLayout: { [x:
 export const BatchSubmitButton = ({ formStates, onSubmit }) => {
   return (
     <Button
-      className="bg-black mt-4 ml-auto"
+      className="ml-auto mt-4"
+      size="sm"
+      color="primary"
       onClick={(e) => {
         const formData = {};
         const formKeys = Object.keys(formStates);
@@ -106,11 +145,13 @@ export const BatchSubmitButton = ({ formStates, onSubmit }) => {
             }
             formData[key] = data;
           } else {
+            console.error("formRef.current is null");
             return;
           }
         }
         onSubmit?.(formData);
-      }}>
+      }}
+    >
       Submit
     </Button>
   );

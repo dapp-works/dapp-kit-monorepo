@@ -1,51 +1,79 @@
 import React, { useState } from "react";
-import { observer } from "mobx-react-lite";
-import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
+import { Button } from "@nextui-org/react";
 import Form from "@rjsf/core";
-import { ErrorListProps, FieldTemplateProps, getSubmitButtonOptions, ObjectFieldTemplateProps, SubmitButtonProps } from "@rjsf/utils";
-import { cn } from "../../lib/utils";
-import { Button } from "../../components/ui/button";
+import {
+  ErrorListProps,
+  FieldTemplateProps,
+  getSubmitButtonOptions,
+  ObjectFieldTemplateProps,
+  SubmitButtonProps,
+} from "@rjsf/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { observer } from "mobx-react-lite";
+
+import { cn } from "../../lib/utils";
+import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
 
 function FieldTemplate(props: FieldTemplateProps) {
-  const { id, classNames, label, help, required, description, errors, children, schema, uiSchema } = props;
+  const {
+    id,
+    classNames,
+    label,
+    help,
+    required,
+    description,
+    errors,
+    children,
+    schema,
+    uiSchema,
+  } = props;
 
   if (uiSchema && uiSchema["ui:widget"] === "hidden") {
     return null;
   }
 
-  const hideLabel = schema.type === "object" || schema.type === "boolean";
-  const horizontal = uiSchema?.horizontal ?? false;
-  const uiSize = uiSchema?.["ui:size"] ?? "default";
+  // const hideLabel = schema.type === 'object' || schema.type === 'boolean';
 
   return (
-    <div className={cn(classNames, horizontal ? "json-schema-form-field-flex" : "json-schema-form-field-flex-col")}>
-      {!hideLabel && (
-        <label htmlFor={id} className={cn("flex items-center h-8")}>
+    <div className={cn(classNames)}>
+      {/* {!hideLabel && (
+        <label htmlFor={id} className={cn('flex items-center h-8')}>
           <span className="text-gray-900 dark:text-gray-100 text-sm font-medium">{label}</span>
           {required && <span className="font-bold text-red-600">*</span>}
         </label>
-      )}
+      )} */}
       {/* {description} */}
-      <div className={cn("json-schema-form-field", { "json-schema-form-field-small": uiSize === "small" })}>{children}</div>
+      {/* <div className={cn("json-schema-form-field")}>{children}</div> */}
       {/* {help} */}
+
+      {children}
     </div>
   );
 }
 
-const renderLayout = (layout: any[], fields: { [k: string]: React.ReactElement }, n = 1) => {
+const renderLayout = (
+  layout: any[],
+  fields: { [k: string]: React.ReactElement },
+  n = 1,
+) => {
   n++;
   return layout.map((item, index) => {
     if (Array.isArray(item)) {
       const even = (n & 1) === 0;
       return (
-        <div key={index} className={cn("json-schema-form-layout", even ? "flex-row" : "flex-col")}>
+        <div
+          key={index}
+          className={cn(
+            "json-schema-form-layout",
+            even ? "flex-row" : "flex-col",
+          )}
+        >
           {renderLayout(item, fields, n)}
         </div>
       );
     } else {
       return (
-        <div className="w-full mb-[10px]" key={index}>
+        <div className="mb-[10px] w-full" key={index}>
           {fields[item]}
         </div>
       );
@@ -53,10 +81,16 @@ const renderLayout = (layout: any[], fields: { [k: string]: React.ReactElement }
   });
 };
 
-//@ts-ignore
-const ObjectFieldTemplate = ({ title, idSchema: { $id }, properties, uiSchema: { layout } }: ObjectFieldTemplateProps) => {
+const ObjectFieldTemplate = ({
+  title,
+  idSchema: { $id },
+  properties,
+  uiSchema: { layout },
+}: ObjectFieldTemplateProps) => {
   const [opened, setOpened] = useState(false);
-  const fields = Object.fromEntries(properties.map((item) => [item.name, item.content]));
+  const fields = Object.fromEntries(
+    properties.map((item) => [item.name, item.content]),
+  );
   return (
     <div className="w-full">
       {$id === "root" ? (
@@ -73,8 +107,13 @@ const ObjectFieldTemplate = ({ title, idSchema: { $id }, properties, uiSchema: {
         )
       ) : (
         <>
-          <div className="mt-5 mb-[10px] flex justify-between items-center cursor-pointer border-t-[1px solid #E5E5EA] py-[5px] hover:bg-[#F2F2F7] dark:hover:bg-gray-900" onClick={() => setOpened((o) => !o)}>
-            <div className="text-gray-900 dark:text-gray-100 font-bold text-base">{title}</div>
+          <div
+            className="border-t-[1px solid #E5E5EA] mb-[10px] mt-5 flex cursor-pointer items-center justify-between py-[5px] hover:bg-[#F2F2F7] dark:hover:bg-gray-900"
+            onClick={() => setOpened((o) => !o)}
+          >
+            <div className="text-base font-bold text-gray-900 dark:text-gray-100">
+              {title}
+            </div>
             {opened ? <ChevronUp /> : <ChevronDown />}
           </div>
           <div className={cn("mt-2", opened ? "block" : "hidden")}>
@@ -110,13 +149,19 @@ const ErrorListTemplate = ({ errors }: ErrorListProps) => {
 };
 
 const SubmitButton = ({ uiSchema }: SubmitButtonProps) => {
-  const { submitText, norender, props: submitButtonProps = {} } = getSubmitButtonOptions(uiSchema);
+  const {
+    submitText,
+    norender,
+    props: submitButtonProps = {},
+  } = getSubmitButtonOptions(uiSchema);
   if (norender) {
     return null;
   }
   return (
     <div className="flex justify-end">
-      <Button type="submit">{submitText}</Button>
+      <Button type="submit" color="primary" size="sm">
+        {submitText}
+      </Button>
     </div>
   );
 };
@@ -145,7 +190,8 @@ export const JSONSchemaForm = observer(({ children, formState }: Props) => {
       onSubmit={formState.onSubmit}
       validator={formState.validator}
       customValidate={formState.customValidate}
-      ref={formState.formRef}>
+      ref={formState.formRef}
+    >
       {children && children}
     </Form>
   );

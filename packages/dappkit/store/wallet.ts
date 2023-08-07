@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { helper } from "@dappkit/lib/helper";
 import {
   TransactionReceipt,
   TransactionRequest,
@@ -19,9 +20,12 @@ import {
 import {
   AbstractClientWallet,
   AbstractWallet,
+  InjectedWallet,
   MetaMaskWallet,
   WalletConnect,
+  WalletOptions,
 } from "@thirdweb-dev/wallets";
+import { WalletMeta } from "@thirdweb-dev/wallets/dist/declarations/src/evm/wallets/base";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { Deferrable } from "ethers/lib/utils";
@@ -34,6 +38,17 @@ import { ToastPlugin } from "../module/Toast/Toast";
 import { BigNumberState } from "./standard/BigNumberState";
 import { PromiseState } from "./standard/PromiseState";
 import { StorageState } from "./standard/StorageState";
+
+export class MyInjectedWallet extends InjectedWallet {
+  constructor(options?: WalletOptions) {
+    super(options);
+  }
+  static meta: WalletMeta = {
+    name: "IoPay Wallet",
+    iconURL:
+      "https://framerusercontent.com/images/zj4bWRK880xDSHFe6mk9E55Lo.png",
+  };
+}
 
 export type NetworkObject = {
   name: string;
@@ -49,9 +64,9 @@ export class WalletStore {
   sid = "wallet";
   autoObervable = true;
   supportedWallets: AbstractClientWallet[] = [
-    new MetaMaskWallet({
-      chains: allChains,
-    }),
+    // new MetaMaskWallet({
+    //   chains: allChains,
+    // }),
     new WalletConnect({
       chains: allChains,
       //TODO: update this
@@ -101,6 +116,22 @@ export class WalletStore {
   constructor(args: Partial<WalletStore>) {
     Object.assign(this, args);
     // this.selectWallet.call(this.lastConnectWalletIdx.value);
+    if (typeof window !== "undefined") {
+      if (!helper.env.isIopayMobile()) {
+        this.supportedWallets.unshift(
+          new MetaMaskWallet({
+            chains: allChains,
+          }),
+        );
+      } else {
+        this.supportedWallets.unshift(
+          new MyInjectedWallet({
+            chains: allChains,
+          }),
+        );
+      }
+      this.selectWallet.call(this.lastConnectWalletIdx.value);
+    }
     makeAutoObservable(this);
   }
 

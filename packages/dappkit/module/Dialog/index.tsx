@@ -1,18 +1,29 @@
-import RootStore from '../../store/root';
-import { Store } from '../../store/standard/base';
-import Provider from './Provider';
-import { makeAutoObservable } from 'mobx';
-import React from 'react'
+import React from "react";
+import { makeAutoObservable } from "mobx";
+
+import { rootStore } from "../../store";
+import { Store } from "../../store/standard/base";
+import Provider from "./Provider";
 
 export class DialogStore implements Store {
-  sid = 'DialogStore';
+  sid = "DialogStore";
   provider = () => <Provider />;
 
   isOpen = false;
-  title = '';
-  description = '';
-  className: string = '';
-  content: JSX.Element | string = '';
+  title = "";
+  size:
+    | "sm"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "full"
+    | "xs"
+    | "3xl"
+    | "4xl"
+    | "5xl" = "md";
+  className: string = "";
+  content: JSX.Element | string | undefined = "";
 
   constructor(args?: Partial<DialogStore>) {
     Object.assign(this, args);
@@ -25,14 +36,13 @@ export class DialogStore implements Store {
 
   close() {
     this.isOpen = false;
-    this.title = '';
-    // @ts-ignore 
+    this.title = "";
     this.content = undefined;
   }
 }
 
 export async function showDialog(v: Partial<DialogStore>) {
-  const modal = RootStore.Get(DialogStore);
+  const modal = rootStore.get(DialogStore);
   modal.setData({
     ...v,
     isOpen: true,
@@ -40,6 +50,6 @@ export async function showDialog(v: Partial<DialogStore>) {
 }
 
 export async function closeDialog() {
-  const modal = RootStore.Get(DialogStore);
+  const modal = rootStore.get(DialogStore);
   modal.close();
 }

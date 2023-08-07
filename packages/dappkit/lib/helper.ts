@@ -13,6 +13,18 @@ const valMap = {
 };
 
 export const helper = {
+  env: {
+    isIopayMobile: () =>
+      navigator.userAgent &&
+      (navigator.userAgent.includes("IoPayAndroid") ||
+        navigator.userAgent.includes("IoPayiOs")),
+    isBrowser: () => typeof window === "object",
+    onBrowser(func) {
+      if (this.isBrowser()) {
+        func();
+      }
+    },
+  },
   promise: {
     async sleep(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));

@@ -1,16 +1,23 @@
+import React from "react";
+import { Card } from "@nextui-org/react";
+import { Col, Grid, Text } from "@tremor/react";
+
 import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
-import { Grid, Col, Card, Text } from "@tremor/react";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { BatchSubmitButton, getFormState } from "./format";
-import React from "react";
 
 export type GridLayoutProps = {
   gridColumn?: number;
 };
 
-export const GridLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+export const GridLayout = <T extends FormDataType, L extends LayoutType>(
+  props: JSONFormProps<T, L>,
+) => {
   const { layoutConfig, onBatchSubmit } = props;
-  const { type, gridColumn, ...formLayout } = layoutConfig as LayoutConfigType<T, "GridLayout">;
+  const { type, gridColumn, ...formLayout } = layoutConfig as LayoutConfigType<
+    T,
+    "GridLayout"
+  >;
   //@ts-ignore
   const formStates = getFormState(props, formLayout);
   return (
@@ -20,8 +27,9 @@ export const GridLayout = <T extends FormDataType, L extends LayoutType>(props: 
           const layout = formLayout[key];
           return (
             <Col numColSpan={layout?.colSpan ?? 1} key={key}>
-              <Card className="h-full">
+              <Card className="m-0 h-full p-4" shadow="sm">
                 <Text className="mb-2">{layout?.title || key}</Text>
+                {/* @ts-ignore */}
                 <JSONSchemaForm formState={formStates[key]}></JSONSchemaForm>
               </Card>
             </Col>
@@ -29,7 +37,7 @@ export const GridLayout = <T extends FormDataType, L extends LayoutType>(props: 
         })}
       </Grid>
       {onBatchSubmit && (
-        <div className="w-full flex">
+        <div className="flex w-full">
           <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} />
         </div>
       )}

@@ -15,9 +15,9 @@ rootStore.addStores([
     disabled: process.env.NODE_ENV != "development",
   }),
   new HeaderStore({
-    UserNav: () => {
-      return <WalletConnectButton></WalletConnectButton>;
-    },
+    // UserNav: () => {
+    //   return <WalletConnectButton></WalletConnectButton>;
+    // },
   }),
   new StoragePlugin(),
   new AsyncStorage(),

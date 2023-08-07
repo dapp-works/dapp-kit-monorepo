@@ -1,31 +1,37 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../components/ui/dialog";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../store/index";
-import { cn } from "../../lib/utils";
-import { DialogStore } from ".";
 import React from "react";
+import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
+import { observer } from "mobx-react-lite";
 
-const Modal = observer(() => {
+import { DialogStore } from ".";
+import { cn } from "../../lib/utils";
+import { useStore } from "../../store/index";
+
+const Dialog = observer(() => {
   const rootStore = useStore();
   const modal = rootStore.get(DialogStore);
-  const { className, isOpen, title, description, content } = modal;
+  const { className, isOpen, title, size, content } = modal;
   return (
-    <Dialog
-      open={isOpen}
+    <Modal
+      isOpen={isOpen}
+      size={size}
       onOpenChange={(open: boolean) => {
         if (!open) {
           modal.close();
         }
-      }}>
-      <DialogContent className={cn("max-h-screen overflow-auto", className)}>
-        <DialogHeader>
-          {title && <DialogTitle>{title}</DialogTitle>}
-          {description && <DialogDescription>{description}</DialogDescription>}
-        </DialogHeader>
-        {content}
-      </DialogContent>
-    </Dialog>
+      }}
+    >
+      <ModalContent className={cn("max-h-screen overflow-auto", className)}>
+        {() => (
+          <>
+            {title && (
+              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+            )}
+            <ModalBody>{content}</ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 });
 
-export default Modal;
+export default Dialog;

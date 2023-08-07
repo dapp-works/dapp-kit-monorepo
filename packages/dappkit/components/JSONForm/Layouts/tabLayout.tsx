@@ -1,15 +1,21 @@
+import React from "react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
+
 import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
-import { TabList, Tab, TabGroup, TabPanels, TabPanel } from "@tremor/react";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { BatchSubmitButton, getFormState } from "./format";
-import React from "react";
 
 export type TabLayoutProps = {};
 
-export const TabLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+export const TabLayout = <T extends FormDataType, L extends LayoutType>(
+  props: JSONFormProps<T, L>,
+) => {
   const { layoutConfig = {}, onBatchSubmit } = props;
-  const { type, ...formLayout } = layoutConfig as LayoutConfigType<T, "TabLayout">;
-  //@ts-ignore
+  const { type, ...formLayout } = layoutConfig as LayoutConfigType<
+    T,
+    "TabLayout"
+  >;
+  // @ts-ignore
   const formStates = getFormState(props, formLayout);
 
   return (
@@ -25,6 +31,7 @@ export const TabLayout = <T extends FormDataType, L extends LayoutType>(props: J
           {Object.keys(formStates).map((key) => {
             return (
               <TabPanel key={key}>
+                {/* @ts-ignore */}
                 <JSONSchemaForm formState={formStates[key]}></JSONSchemaForm>
               </TabPanel>
             );
@@ -32,7 +39,7 @@ export const TabLayout = <T extends FormDataType, L extends LayoutType>(props: J
         </TabPanels>
       </TabGroup>
       {onBatchSubmit && (
-        <div className="w-full flex">
+        <div className="flex w-full">
           <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} />
         </div>
       )}
