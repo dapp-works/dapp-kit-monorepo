@@ -39,7 +39,7 @@ importers:
         specifier: ^0.1.0
         version: link:../../packages/db
       '@dappworks/kit':
-        specifier: ^0.1.26
+        specifier: ^0.1.28
         version: link:../../packages/dappkit
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0

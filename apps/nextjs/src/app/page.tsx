@@ -3,8 +3,7 @@
 import "~/store/index";
 
 import RootStore from "@dappworks/kit/store/root";
-import { JSONViewPlugin,AppProvider,HeaderStore, StoragePlugin } from "@dappworks/kit";
-import { useEffect } from "react";
+import { JSONViewPlugin,AppProvider,HeaderStore, StoragePlugin, UserStore } from "@dappworks/kit";
 
 export default function HomePage() {
   const headerStore = RootStore.Get(HeaderStore);
@@ -27,13 +26,9 @@ export default function HomePage() {
     engine: StoragePlugin.engines.asyncStorage,
   });
 
-  useEffect(() => {
-  
-  }, []);
-  
   return (
-    <AppProvider>
-      <headerStore.Header />
-    </AppProvider>
+      <AppProvider>
+        <headerStore.Header />
+      </AppProvider>
   );
 }

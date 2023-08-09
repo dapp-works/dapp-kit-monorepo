@@ -1,10 +1,9 @@
+"use client"
+import { helper } from '@dappworks/kit';
 import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
-import { helper } from '@dappworks/kit';
-import { error } from 'console';
-import { env } from '~/env.mjs';
 
-const handler =  NextAuth({
+export default NextAuth({
   providers: [
     GithubProvider({
       clientId: "14f83b848722e38be86a",
@@ -19,11 +18,8 @@ const handler =  NextAuth({
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (user) {
-        try {
-          return true;
-        } catch (error) {
-          return false;
-        }
+        console.log(user,account,profile,email,credentials)
+        return true          
       }
       return false;
     },
@@ -38,8 +34,9 @@ const handler =  NextAuth({
       if (user) {
         const iat = Date.now() / 1000;
         const exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+        console.log(user.id,'user.id')
         token.token = await helper.encode({
-          sub: user.id,
+          sub: user.id ?? '',
           name: user.name as string,
           iat,
           exp,
@@ -48,6 +45,7 @@ const handler =  NextAuth({
       return token;
     },
     async session({ session, user, token }) {
+    
       // @ts-ignore
       session.user.id = token.sub;
       // @ts-ignore
@@ -56,5 +54,3 @@ const handler =  NextAuth({
     },
   },
 });
-
-export {handler as GET,handler as POST};

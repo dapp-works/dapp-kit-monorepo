@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { observer } from "mobx-react-lite";
@@ -70,7 +71,7 @@ export const UserNav = observer(
             })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={user.logout}>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={()=>user.logout()}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
