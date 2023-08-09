@@ -68,29 +68,16 @@ export class JSONViewPlugin implements Store {
       <>
         {/* @ts-ignore  */}
         {Object.keys(props.uiConfigs).map((key) => {
-          {
-            /* @ts-ignore  */
-          }
           /* @ts-ignore  */
           const config = props.uiConfigs[key] as any;
           const data = _.get(props.datas, key);
           const Component = jsonviewplugin.JSONView[config.type].render;
           const rootStore = RootStore.init();
           Object.values(data).forEach((i) => {
-            {
-              /* @ts-ignore  */
-            }
             /* @ts-ignore  */
             if (i.events) {
-              {
-                /* @ts-ignore  */
-              }
               /* @ts-ignore  */
               Object.entries(i.events).forEach(([k, v]) => {
-                {
-                  /* @ts-ignore  */
-                }
-                /* @ts-ignore  */
                 i[k] = (args) =>
                   rootStore.events.emit(v as any, { ...args, action: k });
               });

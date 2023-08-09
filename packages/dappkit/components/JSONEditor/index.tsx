@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { _ } from "../../lib/lodash";

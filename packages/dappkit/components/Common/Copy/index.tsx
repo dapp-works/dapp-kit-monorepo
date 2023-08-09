@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { CheckIcon, CopyIcon } from "@radix-ui/react-icons";
 import copy from "copy-to-clipboard";

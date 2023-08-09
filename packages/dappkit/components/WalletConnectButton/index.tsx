@@ -1,3 +1,5 @@
+"use client";
+
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Button } from '../ui/button';
 import { WalletStore } from '../../store/wallet';

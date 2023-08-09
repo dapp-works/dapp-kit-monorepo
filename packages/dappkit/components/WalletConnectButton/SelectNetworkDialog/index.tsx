@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Chain } from "@thirdweb-dev/chains";

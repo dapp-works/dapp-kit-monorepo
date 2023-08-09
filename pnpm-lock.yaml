@@ -39,7 +39,7 @@ importers:
         specifier: ^0.1.0
         version: link:../../packages/db
       '@dappworks/kit':
-        specifier: ^0.1.19
+        specifier: ^0.1.26
         version: link:../../packages/dappkit
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0
@@ -68,6 +68,9 @@ importers:
       next:
         specifier: ^13.4.12
         version: 13.4.12(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
+      next-auth:
+        specifier: ^4.22.4
+        version: 4.22.4(next@13.4.12)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -298,14 +301,14 @@ importers:
         specifier: ^1.1.4
         version: 1.1.4(react-dom@18.2.0)(react@18.2.0)
       '@rjsf/core':
-        specifier: ^5.7.3
-        version: 5.7.3(@rjsf/utils@5.7.3)(react@18.2.0)
+        specifier: ^5.9.0
+        version: 5.9.0(@rjsf/utils@5.9.0)(react@18.2.0)
       '@rjsf/utils':
-        specifier: ^5.7.3
-        version: 5.7.3(react@18.2.0)
+        specifier: ^5.9.0
+        version: 5.9.0(react@18.2.0)
       '@rjsf/validator-ajv6':
-        specifier: ^5.7.3
-        version: 5.7.3(@rjsf/utils@5.7.3)
+        specifier: ^5.9.0
+        version: 5.9.0(@rjsf/utils@5.9.0)
       '@tanstack/react-query':
         specifier: ^4.29.19
         version: 4.29.19(react-dom@18.2.0)(react@18.2.0)
@@ -5892,14 +5895,14 @@ packages:
       type-fest: 2.19.0
     dev: false
 
-  /@rjsf/core@5.7.3(@rjsf/utils@5.7.3)(react@18.2.0):
-    resolution: {integrity: sha512-GebhuCyNK8db+UT2COFmaLsCWjVsZwNXC8jubadqTji5rNCpuB1ywzp+vbqX0vnFPd8phVKbVfHNl2S86fUaIA==}
+  /@rjsf/core@5.9.0(@rjsf/utils@5.9.0)(react@18.2.0):
+    resolution: {integrity: sha512-HYgnWKTGVfbj6bs1O9SYyw4VgBfoISZeQti259aiKK08XDVH+tgThxBMX4CyMjC/K9I4ralRV9KRlGO1un0DzQ==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@rjsf/utils': 5.7.x
+      '@rjsf/utils': ^5.8.x
       react: ^16.14.0 || >=17
     dependencies:
-      '@rjsf/utils': 5.7.3(react@18.2.0)
+      '@rjsf/utils': 5.9.0(react@18.2.0)
       lodash: 4.17.21
       lodash-es: 4.17.21
       markdown-to-jsx: 7.2.1(react@18.2.0)
@@ -5908,8 +5911,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@rjsf/utils@5.7.3(react@18.2.0):
-    resolution: {integrity: sha512-4bUJE4u1A7/wGupiOIKicm50QJ5iJ+C9Zq27EKnk7TeKKIr2MLdg3ljYSV7aKp2ZiGX6CFtXBX3RpaTjugpKAw==}
+  /@rjsf/utils@5.9.0(react@18.2.0):
+    resolution: {integrity: sha512-+UBRrbHgbG/y6Lj32O0U5oiNpbpKZqsFxPKuOCmOqpsfwmb072AyGoHqskc2e05Ur/iURcbBu3xt72aF1azLmQ==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^16.14.0 || >=17
@@ -5922,13 +5925,13 @@ packages:
       react-is: 18.2.0
     dev: false
 
-  /@rjsf/validator-ajv6@5.7.3(@rjsf/utils@5.7.3):
-    resolution: {integrity: sha512-z9+NRrXsUsXdt7TaX+ogVqi9TLH/0ahXFo9dyIHZUFFnVR/JrTdTK+Csvdxr6dDA0ytKZhESL3KPLxt7yI9ClQ==}
+  /@rjsf/validator-ajv6@5.9.0(@rjsf/utils@5.9.0):
+    resolution: {integrity: sha512-ahCO4UAHHeLyFURvm41DCarFajJJi3UHyZxAI5gNT5t8nesUDBDlxSolkcJXa0zt/U0tUZpcf3gY6Q7a0LetXQ==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@rjsf/utils': 5.7.x
+      '@rjsf/utils': ^5.8.x
     dependencies:
-      '@rjsf/utils': 5.7.3(react@18.2.0)
+      '@rjsf/utils': 5.9.0(react@18.2.0)
       ajv: 6.12.6
       lodash: 4.17.21
       lodash-es: 4.17.21
@@ -12366,6 +12369,31 @@ packages:
 
   /next-auth@4.22.1(next@13.4.12)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-NTR3f6W7/AWXKw8GSsgSyQcDW6jkslZLH8AiZa5PQ09w1kR8uHtR9rez/E9gAq/o17+p0JYHE8QjF3RoniiObA==}
+    peerDependencies:
+      next: ^12.2.5 || ^13
+      nodemailer: ^6.6.5
+      react: ^17.0.2 || ^18
+      react-dom: ^17.0.2 || ^18
+    peerDependenciesMeta:
+      nodemailer:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.22.6
+      '@panva/hkdf': 1.1.1
+      cookie: 0.5.0
+      jose: 4.14.4
+      next: 13.4.12(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
+      oauth: 0.9.15
+      openid-client: 5.4.3
+      preact: 10.11.3
+      preact-render-to-string: 5.2.3(preact@10.11.3)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      uuid: 8.3.2
+    dev: false
+
+  /next-auth@4.22.4(next@13.4.12)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-VMI6pq3z4BfvFeCZHBkYtRYa0qqGTYAi2yy3hWCB78KkN1YsSAsOLSssd4oGrQBj0z/0zg2VLzn9tSJ14AtmWw==}
     peerDependencies:
       next: ^12.2.5 || ^13
       nodemailer: ^6.6.5

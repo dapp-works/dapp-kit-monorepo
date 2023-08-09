@@ -1,3 +1,5 @@
+"use client";
+
 import { Store } from "../../store/standard/base";
 import { observer } from "mobx-react-lite";
 import { StoragePlugin } from "./Storage";

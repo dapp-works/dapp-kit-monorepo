@@ -57,6 +57,16 @@ export const helper = {
     },
   },
   json: {
+    isJsonString(str: string) {
+      if (!str || typeof str !== 'string') return false;
+      if (!str?.includes('{')) return false;
+      try {
+        JSON.parse(str);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    },
     safeParse(val: any) {
       try {
         return JSON.parse(val);

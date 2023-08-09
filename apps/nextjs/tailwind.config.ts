@@ -8,6 +8,8 @@ export default {
   content: [
     "./src/**/*.{ts,tsx}",
     "./node_modules/@dappworks/kit/**/*.{js,ts,jsx,tsx}",
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    '../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   presets: [baseConfig],
   darkMode: "class",

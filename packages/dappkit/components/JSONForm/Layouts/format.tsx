@@ -10,6 +10,9 @@ import {
   JSONSchemaFormState,
   JSONValue,
 } from "../../../store/standard/JSONSchemaState";
+import { helper } from "../../../lib/helper";
+import EditorWidget from '../../../components/JSONFormWidgets/EditorWidget';
+
 
 export const getFormState = <T, L>(
   props: JSONFormProps<T, L>,
@@ -49,6 +52,10 @@ export const getFormState = <T, L>(
             };
             if (type === "number") {
               p[k].inputType = "number";
+            }
+
+            if (helper.json.isJsonString(v)) {
+              formConfigData[k]['ui:widget'] = EditorWidget;
             }
           }
         }

@@ -1,11 +1,12 @@
+"use client";
+
 import { rootStore, RootStore } from "@dappkit/store";
 import {
   AsyncStorage,
   DevInspectorPlugin,
   DevTool,
   HeaderStore,
-  // JSONViewPlugin,
-  // SlotPlugin,
+  JSONViewPlugin,
   StoragePlugin,
   ThemePlugin,
   WalletConnectButton,
@@ -17,14 +18,14 @@ rootStore.addStores([
     disabled: process.env.NODE_ENV != "development",
   }),
   new HeaderStore({
-    UserNav: (props) => {
-      return <WalletConnectButton className={...props.className}></WalletConnectButton>;
-    },
+    // UserNav: (props) => {
+    //   return <WalletConnectButton className={...props.className}></WalletConnectButton>;
+    // },
   }),
   new StoragePlugin(),
   new AsyncStorage(),
   // new SlotPlugin(),
-  // new JSONViewPlugin(),
+  new JSONViewPlugin(),
   new DevInspectorPlugin({ disabled: process.env.NODE_ENV != "development" }),
   new ThemePlugin(),
 ]);
