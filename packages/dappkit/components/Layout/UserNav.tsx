@@ -43,7 +43,7 @@ export const UserNav = observer(
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="relative ml-auto h-8 w-8 rounded-full"
+            className={cn("relative ml-auto h-8 w-8 rounded-full", className)}
           >
             <Avatar className="h-8 w-8">
               <AvatarImage src={user.image} alt="@shadcn" />

@@ -16,6 +16,8 @@ export default function HomePage() {
   });
   const ValueFromLocalStoarge = StoragePlugin.Get({ key: 'test.ValueFromLocalStoarge', value: '123', engine: StoragePlugin.engines.localStorage });
   const ValueFromAsyncStorage = StoragePlugin.Get({ key: 'test.ValueFromAsyncStorage', value: '123', engine: StoragePlugin.engines.asyncStorage });
+  
+  
   const navs = StoragePlugin.Get({
     key: 'Navs',
     value: [
