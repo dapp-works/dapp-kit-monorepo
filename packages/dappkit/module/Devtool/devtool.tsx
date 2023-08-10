@@ -12,10 +12,10 @@ import { helper } from "../../lib/helper";
 import EventEmitter from "events";
 import { JSONSchemaForm } from "../../components/JSONSchemaForm";
 import { getFormState } from "../FormModal";
-import { Card } from "../../components/ui/card";
 import { useMemo } from "react";
 import React from "react";
 import JSONEditor from "../../components/JSONEditor";
+import { Card } from "@nextui-org/react";
 
 function filterState(obj) {
   if (typeof obj !== "object" || obj === null) {
@@ -30,7 +30,12 @@ function filterState(obj) {
 
   for (const [key, value] of Object.entries(obj)) {
     try {
-      if (!["sid", "disabled", "autoObservable", "promiseState", "autoAsyncable"].includes(key) && !(value instanceof PromiseState) && !(value instanceof EventEmitter) && !value?.hasOwnProperty("$$typeof")) {
+      if (
+        !["sid", "disabled", "autoObservable", "promiseState", "autoAsyncable"].includes(key) &&
+        !(value instanceof PromiseState) &&
+        !(value instanceof EventEmitter) &&
+        !value?.hasOwnProperty("$$typeof")
+      ) {
         filteredObj[key] = filterState(value);
       }
     } catch (error) {
@@ -63,6 +68,8 @@ export class DevTool implements Store {
           curPromiseStateList: [],
         }));
         const initialJson = useMemo(() => {
+          //@ts-ignore
+          if (state.curStore?.toJSON) return JSON.stringify(state.curStore?.toJSON(), null, 2);
           const filteredData = filterState(state.curStore || {});
           return JSON.stringify(toJS(filteredData), null, 2);
         }, [state.curStore]);
@@ -86,7 +93,8 @@ export class DevTool implements Store {
                         }
                       });
                       state.curPromiseStateList = promiseStateList;
-                    }}>
+                    }}
+                  >
                     {key}
                   </div>
                 );
@@ -166,7 +174,8 @@ export const DevToolProvider = observer(({ rootStore }: { rootStore: RootStore }
           className="p-1 rounded-sm bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer"
           onClick={() => {
             devTool.isOpen = true;
-          }}>
+          }}
+        >
           <Wrench size={20} />
         </div>
       </div>
@@ -177,7 +186,8 @@ export const DevToolProvider = observer(({ rootStore }: { rootStore: RootStore }
           className="p-0 outline-none bg-card dark:border-none"
           style={{
             height: store.sheetHeight,
-          }}>
+          }}
+        >
           <div className="absolute top-0 left-0 h-[32px] w-full bg-gray-100 dark:bg-gray-800"></div>
           <SheetClose
             className="top-2 right-2"

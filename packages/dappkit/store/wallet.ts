@@ -1,30 +1,9 @@
 import { EventEmitter } from "events";
 import { helper } from "@dappkit/lib/helper";
-import {
-  TransactionReceipt,
-  TransactionRequest,
-} from "@ethersproject/providers";
+import { TransactionReceipt, TransactionRequest } from "@ethersproject/providers";
 //allChains,
-import {
-  allChains,
-  Binance,
-  Chain,
-  Ethereum,
-  getChainByChainId,
-  Goerli,
-  IotexNetwork,
-  IotexNetworkTestnet,
-  Mumbai,
-  Polygon,
-} from "@thirdweb-dev/chains";
-import {
-  AbstractClientWallet,
-  AbstractWallet,
-  InjectedWallet,
-  MetaMaskWallet,
-  WalletConnect,
-  WalletOptions,
-} from "@thirdweb-dev/wallets";
+import { allChains, Binance, Chain, Ethereum, getChainByChainId, Goerli, IotexNetwork, IotexNetworkTestnet, Mumbai, Polygon } from "@thirdweb-dev/chains";
+import { AbstractClientWallet, AbstractWallet, InjectedWallet, MetaMaskWallet, WalletConnect, WalletOptions } from "@thirdweb-dev/wallets";
 import { WalletMeta } from "@thirdweb-dev/wallets/dist/declarations/src/evm/wallets/base";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
@@ -45,8 +24,7 @@ export class MyInjectedWallet extends InjectedWallet {
   }
   static meta: WalletMeta = {
     name: "IoPay Wallet",
-    iconURL:
-      "https://framerusercontent.com/images/zj4bWRK880xDSHFe6mk9E55Lo.png",
+    iconURL: "https://framerusercontent.com/images/zj4bWRK880xDSHFe6mk9E55Lo.png",
   };
 }
 
@@ -78,15 +56,7 @@ export class WalletStore {
       //   }
     }),
   ];
-  supportedNetworks: Chain[] = [
-    IotexNetwork,
-    IotexNetworkTestnet,
-    Ethereum,
-    Binance,
-    Polygon,
-    Goerli,
-    Mumbai,
-  ];
+  supportedNetworks: Chain[] = [IotexNetwork, IotexNetworkTestnet, Ethereum, Binance, Polygon, Goerli, Mumbai];
   popularNetworks: Chain[] = [IotexNetwork, Ethereum, Binance, Polygon];
   popularTestnetNetworks = [IotexNetworkTestnet, Goerli, Mumbai];
   isConnected = false;
@@ -155,6 +125,11 @@ export class WalletStore {
     }
   }
 
+  toJSON() {
+    const { account } = this;
+    return { account };
+  }
+
   selectWallet = new PromiseState({
     value: { index: 0 },
     function: async (index: number) => {
@@ -176,8 +151,7 @@ export class WalletStore {
   async onWalletConnect(args) {
     const { address, chainId } = args;
     if (!address && !chainId) {
-      if (this.reconnectCount >= 100)
-        throw new Error("Reconnect too more times");
+      if (this.reconnectCount >= 100) throw new Error("Reconnect too more times");
 
       this.set({
         reconnectCount: this.reconnectCount + 1,
@@ -297,8 +271,7 @@ export class WalletStore {
     chainId = Number(chainId);
     const toast = rootStore.get(ToastPlugin);
     try {
-      if (!chainId || !address || !data)
-        throw new Error("chainId, address, data is required");
+      if (!chainId || !address || !data) throw new Error("chainId, address, data is required");
       if (!this.account) {
         await this.wallet.connect();
       }

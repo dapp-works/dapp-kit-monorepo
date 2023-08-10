@@ -12,6 +12,7 @@ export * from "./module/Layout/nav";
 export * from "./module/Core/Async";
 export * from "./module/Core/Page";
 export * from "./module/Core/Storage";
+export * from "./module/Core/Slot";
 export * from "./module/Core/AppProvider";
 export * from "./module/Devtool/devtool";
 export * from "./module/DevInspector";

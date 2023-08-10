@@ -21,8 +21,8 @@ export abstract class Store {
   };
 
   private slot?: {
+    name?: string;
     input?: Record<string, any>;
-    Component: React.FC;
     render: React.FC;
   };
   slots?: Record<string, Store["slot"]>;

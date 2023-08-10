@@ -38,9 +38,7 @@ export default class RootStore<T extends EventMap = any> {
 
   events: TypedEmitter<T> = new MyEmitter() as TypedEmitter<T>;
 
-  static init<T extends EventMap>(
-    args: Partial<RootStore<T>> = {},
-  ): RootStore<T> {
+  static init<T extends EventMap>(args: Partial<RootStore<T>> = {}): RootStore<T> {
     if (!globalThis.store) {
       //@ts-ignore
       globalThis.store = new RootStore(args);
@@ -107,14 +105,9 @@ export default class RootStore<T extends EventMap = any> {
     return this;
   }
 
-  get<T extends Store>(
-    store: StoreClass<T>,
-    config: { sid?: string; args?: Partial<T> } = {},
-  ): T {
+  get<T extends Store>(store: StoreClass<T>, config: { sid?: string; args?: Partial<T> } = {}): T {
     const instanceMapId = config.sid ? config.sid : "singleton";
-    const valid =
-      this.instanceMap.has(store) &&
-      this.instanceMap.get(store).has(instanceMapId);
+    const valid = this.instanceMap.has(store) && this.instanceMap.get(store).has(instanceMapId);
     if (!valid) {
       this.add(new store(config.args || {}), config);
     }
@@ -142,10 +135,7 @@ export default class RootStore<T extends EventMap = any> {
     });
   }
 
-  static Get<T extends Store>(
-    store: StoreClass<T>,
-    config: { sid?: string; args?: Partial<T> } = {},
-  ): T {
+  static Get<T extends Store>(store: StoreClass<T>, config: { sid?: string; args?: Partial<T> } = {}): T {
     return this.init().get(store, config);
   }
 }
