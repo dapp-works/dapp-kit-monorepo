@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { StoragePlugin } from "./Storage";
 import MonacoEditor from "@monaco-editor/react";
 import { useRef } from "react";
-import { Button } from "../../components/ui/button";
+import { Button } from '@nextui-org/react';
 import { createGlobalStyle } from "styled-components";
 import React from "react";
 
@@ -115,7 +115,7 @@ export class ThemePlugin implements Store {
               />
               <Button
                 className="z-50 absolute bottom-2 right-4"
-                variant="secondary"
+                color="primary"
                 size="sm"
                 onClick={() => {
                   try {

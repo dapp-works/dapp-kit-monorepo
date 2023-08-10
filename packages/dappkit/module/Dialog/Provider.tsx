@@ -6,6 +6,7 @@ import { DialogStore } from ".";
 import { cn } from "../../lib/utils";
 import { useStore } from "../../store/index";
 
+
 const Dialog = observer(() => {
   const rootStore = useStore();
   const modal = rootStore.get(DialogStore);
@@ -23,10 +24,10 @@ const Dialog = observer(() => {
       <ModalContent className={cn("max-h-screen overflow-auto", className)}>
         {() => (
           <>
-            {title && (
-              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-            )}
-            <ModalBody>{content}</ModalBody>
+            {title && <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>}
+            <ModalBody>
+              {content}
+            </ModalBody>
           </>
         )}
       </ModalContent>

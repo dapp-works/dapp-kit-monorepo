@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import SimplePagination from "../../components/Common/SimplePagination";
 import { ActionButtonType, Column, ExtendedTable, JSONSchemaTableState } from "../../store/standard/JSONSchemaState";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import JSONHighlight from "../../components/Common/JSONHighlight";
-import { Button } from "../ui/button";
+import { Button, Pagination as NextuiPagination } from '@nextui-org/react';
 import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { _ } from "../../lib/lodash";
 import { showDialog } from "../../module/Dialog";
@@ -125,21 +124,24 @@ const JSONTable = observer(<T,>(props: JSONTableProps<T>) => {
           <TableBody>{data.map((item, index) => (needExtendedTable ? <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} /> : <Body key={item[rowKey] || index} item={item} columns={columns} rowOnClick={rowOnClick} />))}</TableBody>
         </Table>
       </div>
-      <SimplePagination
-        className="mt-4"
-        //@ts-ignore
-        total={pagination.total}
-        //@ts-ignore
-        limit={pagination.limit}
-        //@ts-ignore
-        page={pagination.page}
-        onPageChange={(currentPage) => {
-          //@ts-ignore
-          pagination.setData({
-            page: currentPage,
-          });
-        }}
-      />
+      {pagination && pagination.total > pagination.limit && (
+        <div className="flex justify-center h-[30px] mt-4">
+          <NextuiPagination
+            showControls
+            size="sm"
+            radius="sm"
+            variant="flat"
+            total={Math.ceil(pagination.total / pagination.limit)}
+            page={pagination.page}
+            initialPage={1}
+            onChange={currentPage => {
+              pagination.setData({
+                page: currentPage,
+              });
+            }}
+          />
+        </div>
+      )}
     </>
   );
 });

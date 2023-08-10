@@ -1,4 +1,4 @@
-import { Dialog, DialogCloseButton, DialogContent, DialogHeader, DialogOverlay, DialogTitle } from "../../components/ui/dialog";
+import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { observer } from "mobx-react-lite";
 import { JSONSchemaForm } from "../../components/JSONSchemaForm";
 import { useStore } from "../../store/index";
@@ -9,41 +9,35 @@ import { FormModalStore } from ".";
 const JSONFormModal = observer(() => {
   const rootStore = useStore();
   const formModal = rootStore.get(FormModalStore);
-  const { form, className, closeOnOverlayClick } = formModal;
+  const { form, closeOnOverlayClick } = formModal;
   if (!form) {
     return null;
   }
   return (
-    <Dialog
-      open={formModal.isOpen}
+    <Modal
+      className={formModal.className}
+      isOpen={formModal.isOpen}
+      size={formModal.modalSize}
+      isDismissable={!closeOnOverlayClick}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          formModal.event.emit("abort");
+          formModal.event.emit('abort');
         }
-      }}>
+      }}
+    >
       <div className="z-50 fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
-        <DialogOverlay
-          onClick={() => {
-            if (!closeOnOverlayClick) {
-              formModal.event.emit("abort");
-            }
-          }}
-        />
         <Draggable handle=".draggable-handle">
-          <div
-            className={cn(
-              "fixed z-50 grid w-fit gap-4 rounded-b-lg border bg-background px-6 py-4 shadow-lg animate-in dark:border-gray-700",
-              "data-[state=open]:fade-in-90 data-[state=open]:slide-in-from-bottom-10 sm:rounded-lg sm:zoom-in-90 data-[state=open]:sm:slide-in-from-bottom-0",
-              className
-            )}>
-            <DialogCloseButton />
-            <DialogHeader className="draggable-handle cursor-move">{formModal.title && <DialogTitle>{formModal.title}</DialogTitle>}</DialogHeader>
-            <JSONSchemaForm formState={form} />
-          </div>
+          <ModalContent>
+            {formModal.title && <ModalHeader className="flex flex-col gap-1 draggable-handle cursor-move">{formModal.title}</ModalHeader>}
+            <ModalBody className='max-h-[90vh] overflow-auto'>
+              <JSONSchemaForm formState={form} />
+            </ModalBody>
+          </ModalContent>
         </Draggable>
       </div>
-    </Dialog>
+    </Modal>
   );
 });
 
 export default JSONFormModal;
+

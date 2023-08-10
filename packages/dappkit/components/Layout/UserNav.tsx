@@ -8,8 +8,7 @@ import { NavStore } from "../../module/Layout/nav";
 import { rootStore } from "../../store";
 import RootStore from "../../store/root";
 import { UserStore } from "../../store/user";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +19,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Avatar, Button } from "@nextui-org/react";
 
 export const UserNav = observer(
   ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
@@ -45,10 +45,7 @@ export const UserNav = observer(
             variant="ghost"
             className={cn("relative ml-auto h-8 w-8 rounded-full", className)}
           >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user.image} alt="@shadcn" />
-              <AvatarFallback>SC</AvatarFallback>
-            </Avatar>
+            <Avatar className="h-8 w-8" src={user.image} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -71,7 +68,7 @@ export const UserNav = observer(
             })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={()=>user.logout()}>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => user.logout()}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );

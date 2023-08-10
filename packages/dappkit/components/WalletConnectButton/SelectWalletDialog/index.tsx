@@ -1,27 +1,27 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../store/index";
 import Draggable from "react-draggable";
 import { WalletStore } from "../../../store/wallet";
 import { helper } from "../../../lib/helper";
 import React from "react";
+import { Modal, ModalContent, ModalHeader } from "@nextui-org/react";
 
 const SelectWalletDialog = observer(() => {
   const rootStore = useStore();
   const walletStore = rootStore.get(WalletStore);
   return (
-    <Dialog
-      open={walletStore.isSelectWalletDialogOpen}
+    <Modal
+      isOpen={walletStore.isSelectWalletDialogOpen}
       onOpenChange={(open: boolean) => {
         if (!open) {
           walletStore.isSelectWalletDialogOpen = false;
         }
       }}>
       <Draggable handle=".draggable-handle">
-        <DialogContent className={"rounded-lg border-none"} style={{ minWidth: "400px" }}>
-          <DialogHeader className="draggable-handle cursor-move">
-            <DialogTitle className="">Choose your wallet</DialogTitle>
-          </DialogHeader>
+        <ModalContent className={"rounded-lg border-none"} style={{ minWidth: "400px" }}>
+          <ModalHeader className="draggable-handle cursor-move">
+            Choose your wallet
+          </ModalHeader>
           {walletStore?.supportedWallets?.map((i, index) => {
             return (
               <div
@@ -38,9 +38,9 @@ const SelectWalletDialog = observer(() => {
               </div>
             );
           })}
-        </DialogContent>
+        </ModalContent>
       </Draggable>
-    </Dialog>
+    </Modal>
   );
 });
 

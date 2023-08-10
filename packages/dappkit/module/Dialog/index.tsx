@@ -5,25 +5,16 @@ import { rootStore } from "../../store";
 import { Store } from "../../store/standard/base";
 import Provider from "./Provider";
 
+
 export class DialogStore implements Store {
-  sid = "DialogStore";
+  sid = 'DialogStore';
   provider = () => <Provider />;
 
   isOpen = false;
-  title = "";
-  size:
-    | "sm"
-    | "md"
-    | "lg"
-    | "xl"
-    | "2xl"
-    | "full"
-    | "xs"
-    | "3xl"
-    | "4xl"
-    | "5xl" = "md";
-  className: string = "";
-  content: JSX.Element | string | undefined = "";
+  title = '';
+  size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
+  className: string = '';
+  content: JSX.Element | string = '';
 
   constructor(args?: Partial<DialogStore>) {
     Object.assign(this, args);
@@ -36,8 +27,8 @@ export class DialogStore implements Store {
 
   close() {
     this.isOpen = false;
-    this.title = "";
-    this.content = undefined;
+    this.title = '';
+    this.content = '';
   }
 }
 

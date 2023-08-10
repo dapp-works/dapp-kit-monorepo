@@ -1,5 +1,5 @@
 import { Sheet, SheetClose, SheetContent } from "../../components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Tabs, Tab } from "@nextui-org/react";
 import { cn } from "../../lib/utils";
 import RootStore, { MyEmitter } from "../../store/root";
 import { PromiseState } from "../../store/standard/PromiseState";
@@ -146,7 +146,6 @@ const PromiseStateDebug = ({ promiseStateList }: { promiseStateList: { name: str
               <div className="font-bold text-xs">{item.name}</div>
               <JSONSchemaForm
                 formState={getFormState({
-                  uiSize: "small",
                   data: formData,
                   onSubmit: (data) => {
                     item.promiseState.call(data);
@@ -214,28 +213,22 @@ export const DevToolProvider = observer(({ rootStore }: { rootStore: RootStore }
               document.body.addEventListener("mouseup", onMouseUp, { once: true });
             }}
           />
-          <Tabs defaultValue="Store">
-            <TabsList className="relative max-w-[calc(100vw-50px)] p-0 h-auto rounded-none">
-              {devTool.panels.map((panel) => {
-                return (
-                  // @ts-ignore
-                  <TabsTrigger key={panel.title} value={panel.title} className="rounded-none">
-                    {/* @ts-ignore */}
-                    <div>{panel.title}</div>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-            {devTool.panels.map((panel) => {
-              //@ts-ignore
+          <Tabs
+            className='w-full'
+            size="sm"
+            radius="none"
+            items={devTool.panels}
+          >
+            {(panel) => {
               const Component = panel.render || (() => null);
               return (
-                //@ts-ignore
-                <TabsContent key={panel.title} value={panel.title} className="p-1" style={{ height: `calc(${store.sheetHeight}px - 50px)` }}>
-                  <Component rootStore={rootStore} />
-                </TabsContent>
-              );
-            })}
+                <Tab key={panel.title} title={panel.title}>
+                  <div className="p-2" style={{ height: `calc(${store.sheetHeight}px - 50px)` }}>
+                    <Component rootStore={rootStore} />
+                  </div>
+                </Tab>
+              )
+            }}
           </Tabs>
         </SheetContent>
       </Sheet>
