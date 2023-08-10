@@ -9,17 +9,17 @@ import { rootStore } from "../../store";
 import React from "react";
 
 export class ComplexFormModalStore<T extends FormDataType> implements Store {
-  sid = "ComplexFormModalStore";
+  sid = 'ComplexFormModalStore';
   provider = () => <Provider />;
 
   isOpen = false;
-  title = "";
+  title = '';
   formData?: T;
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, LayoutType>;
   isAutomaticallyClose = true;
-  className = "";
-  uiSize?: "small" | "default" = "default";
+  className = '';
+  modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   event = new EventEmitter();
   onBatchSubmit?: (data: T) => void;
   onSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
@@ -36,13 +36,13 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
 
   close() {
     this.isOpen = false;
-    this.title = "";
+    this.title = '';
     this.formData = undefined;
     this.formConfig = undefined;
     this.layoutConfig = undefined;
     this.isAutomaticallyClose = true;
-    this.className = "";
-    this.uiSize = "default";
+    this.className = '';
+    this.modalSize = 'md';
     this.onBatchSubmit = undefined;
     this.onSubmit = undefined;
     this.onSet = undefined;
@@ -58,7 +58,7 @@ export async function getComplexFormData<T extends FormDataType>(v: Partial<Comp
       ...v,
       isOpen: true,
     });
-    complexFormModal.event.on("batchSubmit", (formData: T) => {
+    complexFormModal.event.on('batchSubmit', (formData: T) => {
       if (complexFormModal.isAutomaticallyClose) {
         complexFormModal.close();
         resolve(formData);
@@ -66,9 +66,9 @@ export async function getComplexFormData<T extends FormDataType>(v: Partial<Comp
         complexFormModal.onBatchSubmit?.(formData);
       }
     });
-    complexFormModal.event.on("abort", () => {
+    complexFormModal.event.on('abort', () => {
       complexFormModal.close();
-      reject("abort");
+      reject('abort');
     });
   });
 }

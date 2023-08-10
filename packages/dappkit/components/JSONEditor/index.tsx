@@ -5,7 +5,7 @@ import MonacoEditor from "@monaco-editor/react";
 import { _ } from "../../lib/lodash";
 import * as jsonpatch from "fast-json-patch";
 import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
+import { Button } from '@nextui-org/react';
 
 const Editor = ({ className, height = "100%", initialJson, onChange, onSubmit }: { className?: string; height?: string | number; initialJson: string; onChange?: (value: Record<string, any>) => void; onSubmit?: (value: Record<string, any>) => void }) => {
   const valueRef = useRef<string>(initialJson);
@@ -34,7 +34,8 @@ const Editor = ({ className, height = "100%", initialJson, onChange, onSubmit }:
                 // @ts-ignore
                 current = current[key];
               }
-              const lastKey = keys[keys.length - 1];
+              let lastKey = keys[keys.length - 1];
+              lastKey = lastKey.replace('~1', '/');
               if (op === "replace") {
                 // @ts-ignore
                 current[lastKey] = value;
@@ -78,8 +79,8 @@ const Editor = ({ className, height = "100%", initialJson, onChange, onSubmit }:
       {onSubmit && (
         <Button
           className="z-50 absolute bottom-[50px] right-[20px]"
-          variant="secondary"
-          size="sm"
+          color='primary'
+          size='sm'
           onClick={() => {
             try {
               const json = JSON.parse(valueRef.current);

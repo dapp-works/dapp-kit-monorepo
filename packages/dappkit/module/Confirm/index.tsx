@@ -4,14 +4,16 @@ import Provider from "./Provider";
 import React from "react";
 
 export class ConfirmStore implements Store {
-  sid = "ConfirmStore";
+  sid = 'ConfirmStore';
   provider = () => <Provider />;
 
   isOpen: boolean = false;
-  title?: string = "";
-  description?: string = "";
-  cancelText?: string = "Cancel";
-  okText?: string = "Apply";
+  title?: string = '';
+  description?: string = '';
+  size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
+  className: string = '';
+  cancelText?: string = 'Cancel';
+  okText?: string = 'Apply';
 
   constructor() {
     makeAutoObservable(this);
@@ -21,12 +23,18 @@ export class ConfirmStore implements Store {
     this.isOpen = val;
   }
 
-  onOk() {}
+  onOk() { }
 
-  onCancel() {}
+  onCancel() { }
 
   show(confirmProps: Partial<ConfirmStore>) {
     Object.assign(this, confirmProps);
     this.toggleOpen(true);
+  }
+
+  close() {
+    this.isOpen = false;
+    this.title = '';
+    this.description = '';
   }
 }

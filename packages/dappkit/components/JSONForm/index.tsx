@@ -40,7 +40,7 @@ export type LayoutConfigType<T, L> = L extends 'TabLayout'
 
 export type FormDataType = {
   [key: string]: {
-    [key: string]: string | number | boolean | { [key: string]: string | number | boolean };
+    [key: string]: string | number | boolean;
   };
 };
 
@@ -51,7 +51,6 @@ export type FormConfigType<T> = {
       description?: string;
       required?: boolean;
       selectOptions?: { label: string; value: string }[];
-      horizontal?: boolean;
     } & UiSchema;
   };
 };
@@ -69,7 +68,7 @@ export type JSONFormProps<T = FormDataType, L = LayoutType> = {
   onBatchSubmit?: (data: T) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
   onSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
-  // onChange?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
+  onChange?: (data: Partial<T>) => void;
 };
 
 const components = {

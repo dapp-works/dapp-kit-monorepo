@@ -10,18 +10,21 @@ import {
   JSONValue,
 } from "../../store/standard/JSONSchemaState";
 import Provider from "./Provider";
+import SelectWidget from "../../components/JSONFormWidgets/SelectWidget";
+import InputWidget from "../../components/JSONFormWidgets/InputWidget";
+import CheckboxWidget from "../../components/JSONFormWidgets/CheckboxWidget";
 
 export class FormModalStore<T = { [key: string]: any }> implements Store {
-  sid = "FormModalStore";
+  sid = 'FormModalStore';
   provider = () => <Provider />;
 
   isOpen = false;
-  title = "";
+  title = '';
   //@ts-ignore
   form: JSONSchemaFormState<T> = null;
   isAutomaticallyClose = true;
-  className: string = "";
-  uiSize?: "small" | "default" = "default";
+  className: string = '';
+  modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   closeOnOverlayClick = false;
   event = new EventEmitter();
   onAfterSubmit?: (data: T) => void;
@@ -37,28 +40,25 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
 
   close() {
     this.isOpen = false;
-    this.title = "";
-    //@ts-ignore
+    this.title = '';
     this.form = null;
     this.isAutomaticallyClose = true;
-    this.className = "";
-    this.uiSize = "default";
-    this.closeOnOverlayClick = true;
+    this.className = '';
+    this.modalSize = 'md';
+    this.closeOnOverlayClick = false;
     this.onAfterSubmit = undefined;
     this.event.removeAllListeners();
   }
 }
 
-export async function getFormData<T = { [key: string]: any }>(
-  v: Partial<FormModalStore>,
-) {
+export async function getFormData<T = { [key: string]: any }>(v: Partial<FormModalStore>) {
   return new Promise<T>((resolve, reject) => {
     const formModal = RootStore.Get(FormModalStore);
     formModal.setData({
       ...v,
       isOpen: true,
     });
-    formModal.event.on("afterSubmit", (formData: T) => {
+    formModal.event.on('afterSubmit', (formData: T) => {
       if (formModal.isAutomaticallyClose) {
         formModal.close();
         resolve(formData);
@@ -67,62 +67,89 @@ export async function getFormData<T = { [key: string]: any }>(
         formModal.onAfterSubmit?.(formData);
       }
     });
-    formModal.event.on("abort", () => {
+    formModal.event.on('abort', () => {
       formModal.close();
-      reject("abort");
+      reject('abort');
     });
   });
 }
 
-export function getFormState<T>({
-  data,
-  metadata = {},
-  onSet = (v: T, form) => v,
-  onSubmit,
-  uiSize,
-}: {
-  data: T;
-  metadata?: { [key: string]: any } & Partial<JSONSchemaFormState<any>>;
-  onSet?: (v: T, form: JSONSchemaFormState<T, UiSchema>) => T;
-  onSubmit?: (data: T) => void;
-  uiSize?: "small" | "default";
-}): JSONSchemaFormState<T, UiSchema> {
+export function getFormState<T>(
+  {
+    data,
+    metadata = {},
+    onSet = (v: T, form) => v,
+    onSubmit,
+  }: {
+    data: T;
+    metadata?: { [key: string]: any } & Partial<JSONSchemaFormState<any>>;
+    onSet?: (v: T, form: JSONSchemaFormState<T, UiSchema>) => T;
+    onSubmit?: (data: T) => void;
+  }
+): JSONSchemaFormState<T, UiSchema> {
   const value = {};
   const required = [];
-  //@ts-ignore
   const props = Object.entries(data).reduce((p, c) => {
     const [k, v] = c;
+    const type = typeof v;
     p[k] = {
-      type: typeof v,
+      type
     };
+    if (!metadata[k]) {
+      metadata[k] = {};
+    }
+    if (type === 'string' || type === 'number') {
+      if (metadata[k]?.selectOptions) {
+        metadata[k]['ui:widget'] = SelectWidget;
+        p[k].selectOptions = metadata[k].selectOptions;
+      } else {
+        if (!metadata[k]['ui:widget']) {
+          metadata[k]['ui:widget'] = InputWidget;
+          metadata[k]['ui:options'] = {
+            // labelPlacement: 'outside-left',
+            size: 'sm',
+          };
+          if (type === 'number') {
+            p[k].inputType = 'number';
+          }
+        }
+      }
+    }
+    if (type === 'boolean') {
+      metadata[k]['ui:widget'] = CheckboxWidget;
+      metadata[k]['ui:options'] = {
+        size: 'sm',
+      }
+    }
+    if (metadata[k]?.inputType) {
+      p[k].inputType = metadata[k].inputType;
+      delete metadata[k].inputType;
+    }
     if (metadata[k]?.title) {
-      p[k].title = metadata[k]?.title || v;
+      p[k].title = metadata[k].title || v;
       delete metadata[k].title;
     }
-    if (metadata[k]?.enum) {
-      p[k].enum = metadata[k].enum;
-      delete metadata[k].enum;
+    if (metadata[k]?.description) {
+      p[k].description = metadata[k].description;
+      delete metadata[k].description;
     }
-    if (metadata[k]?.enumNames) {
-      p[k].enumNames = metadata[k].enumNames;
-      delete metadata[k].enumNames;
-    }
+    // if (metadata[k]?.enum) {
+    //   p[k].enum = metadata[k].enum;
+    //   delete metadata[k].enum;
+    // }
+    // if (metadata[k]?.enumNames) {
+    //   p[k].enumNames = metadata[k].enumNames;
+    //   delete metadata[k].enumNames;
+    // }
     if (metadata[k]?.required) {
-      //@ts-ignore
       required.push(k);
       delete metadata[k].required;
-    }
-    if (uiSize) {
-      if (!metadata[k]) {
-        metadata[k] = {};
-      }
-      metadata[k]["ui:size"] = uiSize;
     }
     value[k] = v;
     return p;
   }, {});
   const schema = {
-    type: "object",
+    type: 'object',
     properties: props,
     required,
   };
@@ -130,9 +157,9 @@ export function getFormState<T>({
     //@ts-ignore
     schema,
     uiSchema: {
-      "ui:submitButtonOptions": {
+      'ui:submitButtonOptions': {
         norender: false,
-        submitText: "Submit",
+        submitText: 'Submit',
       },
       ...metadata,
     },
@@ -141,7 +168,7 @@ export function getFormState<T>({
         onSubmit(e.formData as T);
       } else {
         const formModal = RootStore.Get(FormModalStore);
-        formModal.event.emit("afterSubmit", e.formData);
+        formModal.event.emit('afterSubmit', e.formData);
       }
     },
     value: new JSONValue({
@@ -161,10 +188,10 @@ export async function getSimpleFormData<T>(
     return v;
   },
 ) {
-  const form = getFormState({ data, metadata, onSet, uiSize: config.uiSize });
+  const form = getFormState({ data, metadata, onSet });
   return getFormData<T>({
     ...config,
     //@ts-ignore
-    form,
+    form
   });
 }

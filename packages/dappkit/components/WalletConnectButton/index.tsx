@@ -1,7 +1,7 @@
 "use client";
 
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { Button } from "../ui/button";
+import { Button } from "@nextui-org/react";
 import { WalletStore } from "../../store/wallet";
 import { helper } from "../../lib/helper";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
@@ -123,7 +123,7 @@ export const WalletConnectButton = observer(({ size = "lg", className }: IProps)
       <SelectWalletDialog />
       <Button
         className={cn(className)}
-        loading={isConnecting}
+        isLoading={isConnecting}
         onClick={() => {
           walletStore.set({
             isSelectWalletDialogOpen: true,

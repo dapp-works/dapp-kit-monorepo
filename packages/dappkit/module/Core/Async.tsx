@@ -4,7 +4,6 @@ import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 
 import JSONEditor from "../../components/JSONEditor";
-import { Input } from "../../components/ui/input";
 import { helper } from "../../lib/helper";
 import { _ } from "../../lib/lodash";
 import RootStore from "../../store/root";
@@ -12,6 +11,7 @@ import { Store } from "../../store/standard/base";
 import { PromiseState } from "../../store/standard/PromiseState";
 import { ToastPlugin } from "../Toast/Toast";
 import { StoragePlugin } from "./Storage";
+import { Input } from "@nextui-org/react";
 
 export class AsyncStorage implements Store {
   sid = "AsyncStorage";

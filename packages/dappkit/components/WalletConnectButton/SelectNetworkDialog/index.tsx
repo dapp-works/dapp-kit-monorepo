@@ -7,24 +7,12 @@ import { Loader2 } from "lucide-react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import Draggable from "react-draggable";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../../../components/ui/dialog";
-import { Input } from "../../../components/ui/input";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../../components/ui/tabs";
 import { helper } from "../../../lib/helper";
 import { useStore } from "../../../store/index";
 import RootStore from "../../../store/root";
 import { PromiseState } from "../../../store/standard/PromiseState";
 import { WalletStore } from "../../../store/wallet";
+import { Input, Modal, ModalContent, ModalHeader, Tab, Tabs } from "@nextui-org/react";
 
 const SignerNetworkCard = observer(
   ({ i, index }: { i: Chain; index: number }) => {
@@ -43,7 +31,7 @@ const SignerNetworkCard = observer(
           store.selectedChainId = i.chainId;
           try {
             await store.switchChain.call(i.chainId);
-          } catch (error) {}
+          } catch (error) { }
         }}
         key={index}
         className="bg-muted border-muted hover:border-primary delay-80 mt-2 flex cursor-pointer rounded-md  border border-2 p-4 transition"
@@ -82,8 +70,8 @@ const SelectNetworkDialog = observer(() => {
   }));
 
   return (
-    <Dialog
-      open={walletStore.isSelectNetworkDialogOpen}
+    <Modal
+      isOpen={walletStore.isSelectNetworkDialogOpen}
       onOpenChange={(open: boolean) => {
         if (!open) {
           // walletStore.toggleSelectNetworkDialog();
@@ -94,76 +82,71 @@ const SelectNetworkDialog = observer(() => {
       }}
     >
       <Draggable handle=".draggable-handle">
-        <DialogContent className={"rounded-lg border-none"}>
-          <DialogHeader className="draggable-handle cursor-move">
-            <DialogTitle className="">Select Network</DialogTitle>
-          </DialogHeader>
-          <Tabs defaultValue="Mainnets" className="w-[400px] ">
-            <TabsList className="">
-              <TabsTrigger value="Mainnets">Mainnets</TabsTrigger>
-              <TabsTrigger value="Testnets">Testnets</TabsTrigger>
-            </TabsList>
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-3 text-2xl" />
-              <Input
-                value={store.searchText}
-                onChange={(e) => (store.searchText = e.target.value)}
-                className="bg-muted mt-6 border-none pl-8"
-                placeholder="Search Network or Chain ID"
-              />
-            </div>
-            <TabsContent
-              value="Mainnets"
-              className="mt-8 overflow-y-scroll pr-2"
-              style={{ height: "300px" }}
-            >
-              {store.searchText ? (
-                <>
-                  {store?.searchMainnetNetwork?.map((i, index) => (
-                    <SignerNetworkCard i={i} index={index} />
-                  ))}
-                </>
-              ) : (
-                <>
-                  <div className="">Popular</div>
-                  {walletStore?.popularNetworks?.map((i, index) => (
-                    <SignerNetworkCard i={i} index={index} />
-                  ))}
-                  <div className="mt-4">All Networks</div>
-                  {walletStore?.mainnetNetworks?.map((i, index) => (
-                    <SignerNetworkCard i={i} index={index} />
-                  ))}
-                </>
-              )}
-            </TabsContent>
-            <TabsContent
-              value="Testnets"
-              className="mt-8 overflow-y-scroll pr-2"
-              style={{ height: "300px" }}
-            >
-              {store.searchText ? (
-                <>
-                  {store?.searchTestnetNetwork?.map((i, index) => (
-                    <SignerNetworkCard i={i} index={index} />
-                  ))}
-                </>
-              ) : (
-                <>
-                  <div className="">Popular</div>
-                  {walletStore?.popularTestnetNetworks?.map((i, index) => (
-                    <SignerNetworkCard i={i} index={index} />
-                  ))}
-                  <div className="mt-4">All Networks</div>
-                  {walletStore?.testnetNetworks?.map((i, index) => (
-                    <SignerNetworkCard i={i} index={index} />
-                  ))}
-                </>
-              )}
-            </TabsContent>
+        <ModalContent className={"rounded-lg border-none"}>
+          <ModalHeader className="draggable-handle cursor-move">
+            Select Network
+          </ModalHeader>
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-3 text-2xl" />
+            <Input
+              value={store.searchText}
+              onChange={(e) => (store.searchText = e.target.value)}
+              className="bg-muted mt-6 border-none pl-8"
+              placeholder="Search Network or Chain ID"
+            />
+          </div>
+          <Tabs
+            defaultValue="Mainnets"
+            className="w-[400px]"
+          >
+            <Tab key="Mainnets" title="Mainnets">
+              <div className="mt-8 overflow-y-scroll pr-2" style={{ height: "300px" }}>
+                {store.searchText ? (
+                  <>
+                    {store?.searchMainnetNetwork?.map((i, index) => (
+                      <SignerNetworkCard i={i} index={index} />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <div className="">Popular</div>
+                    {walletStore?.popularNetworks?.map((i, index) => (
+                      <SignerNetworkCard i={i} index={index} />
+                    ))}
+                    <div className="mt-4">All Networks</div>
+                    {walletStore?.mainnetNetworks?.map((i, index) => (
+                      <SignerNetworkCard i={i} index={index} />
+                    ))}
+                  </>
+                )}
+              </div>
+            </Tab>
+            <Tab key="Testnets" title="Testnets">
+              <div className="mt-8 overflow-y-scroll pr-2" style={{ height: "300px" }}>
+                {store.searchText ? (
+                  <>
+                    {store?.searchTestnetNetwork?.map((i, index) => (
+                      <SignerNetworkCard i={i} index={index} />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <div className="">Popular</div>
+                    {walletStore?.popularTestnetNetworks?.map((i, index) => (
+                      <SignerNetworkCard i={i} index={index} />
+                    ))}
+                    <div className="mt-4">All Networks</div>
+                    {walletStore?.testnetNetworks?.map((i, index) => (
+                      <SignerNetworkCard i={i} index={index} />
+                    ))}
+                  </>
+                )}
+              </div>
+            </Tab>
           </Tabs>
-        </DialogContent>
+        </ModalContent>
       </Draggable>
-    </Dialog>
+    </Modal>
   );
 });
 

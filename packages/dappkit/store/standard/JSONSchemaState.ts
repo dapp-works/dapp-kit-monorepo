@@ -1,12 +1,11 @@
 import { createRef, LegacyRef, Ref } from "react";
-import { helper } from "../../lib/helper";
 import { ButtonProps } from "@nextui-org/react";
 import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv6";
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 
-// import { helper } from '../../lib/helper';
+import { helper } from "../../lib/helper";
 import { PaginationState } from "./PaginationState";
 
 export class JSONSchemaFormState<T, U = UiSchema> {
@@ -32,10 +31,10 @@ export class JSONSchemaFormState<T, U = UiSchema> {
   getDymaicData = () => {
     return { ready: true };
   };
-  onChange = (e: IChangeEvent<T>) => {
+  onChange = (e: IChangeEvent<T>, id: string) => {
     this.value.set(e.formData);
     if (this.afterChange) {
-      this.afterChange(e);
+      this.afterChange(e, id);
     }
   };
   onSubmit = (e: IChangeEvent<T>) => {
@@ -44,7 +43,7 @@ export class JSONSchemaFormState<T, U = UiSchema> {
     }
   };
   afterSubmit: (e: IChangeEvent<T>) => void;
-  afterChange: (e: IChangeEvent<T>) => void;
+  afterChange: (e: IChangeEvent<T>, id: string) => void;
   reset({ force = false } = {}) {
     if (force) {
       this.value.value = this.value.default;

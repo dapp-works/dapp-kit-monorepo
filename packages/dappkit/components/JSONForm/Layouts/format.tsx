@@ -18,7 +18,7 @@ export const getFormState = <T, L>(
   props: JSONFormProps<T, L>,
   formLayout: { [x: string]: { fieldLayout?: any[] } } = {},
 ) => {
-  const { formData, formConfig, onSubmit, onSet } = props;
+  const { formData, formConfig, onSubmit, onSet, onChange } = props;
 
   const formStates: {
     [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>;
@@ -104,9 +104,19 @@ export const getFormState = <T, L>(
       afterSubmit: async (e) => {
         onSubmit?.(key as FormKey<T>, e.formData as FormDataOfKey<T>);
       },
-      // afterChange: (e) => {
-      //   onChange?.(key as FormKey<T>, e.formData as FormDataOfKey<T>,);
-      // },
+      afterChange: (e, id) => {
+        const { formData } = e;
+        if (formData) {
+          const field = id.replace('root_', '');
+          const data = {
+            [key]: {
+              [field]: formData[field],
+            }
+          };
+          //@ts-ignore
+          onChange?.(data);
+        }
+      },
       value: new JSONValue({
         default: value,
         //@ts-ignore

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { useStore } from "../../store/index";
 import Draggable from "react-draggable";
@@ -29,9 +29,9 @@ const JSONViewModal = observer(() => {
       }
     };
     handleResize();
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, [gridColumn]);
 
@@ -49,37 +49,41 @@ const JSONViewModal = observer(() => {
   }
 
   return (
-    <Dialog
-      open={isOpen}
+    <Modal
+      className={complexFormModal.className}
+      isOpen={isOpen}
+      size={complexFormModal.modalSize}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          complexFormModal.event.emit("abort");
+          complexFormModal.event.emit('abort');
         }
-      }}>
+      }}
+    >
       <div className="z-50 fixed top-0 left-0 w-screen h-screen">
         <Draggable handle=".draggable-handle">
-          <DialogContent className={cn("max-h-screen overflow-auto", complexFormModal.className)}>
-            <DialogHeader className="draggable-handle cursor-move">{complexFormModal.title && <DialogTitle>{complexFormModal.title}</DialogTitle>}</DialogHeader>
-            <JSONForm
-              uiSize={complexFormModal.uiSize}
-              formData={formData}
-              formConfig={complexFormModal.formConfig}
-              // @ts-ignore
-              layoutConfig={layoutConfig}
-              onBatchSubmit={
-                complexFormModal.isAutomaticallyClose
-                  ? (data) => {
-                      complexFormModal.event.emit("batchSubmit", data);
+          <ModalContent>
+            {complexFormModal.title && <ModalHeader className="flex flex-col gap-1 draggable-handle cursor-move">{complexFormModal.title}</ModalHeader>}
+            <ModalBody className={cn('max-h-[90vh] overflow-auto')}>
+              <JSONForm
+                formData={formData}
+                formConfig={complexFormModal.formConfig}
+                // @ts-ignore
+                layoutConfig={layoutConfig}
+                onBatchSubmit={
+                  complexFormModal.isAutomaticallyClose
+                    ? (data) => {
+                      complexFormModal.event.emit('batchSubmit', data);
                     }
-                  : complexFormModal.onBatchSubmit
-              }
-              onSubmit={complexFormModal.onSubmit}
-              onSet={complexFormModal.onSet}
-            />
-          </DialogContent>
+                    : complexFormModal.onBatchSubmit
+                }
+                onSubmit={complexFormModal.onSubmit}
+                onSet={complexFormModal.onSet}
+              />
+            </ModalBody>
+          </ModalContent>
         </Draggable>
       </div>
-    </Dialog>
+    </Modal>
   );
 });
 
