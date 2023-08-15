@@ -17,6 +17,7 @@ import { ToastPlugin } from "../module/Toast/Toast";
 import { BigNumberState } from "./standard/BigNumberState";
 import { PromiseState } from "./standard/PromiseState";
 import { StorageState } from "./standard/StorageState";
+import { Store } from "..";
 
 export class MyInjectedWallet extends InjectedWallet {
   constructor(options?: WalletOptions) {
@@ -38,7 +39,7 @@ export type NetworkObject = {
   nativeCoin: string;
   type: "mainnet" | "testnet";
 };
-export class WalletStore {
+export class WalletStore implements Store {
   sid = "wallet";
   autoObervable = true;
   supportedWallets: AbstractClientWallet[] = [
@@ -82,6 +83,15 @@ export class WalletStore {
   });
 
   event = new EventEmitter();
+
+  onKeyBindings() {
+    return [{
+      key: 'ctrl+b',
+      fn: () => {
+        this.isSelectNetworkDialogOpen = true;
+      }
+    }]
+  }
 
   constructor(args: Partial<WalletStore>) {
     Object.assign(this, args);
