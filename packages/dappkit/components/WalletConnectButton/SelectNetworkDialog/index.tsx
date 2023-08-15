@@ -82,25 +82,25 @@ const SelectNetworkDialog = observer(() => {
       }}
     >
       <Draggable handle=".draggable-handle">
-        <ModalContent className={"rounded-lg border-none"}>
+        <ModalContent className={"rounded-lg border-none px-4"}>
           <ModalHeader className="draggable-handle cursor-move">
             Select Network
           </ModalHeader>
           <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-3 text-2xl" />
             <Input
+              startContent={<MagnifyingGlassIcon />}
               value={store.searchText}
               onChange={(e) => (store.searchText = e.target.value)}
-              className="bg-muted mt-6 border-none pl-8"
+              className="mt-2"
               placeholder="Search Network or Chain ID"
             />
           </div>
           <Tabs
             defaultValue="Mainnets"
-            className="w-[400px]"
+            className="w-[400px] mt-4"
           >
             <Tab key="Mainnets" title="Mainnets">
-              <div className="mt-8 overflow-y-scroll pr-2" style={{ height: "300px" }}>
+              <div className="mt-2 overflow-y-scroll pr-2" style={{ height: "300px" }}>
                 {store.searchText ? (
                   <>
                     {store?.searchMainnetNetwork?.map((i, index) => (

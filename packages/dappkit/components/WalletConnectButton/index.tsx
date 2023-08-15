@@ -1,10 +1,10 @@
 "use client";
 
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { Button } from "@nextui-org/react";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import { WalletStore } from "../../store/wallet";
 import { helper } from "../../lib/helper";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ExitIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Copy } from "../Common/Copy";
 import SelectNetworkDialog from "./SelectNetworkDialog";
@@ -12,6 +12,7 @@ import { useStore } from "../../store";
 import { cn } from "../../lib/utils";
 import SelectWalletDialog from "./SelectWalletDialog";
 import React from "react";
+import { Project } from "../../store/project";
 
 type IProps = {
   size?: "sm" | "md" | "lg";
@@ -73,6 +74,54 @@ export const WalletConnectButton = observer(({ size = "lg", className }: IProps)
     return (
       <>
         <SelectNetworkDialog />
+        <Dropdown
+          isOpen={store.isShowWalletDetail}
+          onOpenChange={(open) => {
+            store.isShowWalletDetail = open;
+          }}
+        >
+          <DropdownTrigger>
+            {WalletButton()}
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Static Actions">
+            <DropdownItem className="hover:bg-violet-600">
+              <div className="flex items-center">
+                <img src={helper.img.parse(wallet?.getMeta()?.iconURL)} alt="" className="w-12 h-12 mr-2" />
+                <div className="flex-col">
+                  <div className="flex items-center">
+                    <div className="mr-2 mt-1 text-primary">{helper.string.truncate(account, 14, "...")}</div>
+                    <Project.Copy text={account} />
+                  </div>
+
+                  <div className="mt-1 text-xs ">
+                    <span>{balance?.format}</span>
+                    <span className="ml-1">{currentNetwork?.nativeCurrency?.symbol}</span>
+                  </div>
+                </div>
+                <ExitIcon onClick={() => wallet.disconnect()} className="font-blod ml-auto  hover:text-red-500 transition delay-100 cursor-pointer"></ExitIcon>
+              </div>
+
+              <div className="mt-4 text-sm">Current Network</div>
+              <div
+                onClick={() => {
+                  walletStore.set({
+                    isSelectNetworkDialogOpen: true,
+                  });
+                  store.isShowWalletDetail = false;
+                }}
+                className="mt-2 flex bg-muted p-2 rounded-md items-center border border-2 hover:border-primary transition delay-100 cursor-pointer"
+              >
+                <img src={helper.img.parse(currentNetwork?.icon?.url)} alt="" className="w-6 h-6 mr-2" />
+                <div className="flex-col ">
+                  <div>{currentNetwork?.name}</div>
+                </div>
+                <ChevronRightIcon className="ml-auto " />
+              </div>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+
+        {/* 
         <DropdownMenu
           open={store.isShowWalletDetail}
           onOpenChange={(open) => {
@@ -81,40 +130,9 @@ export const WalletConnectButton = observer(({ size = "lg", className }: IProps)
         >
           <DropdownMenuTrigger asChild>{WalletButton()}</DropdownMenuTrigger>
           <DropdownMenuContent className="flex-col px-6 py-6 bg-background shadow-xl" style={{ minWidth: "350px" }}>
-            <div className="flex items-center">
-              <img src={helper.img.parse(wallet?.getMeta()?.iconURL)} alt="" className="w-12 h-12 mr-2" />
-              <div className="flex-col">
-                <div className="flex items-center">
-                  <div className="mr-2 mt-1 text-primary">{helper.string.truncate(account, 14, "...")}</div>
-                  <Copy value={account} />
-                </div>
-
-                <div className="mt-1 text-xs ">
-                  <span>{balance?.format}</span>
-                  <span className="ml-1">{currentNetwork?.nativeCurrency?.symbol}</span>
-                </div>
-              </div>
-              <ExitIcon onClick={() => wallet.disconnect()} className="font-blod ml-auto  hover:text-red-500 transition delay-100 cursor-pointer"></ExitIcon>
-            </div>
-
-            <div className="mt-4 text-sm">Current Network</div>
-            <div
-              onClick={() => {
-                walletStore.set({
-                  isSelectNetworkDialogOpen: true,
-                });
-                store.isShowWalletDetail = false;
-              }}
-              className="mt-2 flex bg-muted p-2 rounded-md items-center border border-2 hover:border-primary transition delay-100 cursor-pointer"
-            >
-              <img src={helper.img.parse(currentNetwork?.icon?.url)} alt="" className="w-6 h-6 mr-2" />
-              <div className="flex-col ">
-                <div>{currentNetwork?.name}</div>
-              </div>
-              <ChevronRightIcon className="ml-auto " />
-            </div>
+           
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </>
     );
   }

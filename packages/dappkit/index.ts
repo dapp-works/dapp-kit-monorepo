@@ -3,8 +3,10 @@ export * from "./module/Core/AppProvider";
 export * from "./store";
 export * from "./store/wallet";
 export * from "./store/standard/PromiseState";
+export { Store } from "./store/standard/base";
 export * from "./store/user";
 export * from "./store/root";
+export * from "./store/project"
 
 export * from "./module/Toast/Toast";
 export * from "./module/Layout/header";

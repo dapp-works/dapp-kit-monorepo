@@ -5,6 +5,7 @@ import numeral from "numeral";
 import { v4 as uuid } from "uuid";
 
 import { _ } from "./lodash";
+import copy from "copy-to-clipboard";
 
 const valMap = {
   undefined: "",
@@ -132,6 +133,9 @@ export const helper = {
     },
   },
   string: {
+    copy(str: string) {
+      copy(str);
+    },
     fristUpper(str: string) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
@@ -219,7 +223,7 @@ export const helper = {
     token: string,
   ): Promise<{ sub: string; name: string; iat: number; exp: number }> => {
     //@ts-ignore
-    return jwt.verify(token,  "JWT_SECRET", { algorithms: ["HS256"] });
+    return jwt.verify(token, "JWT_SECRET", { algorithms: ["HS256"] });
   },
   number: {
     countNonZeroNumbers: (str: string) => {
@@ -296,8 +300,8 @@ export const helper = {
       return value instanceof BN
         ? value
         : typeof value === "string"
-        ? new BN(Number(value))
-        : new BN(value);
+          ? new BN(Number(value))
+          : new BN(value);
     },
   },
 };
