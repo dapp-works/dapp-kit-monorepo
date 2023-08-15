@@ -1,8 +1,11 @@
 import { EventEmitter } from "events";
 import { makeAutoObservable, makeObservable } from "mobx";
 import TypedEmitter from "typed-emitter";
-
+import { useHotkeys } from 'react-hotkeys-hook'
 import { Store, StoreClass } from "./standard/base";
+import { useEffect } from "react";
+import { StoragePlugin, helper } from "..";
+import hotkeys from 'hotkeys-js';
 
 export type EventMap = {
   "*": (args: any) => void;
@@ -89,6 +92,18 @@ export default class RootStore<T extends EventMap = any> {
       });
     }
 
+    // if (helper.env.isBrowser && store.onKeyBindings) {
+    //   const res = store.onKeyBindings()
+    //   res.forEach(({ key, fn }: { key: string[], fn: (ev: KeyboardEvent) => void }) => {
+    //     useEffect(() => {
+    //       window.addEventListener("keydown", fn);
+    //       return () => {
+    //         window.removeEventListener("keydown", fn);
+    //       }
+    //     }, [])
+    //   })
+    // }
+
     this.instanceMap.get(store.constructor).set(instanceMapId, store);
     this.instance[instanceId] = store;
     //@ts-ignore
@@ -98,6 +113,24 @@ export default class RootStore<T extends EventMap = any> {
       store.init();
     }
     // this.crawlStore(store);
+  }
+
+  useKeyBindings() {
+    const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] })
+    Object.entries(this.instance).forEach(([key, store]) => {
+      if (helper.env.isBrowser && store.onKeyBindings) {
+        const res = store.onKeyBindings()
+        res.forEach(({ key, fn }) => {
+          if (events.value.find((i: any) => i == key)) {
+            return
+          }
+          hotkeys(key, (event, handler) => {
+            fn()
+          });
+          events.value.push(key)
+        })
+      }
+    })
   }
 
   addStores(store: Store[]) {

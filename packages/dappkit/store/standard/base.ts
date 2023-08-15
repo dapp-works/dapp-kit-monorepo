@@ -37,6 +37,8 @@ export abstract class Store {
 
   init?(): void;
   JSONView?: Record<string, { name: string; render: React.FC }>;
+
+  onKeyBindings?: () => { key: string, fn: () => void }[];
 }
 
 export type StoreClass<T extends Store> = new (...args: any[]) => T;
