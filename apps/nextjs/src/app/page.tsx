@@ -4,18 +4,21 @@ import "~/store/index";
 
 import RootStore from "@dappworks/kit/store/root";
 import { JSONViewPlugin, AppProvider, HeaderStore, StoragePlugin, UserStore } from "@dappworks/kit";
+import { Input } from "@nextui-org/react";
+import { observer } from "mobx-react-lite";
 
-export default function HomePage() {
+const HomePage = observer(() => {
   const headerStore = RootStore.Get(HeaderStore);
-  const ValueFromMemroy = StoragePlugin.Get({
-    key: "test.ValueFromMemroy",
-    value: true,
-    onSet(v) {
-      // console.log(v);
-    },
+  const inputValue = StoragePlugin.Input({
+    key: "test.inputValue", value: "", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
+      console.log('test.inputValue onset', v);
+    }
   });
-  const ValueFromLocalStoarge = StoragePlugin.Get({ key: "test.ValueFromLocalStoarge", value: "123", engine: StoragePlugin.engines.localStorage });
-  const ValueFromAsyncStorage = StoragePlugin.Get({ key: "test.ValueFromAsyncStorage", value: "123", engine: StoragePlugin.engines.asyncStorage });
+  const inputValue2 = StoragePlugin.Get({
+    key: "test.inputValue2", value: "", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
+      console.log('test.inputValue2 onset', v);
+    }
+  });
 
   const navs = StoragePlugin.Get({
     key: "Navs",
@@ -30,6 +33,12 @@ export default function HomePage() {
   return (
     <AppProvider>
       <headerStore.Header />
+      <div className="flex flex-col">
+        <Input placeholder="StoragePlugin.Input debounce Example" {...inputValue}></Input>
+        <Input placeholder="StoragePlugin.Get debounce Example" value={inputValue2.value} onChange={e => inputValue2.value = e.target.value}></Input>
+      </div>
     </AppProvider>
   );
-}
+})
+
+export default HomePage;

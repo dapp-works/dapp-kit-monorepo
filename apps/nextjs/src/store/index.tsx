@@ -1,14 +1,13 @@
 "use client";
 
 import { rootStore, RootStore } from "@dappkit/store";
-import { AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, JSONViewPlugin, SlotPlugin, StoragePlugin, ThemePlugin, WalletConnectButton } from "@dappworks/kit";
+import { AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, JSONViewPlugin, StoragePlugin, ThemePlugin, WalletConnectButton } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
 
 rootStore.addStores([
   new DevTool({
     disabled: process.env.NODE_ENV != "development",
   }),
-  new SlotPlugin(),
   new StoragePlugin(),
   new AsyncStorage(),
   new JSONViewPlugin(),

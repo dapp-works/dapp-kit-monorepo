@@ -9,7 +9,7 @@ import { useRef } from "react";
 import { _ } from "../../lib/lodash";
 import { AsyncStorage } from "./Async";
 import React from "react";
-import {  cn } from '@nextui-org/react';
+import { cn } from '@nextui-org/react';
 import { Collection } from './standard/Collection';
 import { JSONForm } from '../../components/JSONForm';
 
@@ -34,7 +34,9 @@ export type StorageParams<T> = {
   engine?: Engine;
   _value?: T;
   defaultValue?: T;
+  debounce?: number;
   onInit?(value: T): void;
+  onDebounce?(value: T): void;
   onSet?(value: T): void;
   set?: (value: T) => void;
   setValue?: (value: T) => void;
@@ -86,7 +88,7 @@ export class StoragePlugin implements Store {
     },
   };
   engines = StoragePlugin.engines;
-
+  debounceFn: (val: any) => void;
   // data = {};
   dataMeta: Record<string, StorageParams<any>> = {};
 
@@ -209,9 +211,11 @@ export class StoragePlugin implements Store {
         },
         set value(value) {
           that.set({ key, value });
+          other.debounce && that.debounceFn(value)
         },
         set(value) {
           that.set({ key, value });
+          other.debounce && that.debounceFn(value)
         },
         setValue(value) {
           that.set({ key, value });
@@ -242,13 +246,22 @@ export class StoragePlugin implements Store {
 
   static Get<T>(args: StorageParams<T>): StorageParams<T> {
     const storagePlugin = RootStore.Get(StoragePlugin);
+    if (args.debounce && !storagePlugin.debounceFn) {
+      storagePlugin.debounceFn = _.debounce((value) => {
+        storagePlugin.get(args).onDebounce(value);
+      }, args.debounce);
+    }
     return storagePlugin.get(args);
   }
 
   static Input<T, U extends StorageParams<T>>(args: U): U {
     const storagePlugin = RootStore.Get(StoragePlugin);
-
     const data = storagePlugin.get(args);
+    if (args.debounce && !storagePlugin.debounceFn) {
+      storagePlugin.debounceFn = _.debounce((value) => {
+        data.onDebounce(value);
+      }, args.debounce);
+    }
     //@ts-ignore
     return observable({
       ...args,
