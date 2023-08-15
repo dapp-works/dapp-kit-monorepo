@@ -2,11 +2,10 @@
 
 import "~/store/index";
 
-import RootStore from "@dappworks/kit/store/root";
-import { JSONViewPlugin, AppProvider, HeaderStore, StoragePlugin, UserStore } from "@dappworks/kit";
+import { RootStore, AppProvider, HeaderStore, StoragePlugin, UserStore } from "@dappworks/kit";
 import { Input } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
-
+import { MyProject } from "~/store/index";
 const HomePage = observer(() => {
   const headerStore = RootStore.Get(HeaderStore);
   const inputValue = StoragePlugin.Input({
@@ -31,13 +30,14 @@ const HomePage = observer(() => {
   });
 
   return (
-    <AppProvider>
+    <div className="px-4">
       <headerStore.Header />
       <div className="flex flex-col">
-        <Input placeholder="StoragePlugin.Input debounce Example" {...inputValue}></Input>
-        <Input placeholder="StoragePlugin.Get debounce Example" value={inputValue2.value} onChange={e => inputValue2.value = e.target.value}></Input>
+        <Input className="mt-2" placeholder="StoragePlugin.Input debounce Example" {...inputValue}></Input>
+        <Input className="mt-2" placeholder="StoragePlugin.Get debounce Example" value={inputValue2.value} onChange={e => inputValue2.value = e.target.value}></Input>
+        <MyProject.Copy className="mt-2" text="123"></MyProject.Copy>
       </div>
-    </AppProvider>
+    </div>
   );
 })
 

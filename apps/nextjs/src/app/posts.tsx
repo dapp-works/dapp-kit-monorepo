@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 
@@ -40,7 +39,7 @@ export function CreatePostForm() {
       {error?.data?.zodError?.fieldErrors.title && <span className="mb-2 text-red-500">{error.data.zodError.fieldErrors.title}</span>}
       <input className="mb-2 rounded bg-white/10 p-2 text-white" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Content" />
       {error?.data?.zodError?.fieldErrors.content && <span className="mb-2 text-red-500">{error.data.zodError.fieldErrors.content}</span>}
-      {}
+      { }
       <button type="submit" className="rounded bg-pink-400 p-2 font-bold">
         Create
       </button>

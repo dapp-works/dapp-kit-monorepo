@@ -11,6 +11,7 @@ const SelectWalletDialog = observer(() => {
   const walletStore = rootStore.get(WalletStore);
   return (
     <Modal
+      className="z-50"
       isOpen={walletStore.isSelectWalletDialogOpen}
       onOpenChange={(open: boolean) => {
         if (!open) {
