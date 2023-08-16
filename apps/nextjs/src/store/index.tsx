@@ -15,6 +15,7 @@ rootStore.addStores([
   new DevTool({
     disabled: process.env.NODE_ENV != "development",
   }),
+  new Project(),
   new StoragePlugin(),
   new AsyncStorage(),
   new JSONViewPlugin(),

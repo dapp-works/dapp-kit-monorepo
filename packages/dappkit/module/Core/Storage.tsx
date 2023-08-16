@@ -248,7 +248,7 @@ export class StoragePlugin implements Store {
     const storagePlugin = RootStore.Get(StoragePlugin);
     if (args.debounce && !storagePlugin.debounceFn) {
       storagePlugin.debounceFn = _.debounce((value) => {
-        storagePlugin.get(args).onDebounce(value);
+        storagePlugin.get(args)?.onDebounce(value);
       }, args.debounce);
     }
     return storagePlugin.get(args);
@@ -259,7 +259,7 @@ export class StoragePlugin implements Store {
     const data = storagePlugin.get(args);
     if (args.debounce && !storagePlugin.debounceFn) {
       storagePlugin.debounceFn = _.debounce((value) => {
-        data.onDebounce(value);
+        data?.onDebounce(value);
       }, args.debounce);
     }
     //@ts-ignore

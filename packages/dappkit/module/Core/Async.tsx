@@ -15,7 +15,7 @@ import { Input } from "@nextui-org/react";
 
 export class AsyncStorage implements Store {
   sid = "AsyncStorage";
-  url = "/api/projectData";
+  url = `https://dappkit-async-api.deno.dev/project/${process.env.NEXT_PUBLIC_PROJECT_ID}`;
   forceUpdate = false;
   autoObservable?: boolean = true;
 
@@ -83,11 +83,8 @@ export class AsyncStorage implements Store {
                       );
                     }
                     await axios.post(
-                      "/api/upsertAsyncData",
-                      {
-                        projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
-                        config: data,
-                      },
+                      `https://dappkit-async-api.deno.dev/update/${process.env.NEXT_PUBLIC_PROJECT_ID}`,
+                      data,
                       {
                         headers: {
                           Authorization: `${jwt.value}`,
@@ -97,6 +94,7 @@ export class AsyncStorage implements Store {
                   }
                   this.forceUpdate = true;
                   await this.data.wait({ call: true });
+                  RootStore.Get(ToastPlugin).success("Update success");
                   console.log("onSubmit", data);
                 }}
               />

@@ -7,6 +7,10 @@ import { StoragePlugin } from "../module/Core/Storage";
 export class Project implements Store {
   sid = 'project';
   autoObservable?: boolean = false;
+  title = StoragePlugin.Get({ key: "project.title", value: "@dappworks/kit", engine: StoragePlugin.engines.asyncStorage })
+  description = StoragePlugin.Get({ key: "project.description", value: "This is dapp kit template project", engine: StoragePlugin.engines.asyncStorage })
+  script = StoragePlugin.Get({ key: "project.script", value: "console.log('from script')", engine: StoragePlugin.engines.asyncStorage })
+  body = StoragePlugin.Get({ key: "project.body", value: "", engine: StoragePlugin.engines.asyncStorage })
 
   static Copy = observer(({ text, className, ...props }: { [key: string]: any }) => {
     const copied = StoragePlugin.Get({ key: "copied", defaultValue: false })
@@ -21,11 +25,11 @@ export class Project implements Store {
       {!copied.value ? <svg
         fill="none"
         height={20}
-        shape-rendering="geometricPrecision"
+        shapeRendering="geometricPrecision"
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
         viewBox="0 0 24 24"
         width={20}
       >
@@ -42,4 +46,6 @@ export class Project implements Store {
       </svg>}
     </div >)
   })
+
+
 }

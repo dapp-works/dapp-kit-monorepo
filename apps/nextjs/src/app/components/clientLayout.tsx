@@ -1,9 +1,9 @@
 "use client";
 
-import { AppProvider } from "@dappworks/kit";
-import { Project } from "~/store";
+import { AppProvider, Project, RootStore } from "@dappworks/kit";
 
 export const ClientLayout = ({ children }) => {
+  const project = RootStore.Get(Project)
   return <AppProvider>
     {children}
   </AppProvider>
