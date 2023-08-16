@@ -116,9 +116,10 @@ export default class RootStore<T extends EventMap = any> {
   }
 
   useKeyBindings() {
+    if (!helper.env.isBrowser) return
     const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] })
     Object.entries(this.instance).forEach(([key, store]) => {
-      if (helper.env.isBrowser && store.onKeyBindings) {
+      if (store.onKeyBindings) {
         const res = store.onKeyBindings()
         res.forEach(({ key, fn }) => {
           if (events.value.find((i: any) => i == key)) {
