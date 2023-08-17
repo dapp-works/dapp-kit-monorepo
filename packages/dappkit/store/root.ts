@@ -117,6 +117,7 @@ export default class RootStore<T extends EventMap = any> {
 
   useKeyBindings() {
     if (!helper.env.isBrowser) return
+
     const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] })
     Object.entries(this.instance).forEach(([key, store]) => {
       if (store.onKeyBindings) {
@@ -157,7 +158,6 @@ export default class RootStore<T extends EventMap = any> {
     makeObservable(this, {
       providers: true,
     });
-
     this.crawlStore(this);
   }
 

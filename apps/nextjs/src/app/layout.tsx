@@ -4,10 +4,6 @@ import { Inter } from "next/font/google";
 import "~/styles/globals.css";
 import { ClientLayout } from "./components/clientLayout";
 import Script from "next/script";
-import Head from "next/head";
-// import Script from "next/script";
-// import { RootStore } from "@dappkit/store";
-// import { Project } from "@dappkit/index";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -45,7 +41,7 @@ export default async function Layout(props: { children: React.ReactNode }) {
         {/* <TRPCReactProvider headers={headers()}>{props.children}</TRPCReactProvider> */}
       </body>
       {
-        project?.script && <Script id="show-banner" strategy="beforeInteractive">
+        project?.script && <Script>
           {`${project.script} `}
         </Script>
       }
