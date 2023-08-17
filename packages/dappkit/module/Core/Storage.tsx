@@ -259,13 +259,13 @@ export class StoragePlugin implements Store {
     const data = storagePlugin.get(args);
     if (args.debounce && !storagePlugin.debounceFn) {
       storagePlugin.debounceFn = _.debounce((value) => {
-        data?.onDebounce(value);
+        data?.onDebounce?.(value);
       }, args.debounce);
     }
     //@ts-ignore
     return observable({
-      ...args,
-      ...data,
+      // ...args,
+      // ...data,
       get value() {
         return data.value;
       },
@@ -283,6 +283,7 @@ export class StoragePlugin implements Store {
     const { value, _value, ...others } = args;
     const data = storagePlugin.get(args);
     //@ts-ignore
+
     return observable({
       ...args,
       ...data,
