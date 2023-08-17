@@ -12,40 +12,34 @@ const JSONViewModal = observer(() => {
   const rootStore = useStore();
   const complexFormModal = rootStore.get(ComplexFormModalStore);
   const { formData, isOpen } = complexFormModal;
-  const gridColumn = complexFormModal.layoutConfig?.gridColumn as number;
   const store = useLocalObservable(() => ({
-    gridColumn: undefined,
-    setGridColumn(v: number | undefined) {
-      // @ts-ignore
-      store.gridColumn = v;
-    },
+    isMobile: false,
   }));
+
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 600) {
-        store.setGridColumn(1);
-      } else {
-        store.setGridColumn(gridColumn);
-      }
+      store.isMobile = window.innerWidth < 600;
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [gridColumn]);
+  }, []);
 
   if (!formData) {
     return null;
   }
 
-  const layoutConfig = {
-    ...complexFormModal.layoutConfig,
-  };
-
-  if (store.gridColumn) {
-    // @ts-ignore
-    layoutConfig.gridColumn = store.gridColumn;
+  const layoutConfig = JSON.parse(JSON.stringify(complexFormModal.layoutConfig));
+  if (store.isMobile) {
+    layoutConfig.gridColumn = 1;
+    Object.keys(layoutConfig).forEach((key) => {
+      if (typeof layoutConfig[key] === 'object') {
+        // @ts-ignore
+        layoutConfig[key].colSpan = 1;
+      }
+    });
   }
 
   return (
