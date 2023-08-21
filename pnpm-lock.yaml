@@ -267,6 +267,9 @@ importers:
       '@blocknote/react':
         specifier: ^0.8.2
         version: 0.8.2(@tiptap/core@2.0.4)(@tiptap/pm@2.0.4)(prosemirror-model@1.19.3)(prosemirror-state@1.4.3)(prosemirror-view@1.31.7)(react-dom@18.2.0)(react@18.2.0)
+      '@dappworks/kit':
+        specifier: ^0.1.30
+        version: link:../dappkit
       '@isaacs/ttlcache':
         specifier: ^1.4.0
         version: 1.4.0
@@ -8814,6 +8817,7 @@ packages:
       tsv: 0.2.0
       uuid: 3.4.0
     dev: false
+    bundledDependencies: []
 
   /client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}

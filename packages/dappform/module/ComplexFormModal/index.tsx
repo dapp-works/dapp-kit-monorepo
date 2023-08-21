@@ -5,13 +5,12 @@ import EventEmitter from "events";
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
 import { UiSchema } from "@rjsf/utils";
 import { makeAutoObservable } from "mobx";
-import { rootStore } from "../../store";
+import { RootStore, rootStore } from "../../store";
 import React from "react";
 
-export class ComplexFormModalStore<T extends FormDataType> implements Store {
-  sid = 'ComplexFormModalStore';
+export class FormPlugin<T extends FormDataType> implements Store {
+  sid = 'FormPlugin';
   provider = () => <Provider />;
-
   isOpen = false;
   title = '';
   formData?: T;
@@ -25,12 +24,16 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
   onSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
 
-  constructor(args?: Partial<ComplexFormModalStore<T>>) {
+  constructor(args?: Partial<FormPlugin<T>>) {
     Object.assign(this, args);
     makeAutoObservable(this);
   }
 
-  setData(v: Partial<ComplexFormModalStore<T>>) {
+  async form(v: Partial<FormPlugin<T>>) {
+    return await getComplexFormData(v);
+  }
+
+  setData(v: Partial<FormPlugin<T>>) {
     Object.assign(this, v);
   }
 
@@ -48,11 +51,13 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
     this.onSet = undefined;
     this.event.removeAllListeners();
   }
+
+
 }
 
-export async function getComplexFormData<T extends FormDataType>(v: Partial<ComplexFormModalStore<T>>) {
+export async function getComplexFormData<T extends FormDataType>(v: Partial<FormPlugin<T>>) {
   return new Promise<T>((resolve, reject) => {
-    const complexFormModal = rootStore.get(ComplexFormModalStore);
+    const complexFormModal = RootStore.Get(FormPlugin);
     // @ts-ignore
     complexFormModal.setData({
       ...v,

@@ -4,7 +4,6 @@ import TypedEmitter from "typed-emitter";
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Store, StoreClass } from "./standard/base";
 import { useEffect } from "react";
-import { StoragePlugin, helper } from "..";
 import hotkeys from 'hotkeys-js';
 
 export type EventMap = {
@@ -113,26 +112,6 @@ export default class RootStore<T extends EventMap = any> {
       store.init();
     }
     // this.crawlStore(store);
-  }
-
-  useKeyBindings() {
-    if (!helper.env.isBrowser) return
-
-    const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] })
-    Object.entries(this.instance).forEach(([key, store]) => {
-      if (store.onKeyBindings) {
-        const res = store.onKeyBindings()
-        res.forEach(({ key, fn }) => {
-          if (events.value.find((i: any) => i == key)) {
-            return
-          }
-          hotkeys(key, (event, handler) => {
-            fn()
-          });
-          events.value.push(key)
-        })
-      }
-    })
   }
 
   addStores(store: Store[]) {
