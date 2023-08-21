@@ -1,16 +1,16 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { useStore } from "../../store/index";
+import { RootStore, useStore } from "../../store/index";
 import Draggable from "react-draggable";
 import { JSONForm } from "../../components/JSONForm";
 import { useEffect } from "react";
 import { cn } from "../../lib/utils";
-import { ComplexFormModalStore } from ".";
+import { FormPlugin } from ".";
 import React from "react";
 
 const JSONViewModal = observer(() => {
   const rootStore = useStore();
-  const complexFormModal = rootStore.get(ComplexFormModalStore);
+  const complexFormModal = RootStore.Get(FormPlugin);
   const { formData, isOpen } = complexFormModal;
   const store = useLocalObservable(() => ({
     isMobile: false,
