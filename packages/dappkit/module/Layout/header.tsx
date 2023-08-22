@@ -7,7 +7,7 @@ import Nav from "../../components/Layout/Nav";
 import { UserNav } from "../../components/Layout/UserNav";
 import { Store } from "../../store/standard/base";
 import { PromiseState } from "../../store/standard/PromiseState";
-import { RootStore } from "@dappkit/store";
+import { RootStore } from "../../store";
 
 export class HeaderStore implements Store {
   sid = "HeaderStore";

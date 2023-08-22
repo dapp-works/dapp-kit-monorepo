@@ -1,8 +1,5 @@
 "use client";
-import { cn } from "@dappkit/lib/utils";
 import { rootStore, Store, AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, JSONViewPlugin, StoragePlugin, ThemePlugin, WalletConnectButton, Project } from "@dappworks/kit";
-import { Snippet } from "@nextui-org/react";
-import { observer } from "mobx-react-lite";
 import { signIn } from "next-auth/react";
 
 export class MyProject extends Project {
