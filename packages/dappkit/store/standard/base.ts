@@ -104,9 +104,9 @@ export class ValueState<T> {
   }
 }
 
-export interface Events {
-  data: (data: any) => void;
-  error: (error: any) => void;
-  update: () => void;
-  wait: () => void;
-}
+// export interface Events {
+//   data: (data: any) => void;
+//   error: (error: any) => void;
+//   update: () => void;
+//   wait: () => void;
+// }
