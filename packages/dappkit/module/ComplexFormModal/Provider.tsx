@@ -32,7 +32,7 @@ const JSONViewModal = observer(() => {
   }
 
   const layoutConfig = JSON.parse(JSON.stringify(complexFormModal.layoutConfig));
-  if (store.isMobile) {
+  if (store.isMobile && layoutConfig.type === 'GridLayout') {
     layoutConfig.gridColumn = 1;
     Object.keys(layoutConfig).forEach((key) => {
       if (typeof layoutConfig[key] === 'object') {
@@ -72,6 +72,7 @@ const JSONViewModal = observer(() => {
                 }
                 onSubmit={complexFormModal.onSubmit}
                 onSet={complexFormModal.onSet}
+                onChange={complexFormModal.onChange}
               />
             </ModalBody>
           </ModalContent>

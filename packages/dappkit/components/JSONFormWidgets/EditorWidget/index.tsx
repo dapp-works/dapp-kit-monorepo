@@ -1,16 +1,17 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import MonacoEditor from "@monaco-editor/react";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../../components/ui/select";
+import { Button } from '@nextui-org/react';
+import { cn } from "../../../lib/utils";
 
 type Options = {
   emptyValue?: string;
   editorHeight?: string;
   readOnly?: boolean;
   language?: string;
-  showLanguageSelector?: boolean;
   languageSelectorOptions?: { label: string; value: string }[];
   onChangeLanguage?: (v: string) => void;
+  onRun?: (v: string) => void;
 };
 
 export interface EditorWidgetProps extends WidgetProps {
@@ -23,49 +24,59 @@ export type EditorWidgetUIOptions = {
 };
 
 const EditorWidget = ({ id, label, options = {}, value, required, onChange }: EditorWidgetProps) => {
-  const { emptyValue, editorHeight = "200px", readOnly = false, language = "json", showLanguageSelector = false, languageSelectorOptions = [], onChangeLanguage } = options;
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const handleChange = useCallback(
-    (value) => {
-      onChange(value === "" ? (emptyValue ? emptyValue : "") : value);
-    },
-    [onChange, emptyValue]
-  );
-
+  const { editorHeight = "200px", readOnly = false, language = "json", languageSelectorOptions = [], onChangeLanguage, onRun } = options;
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [runLoading, setRunLoading] = useState(false);
+  const showLanguageSelector = languageSelectorOptions.length > 0;
   return (
     <div className="flex flex-col">
-      <div className="flex justify-between items-center mb-[10px]">
-        {/* <div className="flex items-center">
-          <div>{label}</div>
-          {required && (
-            <div className="ml-1 text-red-500 ">
-              *
-            </div>
-          )}
-        </div> */}
+      <div className={cn('flex justify-between items-center', { 'mb-[10px]': label.trim() || showLanguageSelector })}>
+        {label && (
+          <label
+            className="mr-2 flex items-center text-sm"
+          >
+            {label}
+            {required && <span className="font-bold text-red-600">*</span>}
+          </label>
+        )}
         {showLanguageSelector && (
-          <Select
+          <select
+            className="w-full p-3 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]"
             value={selectedLanguage}
-            onValueChange={(v) => {
+            onChange={(event) => {
+              const v = event.target.value;
               setSelectedLanguage(v);
               onChangeLanguage && onChangeLanguage(v);
-            }}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {languageSelectorOptions.map((item, index) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            }}
+          >
+            {languageSelectorOptions.map((item) => {
+              return <option key={item.value} value={item.value}>{item.label}</option>
+            })}
+          </select>
         )}
       </div>
-      <MonacoEditor options={{ readOnly }} height={editorHeight} theme="vs-dark" language={showLanguageSelector ? selectedLanguage : language} value={value} onChange={handleChange} />
+      <MonacoEditor
+        options={{ readOnly, minimap: { enabled: false } }}
+        height={editorHeight}
+        theme="vs-dark"
+        language={selectedLanguage ? selectedLanguage : language}
+        value={value}
+        onChange={(v) => onChange(v)}
+      />
+      {onRun && (
+        <Button
+          className="absolute bottom-2 right-4"
+          size="sm"
+          isLoading={runLoading}
+          onClick={async () => {
+            setRunLoading(true);
+            await onRun(value);
+            setRunLoading(false);
+          }}
+        >
+          Run
+        </Button>
+      )}
     </div>
   );
 };

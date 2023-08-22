@@ -24,6 +24,7 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
   onBatchSubmit?: (data: T) => void;
   onSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
+  onChange?: (data: Partial<T>) => void;
 
   constructor(args?: Partial<ComplexFormModalStore<T>>) {
     Object.assign(this, args);
@@ -46,6 +47,7 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
     this.onBatchSubmit = undefined;
     this.onSubmit = undefined;
     this.onSet = undefined;
+    this.onChange = undefined;
     this.event.removeAllListeners();
   }
 }
