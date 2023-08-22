@@ -36,7 +36,7 @@ function InputWidget({
       className={cn("w-full", className)}
       label={label}
       placeholder=""
-      defaultValue={value}
+      value={value}
       isRequired={required}
       isDisabled={disabled}
       size={size}
