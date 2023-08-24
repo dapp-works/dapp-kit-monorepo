@@ -1,5 +1,5 @@
 {
-  "name": "@dappworks/form",
+  "name": "@dappworks/jsonview",
   "version": "0.1.31",
   "description": "",
   "main": "dist/index.js",

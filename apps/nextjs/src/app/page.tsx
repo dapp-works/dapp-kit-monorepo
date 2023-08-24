@@ -6,7 +6,10 @@ import { RootStore, AppProvider, HeaderStore, StoragePlugin, UserStore } from "@
 import { Button, Input } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
 import { MyProject } from "~/store/index";
-import { FormPlugin } from "@dappworks/form";
+import { FormPlugin } from "@dappworks/jsonview";
+import { JSONMetricsView } from "@dappworks/jsonview";
+import { Card, Text, Metric, Flex, ProgressBar, AreaChart } from "@tremor/react";
+
 
 const HomePage = observer(() => {
   const headerStore = RootStore.Get(HeaderStore);
@@ -39,6 +42,16 @@ const HomePage = observer(() => {
         <Input className="mt-2" placeholder="StoragePlugin.Input debounce Example" {...inputValue}></Input>
         <Input className="mt-2" placeholder="StoragePlugin.Get debounce Example" value={inputValue2.value} onChange={e => inputValue2.value = e.target.value}></Input>
         <MyProject.Copy className="mt-2" text="123"></MyProject.Copy>
+        <Card className="max-w-xs mx-auto">
+          <Text>Sales</Text>
+          <Metric>$ 71,465</Metric>
+          <Flex className="mt-4">
+            <Text>32% of annual target</Text>
+            <Text>$ 225,000</Text>
+          </Flex>
+          <ProgressBar value={32} className="mt-2" />
+        </Card>
+
         <Button className="mt-2" onClick={async () => {
           const data = await RootStore.Get(FormPlugin).form({
             title: 'test',
@@ -54,6 +67,22 @@ const HomePage = observer(() => {
           });
           console.log(data)
         }}>Open ComplexFormModal</Button>
+
+        <JSONMetricsView data={[{
+          type: 'KPICard',
+          title: 'Data Messages',
+          description: 'Total number of messages received from all devices',
+          data: new Array(30).fill(0).map((_, i) => ({
+            date: new Date(2021, 0, i + 1).toISOString(),
+            SemiAnalysis: Math.floor(Math.random() * 100),
+            'The Pragmatic Engineer': Math.floor(Math.random() * 100),
+          })),
+          index: 'date',
+          categories: ["SemiAnalysis", "The Pragmatic Engineer"],
+          metricTitle: 'Total Events',
+          metric: 124,
+          chartType: 'area',
+        }]} />
       </div>
     </div>
   );
