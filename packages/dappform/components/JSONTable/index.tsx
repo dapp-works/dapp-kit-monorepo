@@ -254,3 +254,4 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
 }
 
 export default JSONTable;
+export { JSONTable }
