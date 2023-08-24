@@ -1,3 +1,4 @@
+import React from 'react';
 import { AreaChart, LineChart, Text, ValueFormatter } from '@tremor/react';
 import { ChartBox } from '../ChartBox';
 

@@ -1,12 +1,8 @@
-import { Avatar, AvatarImage } from "../../components/ui/avatar";
+import { Avatar } from '@nextui-org/react';
 import React from "react";
 
 export const AvatarRender = (item: Partial<{ image: string }>) => {
-  return (
-    <Avatar>
-      <AvatarImage src={item.image} alt="" />
-    </Avatar>
-  );
+  return <Avatar src={item.image} alt="" size="sm" />;
 };
 
 export const ChainLabelRender = (item: Partial<{ layer_1: string[] }>) => {

@@ -19,9 +19,9 @@ rootStore.addStores([
   new DevInspectorPlugin({ disabled: process.env.NODE_ENV != "development" }),
   new ThemePlugin(),
   new HeaderStore({
-    UserNav: (props) => {
-      return <WalletConnectButton className={...props.className}></WalletConnectButton>;
-    },
+    // UserNav: (props) => {
+    //   return <WalletConnectButton className={...props.className}></WalletConnectButton>;
+    // },
   }),
 ]);
 

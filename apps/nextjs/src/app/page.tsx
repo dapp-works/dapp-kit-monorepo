@@ -42,15 +42,6 @@ const HomePage = observer(() => {
         <Input className="mt-2" placeholder="StoragePlugin.Input debounce Example" {...inputValue}></Input>
         <Input className="mt-2" placeholder="StoragePlugin.Get debounce Example" value={inputValue2.value} onChange={e => inputValue2.value = e.target.value}></Input>
         <MyProject.Copy className="mt-2" text="123"></MyProject.Copy>
-        <Card className="max-w-xs mx-auto">
-          <Text>Sales</Text>
-          <Metric>$ 71,465</Metric>
-          <Flex className="mt-4">
-            <Text>32% of annual target</Text>
-            <Text>$ 225,000</Text>
-          </Flex>
-          <ProgressBar value={32} className="mt-2" />
-        </Card>
 
         <Button className="mt-2" onClick={async () => {
           const data = await RootStore.Get(FormPlugin).form({
@@ -83,6 +74,8 @@ const HomePage = observer(() => {
           metric: 124,
           chartType: 'area',
         }]} />
+
+
       </div>
     </div>
   );

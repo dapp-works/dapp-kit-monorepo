@@ -8,18 +8,17 @@ import { NavStore } from "../../module/Layout/nav";
 import { rootStore } from "../../store";
 import RootStore from "../../store/root";
 import { UserStore } from "../../store/user";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Avatar, Button } from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Avatar } from "@nextui-org/react";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuGroup,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuShortcut,
+//   DropdownMenuTrigger,
+// } from "../ui/dropdown-menu";
 
 export const UserNav = observer(
   ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
@@ -39,38 +38,37 @@ export const UserNav = observer(
       );
     }
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className={cn("relative ml-auto h-8 w-8 rounded-full", className)}
-          >
-            <Avatar className="h-8 w-8" src={user.image} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user.name}</p>
-              <p className="text-muted-foreground text-xs leading-none">
-                {user.email}
-              </p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+      <>
+        <Dropdown>
+          <DropdownTrigger>
+            <Avatar className={cn("cursor-pointer h-8 w-8 ml-auto", className)} src={user?.image} />
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Static Actions">
+            <DropdownItem key="new">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.name}</p>
+                <p className="text-muted-foreground text-xs leading-none">
+                  {user?.email}
+                </p>
+              </div>
+            </DropdownItem>
+
+            {/* @ts-ignore  */}
             {nav.userNavs.map((i) => {
               return (
-                <DropdownMenuItem key={i.text} onClick={i.onClick}>
+                <DropdownItem key={i.text} onClick={i.onClick}>
                   {i.href ? <Link href={i.href}>{i.text}</Link> : i.text}
-                </DropdownMenuItem>
+                </DropdownItem>
               );
             })}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => user.logout()}>Log out</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+            <DropdownItem key="delete" className="text-danger" color="danger" onClick={() => user.logout()}>
+              Log out
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </>
+
     );
   },
 );
