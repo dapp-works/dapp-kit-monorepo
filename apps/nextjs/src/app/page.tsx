@@ -6,8 +6,8 @@ import { RootStore, AppProvider, HeaderStore, StoragePlugin, UserStore } from "@
 import { Button, Input } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
 import { MyProject } from "~/store/index";
-import { FormPlugin } from "@dappworks/jsonview";
-import { JSONMetricsView } from "@dappworks/jsonview";
+import { FormPlugin, JSONSchemaTableState, PaginationState } from "@dappworks/jsonview";
+import { JSONMetricsView, JSONTable } from "@dappworks/jsonview";
 import { Card, Text, Metric, Flex, ProgressBar, AreaChart } from "@tremor/react";
 
 
@@ -34,6 +34,26 @@ const HomePage = observer(() => {
     ],
     engine: StoragePlugin.engines.asyncStorage,
   });
+
+  const table = new JSONSchemaTableState({
+    columns: [{
+      key: "nonce",
+      label: "NONCE",
+    }, {
+      key: "destination",
+      label: "DESTINATION"
+    }],
+    dataSource: new Array(100).fill(0).map((_, i) => ({
+      nonce: i,
+      destination: '0x' + Math.floor(Math.random() * 100
+      ).toString(16),
+    })),
+    rowKey: "id",
+    pagination: new PaginationState({
+      page: 1,
+      limit: 8
+    }),
+  })
 
   return (
     <div className="px-4">
@@ -75,7 +95,7 @@ const HomePage = observer(() => {
           chartType: 'area',
         }]} />
 
-
+        <JSONTable jsonstate={{ table }}></JSONTable>
       </div>
     </div>
   );
