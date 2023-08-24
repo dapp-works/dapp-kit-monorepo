@@ -1,3 +1,4 @@
+import React from 'react';
 import { JSONSchemaTableState } from '../../../store/standard/JSONSchemaState';
 import { ChartBox } from '../ChartBox';
 import { useEffect, useState } from 'react';

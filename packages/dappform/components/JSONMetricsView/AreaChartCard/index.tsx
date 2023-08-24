@@ -1,6 +1,6 @@
+import React from 'react';
 import { AreaChart, ValueFormatter } from '@tremor/react';
 import { ChartBox } from '../ChartBox';
-import { Spinner } from '@nextui-org/react';
 
 export type AreaChartCard = ChartBox & {
   type?: 'AreaChartCard';

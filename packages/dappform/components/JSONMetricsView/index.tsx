@@ -1,3 +1,4 @@
+import React from 'react';
 import { Col, Grid } from '@tremor/react';
 import { BarChartCard } from './BarChartCard';
 import { LineChartCard } from './LineChartCard';
@@ -6,7 +7,6 @@ import { DonutChartCard } from './DonutChartCard';
 import { CountCard } from './CountCard';
 import { TableCard } from './TableCard';
 import { KPICard } from './KPICard';
-import React from 'react';
 
 
 export type JSONMetricsViewType = AreaChartCard | LineChartCard | BarChartCard | DonutChartCard | CountCard | TableCard | KPICard;

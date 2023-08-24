@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChartBox } from '../ChartBox';
 
 export type CountCard = ChartBox & {

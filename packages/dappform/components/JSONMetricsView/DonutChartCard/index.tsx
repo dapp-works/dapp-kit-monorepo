@@ -1,3 +1,4 @@
+import React from 'react';
 import { DonutChart, ValueFormatter } from '@tremor/react';
 import { ChartBox } from '../ChartBox';
 
@@ -11,7 +12,7 @@ export type DonutChartCard = ChartBox & {
 }
 
 export const DonutChartCard = (props: DonutChartCard) => {
-  const { data = [], categories = ['value'], index = 'name', valueFormatter = (number) => `${number}`, showLabel = true, variant = 'donut'} = props;
+  const { data = [], categories = ['value'], index = 'name', valueFormatter = (number) => `${number}`, showLabel = true, variant = 'donut' } = props;
   const category = categories[0];
   return (
     <ChartBox {...props}>
