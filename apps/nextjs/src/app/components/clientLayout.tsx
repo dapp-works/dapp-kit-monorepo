@@ -1,10 +1,13 @@
 "use client";
 
-import { AppProvider, Project, RootStore } from "@dappworks/kit";
+import { AppProvider, RootStore } from "@dappworks/kit";
+import { useEffect } from "react";
+import { init } from "~/store";
+import { Project } from "~/store/project";
 
 export const ClientLayout = ({ children }) => {
-  const project = RootStore.Get(Project)
-  return <AppProvider>
+  useEffect(() => { init() }, [])
+  return <AppProvider errorBoundaryFallback={<>Error!</>}>
     {children}
   </AppProvider>
 };

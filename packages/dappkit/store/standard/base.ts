@@ -4,6 +4,7 @@ import RootStore from "../root";
 
 export abstract class Store {
   sid?: string;
+  stype?: "Plugin" | "Store";
   disabled?: boolean;
   autoObservable?: boolean;
   autoAsyncable?: boolean;

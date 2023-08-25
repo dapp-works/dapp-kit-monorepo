@@ -36,6 +36,7 @@ export type JSONDataType = {
 
 export class JSONViewPlugin implements Store {
   sid = "JSONViewPlugin";
+  stype = "Plugin" as "Plugin";
   autoObservable?: boolean = false;
 
   JSONView = {

@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import { HeaderStore } from "../../module/Layout/header";
 import RootStore from "../../store/root";
 import { Logo } from "./Logo";
-import { SlotPlugin } from "@dappkit/module/Core/Slot";
+import { SlotPlugin } from "../../module/Core/Slot";
 
 const Nav = observer(() => {
   const header = RootStore.Get(HeaderStore);

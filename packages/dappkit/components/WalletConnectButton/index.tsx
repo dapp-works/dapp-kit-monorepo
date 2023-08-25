@@ -12,7 +12,7 @@ import { useStore } from "../../store";
 import { cn } from "../../lib/utils";
 import SelectWalletDialog from "./SelectWalletDialog";
 import React from "react";
-import { Project } from "../../store/project";
+import { Project } from "../../../../apps/nextjs/src/store/project";
 
 type IProps = {
   size?: "sm" | "md" | "lg";
@@ -90,7 +90,7 @@ export const WalletConnectButton = observer(({ size = "lg", className }: IProps)
                 <div className="flex-col">
                   <div className="flex items-center">
                     <div className="mr-2 mt-1 text-primary">{helper.string.truncate(account, 14, "...")}</div>
-                    <Project.Copy text={account} />
+                    <Copy value={account} />
                   </div>
 
                   <div className="mt-1 text-xs ">

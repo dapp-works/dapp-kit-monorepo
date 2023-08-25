@@ -8,6 +8,7 @@ import { UserNav } from "../../components/Layout/UserNav";
 import { Store } from "../../store/standard/base";
 import { PromiseState } from "../../store/standard/PromiseState";
 import { RootStore } from "../../store";
+import { StoragePlugin } from "../Core/Storage";
 
 export class HeaderStore implements Store {
   sid = "HeaderStore";
@@ -18,21 +19,11 @@ export class HeaderStore implements Store {
     return Nav;
   }
 
-  Logo = (props) => {
-    return <Logo {...props} />;
-  };
-
-  DesktopNav = (props) => {
-    return <DesktopNav {...props} />;
-  };
-
-  MobileNav = (props) => {
-    return <MobileNav {...props} />;
-  };
-
-  UserNav = (props) => {
-    return <UserNav {...props} />;
-  };
+  navs = StoragePlugin.Get<{ text: string, href: string }[]>({
+    key: "Nav",
+    defaultValue: [],
+    engine: StoragePlugin.engines.asyncStorage
+  })
 
   set(args: Partial<HeaderStore>) {
     Object.assign(this, args);
@@ -60,30 +51,16 @@ export class HeaderStore implements Store {
       input: {},
       render: (props) => <MobileNav {...props} />,
     },
+    UserNav: {
+      name: "UserNav",
+      input: {},
+      render: (props) => <UserNav {...props} />,
+    }
   };
 
   static get slots() {
     return RootStore.Get(HeaderStore).slots;
   }
-
-  test = new PromiseState({
-    debug: {
-      name: "test",
-      input: { username: "", password: "" },
-    },
-    function: async (input: { username: string; password: string }) => {
-      console.log(input);
-    },
-  });
-  test1 = new PromiseState({
-    debug: {
-      name: "test1",
-      input: { username: "", password: "" },
-    },
-    function: async (input: { username: string; password: string }) => {
-      console.log(input);
-    },
-  });
 
   constructor(args: Partial<HeaderStore> = {}) {
     Object.assign(this, args);
