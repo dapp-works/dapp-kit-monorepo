@@ -8,24 +8,24 @@ export class NavStore implements Store {
   autoObservable?: boolean = true;
   autoAsyncable?: boolean = true;
 
-  navs: Nav[] = [
-    { text: "Home", href: "/" },
-    { text: "Playgorund", href: "/playgorund" },
-    { text: "Settings", href: "/settings" },
-  ];
+  // navs: Nav[] = [
+  //   { text: "Home", href: "/" },
+  //   { text: "Playgorund", href: "/playgorund" },
+  //   { text: "Settings", href: "/settings" },
+  // ];
 
-  userNavs: UserNav[] = [
-    {
-      text: "Profile",
-      href: "/profile",
-      onClick: () => {},
-    },
-    {
-      text: "Settings",
-      href: "/settings",
-      onClick: () => {},
-    },
-  ];
+  // userNavs = [
+  //   {
+  //     text: "Profile",
+  //     href: "/profile",
+  //     clickEvent: "userNavs.click"
+  //   },
+  //   {
+  //     text: "Settings",
+  //     href: "/settings",
+  //     clickEvent: "settings.click"
+  //   },
+  // ];
 
   constructor(args: Partial<NavStore> = {}) {
     Object.assign(this, args);

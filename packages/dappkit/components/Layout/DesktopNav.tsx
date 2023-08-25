@@ -8,20 +8,22 @@ import { cn } from "../../lib/utils";
 import { HeaderStore } from "../../module/Layout/header";
 import { NavStore } from "../../module/Layout/nav";
 import RootStore from "../../store/root";
+import { StoragePlugin } from "../../module/Core/Storage";
+import { SlotPlugin } from "../../module/Core/Slot";
+import ErrorBoundary from "../Common/ErrorBoundary";
 
 export const DesktopNav = observer(
   ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
-    const nav = RootStore.Get(NavStore);
     const header = RootStore.Get(HeaderStore);
     return (
       <>
         <nav
           className={cn("flex items-center space-x-4 lg:space-x-6", className)}
         >
-          {nav?.navs?.map((item, index) => {
+          {header.navs.value?.map?.((item, index) => {
             return (
               <Link
-                href={item.href}
+                href={item.href ?? '/'}
                 key={index}
                 className="hover:text-primary text-sm font-medium transition-colors"
               >
@@ -30,7 +32,8 @@ export const DesktopNav = observer(
             );
           })}
         </nav>
-        <header.UserNav className="ml-auto hidden md:flex" />
+        {/* <header.UserNav className="ml-auto hidden md:flex" /> */}
+        <SlotPlugin.Slot name={HeaderStore.slots.UserNav.name} className="ml-auto hidden md:flex" />
       </>
     );
   },

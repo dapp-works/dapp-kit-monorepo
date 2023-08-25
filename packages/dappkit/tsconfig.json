@@ -5,11 +5,4 @@
     "*.ts",
     "*.tsx"
   ],
-  "compilerOptions": {
-    "paths": {
-      "@dappkit/*": [
-        "./*"
-      ]
-    }
-  }
 }

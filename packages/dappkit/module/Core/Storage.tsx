@@ -36,6 +36,7 @@ export type StorageParams<T> = {
   defaultValue?: T;
   debounce?: number;
   onInit?(value: T): void;
+  debounceFn?: any;
   onDebounce?(value: T): void;
   onSet?(value: T): void;
   set?: (value: T) => void;
@@ -88,7 +89,7 @@ export class StoragePlugin implements Store {
     },
   };
   engines = StoragePlugin.engines;
-  debounceFn: (val: any) => void;
+  // debounceFn: (val: any) => void;
   // data = {};
   dataMeta: Record<string, StorageParams<any>> = {};
 
@@ -189,17 +190,22 @@ export class StoragePlugin implements Store {
     return _engine.set(key, value);
   };
 
-  get = <T,>({ key, value: defaultValue, engine = this.engines.memory, ...other }: StorageParams<T>): StorageParams<T> => {
+
+  get = <T,>({ key, value, defaultValue, engine = this.engines.memory, ...other }: StorageParams<T>): StorageParams<T> => {
     if (typeof window == 'undefined' && engine.name == 'localStorage') {
       engine = this.engines.memory;
     }
     const that = this;
     if (!this.dataMeta[key]) {
       const exists = engine.get(key);
+      if (engine.name == 'asyncStorage') {
+        console.log('get', key, exists);
+      }
       if (!exists) {
         engine.set(key, defaultValue);
       }
       const _value = engine.get(key);
+
       this.dataMeta[key] = makeAutoObservable({
         key,
         engine,
@@ -211,11 +217,11 @@ export class StoragePlugin implements Store {
         },
         set value(value) {
           that.set({ key, value });
-          other.debounce && that.debounceFn(value)
+          other.debounce && that.dataMeta[key].debounceFn(value)
         },
         set(value) {
           that.set({ key, value });
-          other.debounce && that.debounceFn(value)
+          other.debounce && that.dataMeta[key].debounceFn(value)
         },
         setValue(value) {
           that.set({ key, value });
@@ -230,6 +236,9 @@ export class StoragePlugin implements Store {
           //@ts-ignore
           RootStore.init().events.on(`storage.${key}.update`, (args) => func(args));
         },
+        debounceFn: _.debounce((value) => {
+          other?.onDebounce(value);
+        }, other.debounce)
       });
       if (this.dataMeta[key].onInit) {
         this.dataMeta[key].onInit(this.dataMeta[key].value);
@@ -246,22 +255,12 @@ export class StoragePlugin implements Store {
 
   static Get<T>(args: StorageParams<T>): StorageParams<T> {
     const storagePlugin = RootStore.Get(StoragePlugin);
-    if (args.debounce && !storagePlugin.debounceFn) {
-      storagePlugin.debounceFn = _.debounce((value) => {
-        storagePlugin.get(args)?.onDebounce(value);
-      }, args.debounce);
-    }
     return storagePlugin.get(args);
   }
 
   static Input<T, U extends StorageParams<T>>(args: U): U {
     const storagePlugin = RootStore.Get(StoragePlugin);
     const data = storagePlugin.get(args);
-    if (args.debounce && !storagePlugin.debounceFn) {
-      storagePlugin.debounceFn = _.debounce((value) => {
-        data?.onDebounce?.(value);
-      }, args.debounce);
-    }
     //@ts-ignore
     return observable({
       // ...args,
