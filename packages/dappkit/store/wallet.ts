@@ -1,5 +1,4 @@
 import { EventEmitter } from "events";
-import { helper } from "@dappkit/lib/helper";
 import { TransactionReceipt, TransactionRequest } from "@ethersproject/providers";
 //allChains,
 import { allChains, Binance, Chain, Ethereum, getChainByChainId, Goerli, IotexNetwork, IotexNetworkTestnet, Mumbai, Polygon } from "@thirdweb-dev/chains";
@@ -17,7 +16,7 @@ import { ToastPlugin } from "../module/Toast/Toast";
 import { BigNumberState } from "./standard/BigNumberState";
 import { PromiseState } from "./standard/PromiseState";
 import { StorageState } from "./standard/StorageState";
-import { Store } from "..";
+import { helper, Store } from "..";
 
 export class MyInjectedWallet extends InjectedWallet {
   constructor(options?: WalletOptions) {
