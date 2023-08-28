@@ -47,14 +47,14 @@ export class Project implements Store {
     </div >)
   })
 
-  // slots = {
-  //   Logo: {
-  //     ...HeaderStore.slots.Logo,
-  //     render: () => {
-  //       return <div className="flex items-center">
-  //         <div className="text-lg font-bold">Custom Logo in store/project/slots</div>
-  //       </div>
-  //     }
-  //   }
-  // }
+  slots = {
+    Logo: {
+      ...HeaderStore.slots.Logo,
+      render: () => {
+        return <div className="flex items-center">
+          <div className="text-lg font-bold">Custom Logo in store/project/slots</div>
+        </div>
+      }
+    }
+  }
 }
