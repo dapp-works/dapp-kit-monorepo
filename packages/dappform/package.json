@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/jsonview",
-  "version": "0.1.32",
+  "version": "0.1.35",
   "description": "",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "build": "tsup index.ts --format cjs --dts"
   },
   "peerDependencies": {
-    "@nextui-org/react": "^2.0.1"
+    "@nextui-org/react": "^2.1.10"
   },
   "dependencies": {
     "@dappworks/kit": "^0.1.30",
