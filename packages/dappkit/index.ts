@@ -22,6 +22,7 @@ export * from "./module/JSONView";
 
 export * from "./components/WalletConnectButton";
 export * from "./components/Common/PanelCard";
+export * from "./components/Common/Copy";
 
 export * from "./lib/helper";
 export * from "./lib/context";
