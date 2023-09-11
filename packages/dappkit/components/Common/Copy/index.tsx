@@ -3,11 +3,13 @@ import React from "react";
 import { CheckIcon, CopyIcon } from "@radix-ui/react-icons";
 import copy from "copy-to-clipboard";
 import { observer, useLocalStore } from "mobx-react-lite";
+import { cn } from "../../../lib/utils";
 
 interface IProps {
   value: string;
+  className?: string;
 }
-export const Copy = observer(({ value }: IProps) => {
+export const Copy = observer(({ value, className }: IProps) => {
   const store = useLocalStore(() => ({
     copied: false,
     toggleIOTipOpen(val: boolean) {
@@ -21,7 +23,7 @@ export const Copy = observer(({ value }: IProps) => {
         <CheckIcon className="text-green-400" />
       ) : (
         <CopyIcon
-          className="text-primary-foreground cursor-pointer"
+          className={cn("text-primary-foreground cursor-pointer", className)}
           onClick={async () => {
             copy(value);
             store.copied = true;

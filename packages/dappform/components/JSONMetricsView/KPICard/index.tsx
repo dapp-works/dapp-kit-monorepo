@@ -25,7 +25,7 @@ export const KPICard = (props: KPICard) => {
       <div className="mt-4 space-x-6 px-2 flex items-center">
         <div className='w-auto'>
           <Text className='whitespace-nowrap'>{metricTitle}</Text>
-          <div className='font-bold text-3xl'>{metric ?? '-'}</div>
+          <div className='font-bold text-3xl'>{metric}</div>
         </div>
         <ChartComp
           className='overflow-hidden'
