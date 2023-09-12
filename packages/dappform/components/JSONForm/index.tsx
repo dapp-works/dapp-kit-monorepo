@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { UiSchema } from "@rjsf/utils";
 
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
@@ -6,6 +6,7 @@ import { GridLayout, GridLayoutProps } from "./Layouts/gridLayout";
 import { ListLayout, ListLayoutProps } from "./Layouts/listLayout";
 import { SimpleLayout, SimpleLayoutProps } from "./Layouts/simpleLayout";
 import { TabLayout, TabLayoutProps } from "./Layouts/tabLayout";
+import { ButtonProps } from "@nextui-org/react";
 
 export type LayoutType = 'TabLayout' | 'GridLayout' | 'ListLayout' | 'SimpleLayout';
 
@@ -16,6 +17,7 @@ export type SubLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simple
     [F in keyof T]?: {
       title?: string;
       fieldLayout?: FieldLayoutType<T, F>;
+      submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
     };
   }
   : L extends 'GridLayout'
@@ -24,6 +26,7 @@ export type SubLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simple
       title?: string;
       fieldLayout?: FieldLayoutType<T, F>;
       colSpan?: number;
+      submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
     };
   }
   : never;
@@ -65,10 +68,10 @@ export type JSONFormProps<T = FormDataType, L = LayoutType> = {
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, L>;
   children?: any;
-  onBatchSubmit?: (data: T) => void;
+  onBatchSubmit?: (data: T, setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
-  onSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
   onChange?: (data: Partial<T>) => void;
+  batchSubmitButtonProps?: ButtonProps & { onBatchSubmit?: (formData: T, setLoading: Dispatch<SetStateAction<boolean>>) => void };
 };
 
 const components = {

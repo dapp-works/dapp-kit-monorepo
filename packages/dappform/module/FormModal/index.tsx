@@ -22,7 +22,6 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
   title = '';
   //@ts-ignore
   form: JSONSchemaFormState<T> = null;
-  isAutomaticallyClose = true;
   className: string = '';
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   closeOnOverlayClick = false;
@@ -42,7 +41,6 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
     this.isOpen = false;
     this.title = '';
     this.form = null;
-    this.isAutomaticallyClose = true;
     this.className = '';
     this.modalSize = 'md';
     this.closeOnOverlayClick = false;
@@ -59,12 +57,11 @@ export async function getFormData<T = { [key: string]: any }>(v: Partial<FormMod
       isOpen: true,
     });
     formModal.event.on('afterSubmit', (formData: T) => {
-      if (formModal.isAutomaticallyClose) {
+      if (formModal.onAfterSubmit) {
+        formModal.onAfterSubmit(formData);
+      } else {
         formModal.close();
         resolve(formData);
-      } else {
-        //@ts-ignore
-        formModal.onAfterSubmit?.(formData);
       }
     });
     formModal.event.on('abort', () => {

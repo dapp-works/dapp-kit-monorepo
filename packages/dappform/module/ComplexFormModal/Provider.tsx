@@ -1,6 +1,6 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { RootStore, useStore } from "../../store/index";
+import { useStore } from "../../store/index";
 import Draggable from "react-draggable";
 import { JSONForm } from "../../components/JSONForm";
 import { useEffect } from "react";
@@ -10,7 +10,7 @@ import React from "react";
 
 const JSONViewModal = observer(() => {
   const rootStore = useStore();
-  const complexFormModal = RootStore.Get(FormPlugin);
+  const complexFormModal = rootStore.get(FormPlugin);
   const { formData, isOpen } = complexFormModal;
   const store = useLocalObservable(() => ({
     isMobile: false,
@@ -31,8 +31,8 @@ const JSONViewModal = observer(() => {
     return null;
   }
 
-  const layoutConfig = JSON.parse(JSON.stringify(complexFormModal.layoutConfig));
-  if (store.isMobile) {
+  const layoutConfig = { ...complexFormModal.layoutConfig };
+  if (store.isMobile && layoutConfig.type === 'GridLayout') {
     layoutConfig.gridColumn = 1;
     Object.keys(layoutConfig).forEach((key) => {
       if (typeof layoutConfig[key] === 'object') {
@@ -64,14 +64,15 @@ const JSONViewModal = observer(() => {
                 // @ts-ignore
                 layoutConfig={layoutConfig}
                 onBatchSubmit={
-                  complexFormModal.isAutomaticallyClose
-                    ? (data) => {
+                  complexFormModal.onBatchSubmit
+                    ? complexFormModal.onBatchSubmit
+                    : (data) => {
                       complexFormModal.event.emit('batchSubmit', data);
                     }
-                    : complexFormModal.onBatchSubmit
                 }
-                onSubmit={complexFormModal.onSubmit}
                 onSet={complexFormModal.onSet}
+                onChange={complexFormModal.onChange}
+                batchSubmitButtonProps={complexFormModal.batchSubmitButtonProps}
               />
             </ModalBody>
           </ModalContent>

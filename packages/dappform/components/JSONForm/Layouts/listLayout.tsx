@@ -6,45 +6,31 @@ import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { cn } from "../../../lib/utils";
 import { JSONSchemaFormState } from "../../../store/standard/JSONSchemaState";
-import { BatchSubmitButton, getFormState } from "./format";
+import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
 
 export type ListLayoutProps = {};
 
-const CollapsibleBox = ({
-  title,
-  formState,
-}: {
-  title: string;
-  formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>;
-}) => {
+const CollapsibleBox = ({ key, title, formState, submitButtonProps }: { key: string; title: string; formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>; submitButtonProps: any }) => {
   const [opened, setOpened] = useState(true);
   return (
     <>
       <div
-        className="border-t-[1px solid #E5E5EA] mb-[10px] mt-5 flex cursor-pointer items-center justify-between py-[5px] hover:bg-[#F2F2F7] dark:hover:bg-gray-900"
+        className="mt-5 mb-[10px] flex justify-between items-center cursor-pointer border-t-[1px solid #E5E5EA] py-[5px] hover:bg-[#F2F2F7] dark:hover:bg-gray-900"
         onClick={() => setOpened((o) => !o)}
       >
-        <div className="text-base font-bold text-gray-900 dark:text-gray-100">
-          {title}
-        </div>
+        <div className="text-gray-900 dark:text-gray-100 font-bold text-base">{title}</div>
         {opened ? <ChevronUp /> : <ChevronDown />}
       </div>
-      <div className={cn("mt-2", opened ? "block" : "hidden")}>
-        <JSONSchemaForm formState={formState}></JSONSchemaForm>
+      <div className={cn('mt-2', opened ? 'block' : 'hidden')}>
+        <JSONSchemaForm formState={formState}>{submitButtonProps && <SubmitButton formKey={key} formState={formState} buttonProps={submitButtonProps} />}</JSONSchemaForm>
       </div>
     </>
   );
 };
 
-export const ListLayout = <T extends FormDataType, L extends LayoutType>(
-  props: JSONFormProps<T, L>,
-) => {
-  const { layoutConfig = {}, onBatchSubmit } = props;
-  const { type, ...formLayout } = layoutConfig as LayoutConfigType<
-    T,
-    "ListLayout"
-  >;
-  //@ts-ignore
+export const ListLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps } = props;
+  const { type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'ListLayout'>;
   const formStates = getFormState(props, formLayout);
 
   return (
@@ -52,18 +38,11 @@ export const ListLayout = <T extends FormDataType, L extends LayoutType>(
       {Object.keys(formStates).map((key) => {
         const layout = formLayout[key];
         const formState = formStates[key];
-        return (
-          <CollapsibleBox
-            key={key}
-            title={layout?.title || key}
-            // @ts-ignore
-            formState={formState}
-          ></CollapsibleBox>
-        );
+        return <CollapsibleBox key={key} title={layout?.title || key} formState={formState} submitButtonProps={layout?.submitButtonProps} />;
       })}
-      {onBatchSubmit && (
-        <div className="flex w-full">
-          <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} />
+      {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
+        <div className="w-full flex">
+          <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} buttonProps={batchSubmitButtonProps} />
         </div>
       )}
     </>

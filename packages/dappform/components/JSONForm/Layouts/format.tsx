@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { UiSchema } from "@rjsf/utils";
 
-import { FormDataOfKey, FormKey, JSONFormProps } from "..";
+import { FormDataOfKey, JSONFormProps } from "..";
 import CheckboxWidget from "../../../components/JSONFormWidgets/CheckboxWidget";
 import InputWidget from "../../../components/JSONFormWidgets/InputWidget";
 import SelectWidget from "../../../components/JSONFormWidgets/SelectWidget";
@@ -12,13 +12,14 @@ import {
 } from "../../../store/standard/JSONSchemaState";
 import { helper } from "../../../lib/helper";
 import EditorWidget from '../../../components/JSONFormWidgets/EditorWidget';
+import { cn } from "../../../lib/utils";
 
 
 export const getFormState = <T, L>(
   props: JSONFormProps<T, L>,
   formLayout: { [x: string]: { fieldLayout?: any[] } } = {},
 ) => {
-  const { formData, formConfig, onSubmit, onSet, onChange } = props;
+  const { formData, formConfig, onSet, onChange } = props;
 
   const formStates: {
     [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>;
@@ -96,14 +97,14 @@ export const getFormState = <T, L>(
       schema,
       uiSchema: {
         "ui:submitButtonOptions": {
-          norender: onSubmit ? false : true,
+          norender: true,
         },
         ...formConfigData,
         layout: formLayout[key]?.fieldLayout,
       },
-      afterSubmit: async (e) => {
-        onSubmit?.(key as FormKey<T>, e.formData as FormDataOfKey<T>);
-      },
+      // afterSubmit: async (e) => {
+      //   onSubmit?.(key as FormKey<T>, e.formData as FormDataOfKey<T>);
+      // },
       afterChange: (e, id) => {
         const { formData } = e;
         if (formData) {
@@ -135,12 +136,15 @@ export const getFormState = <T, L>(
   return formStates;
 };
 
-export const BatchSubmitButton = ({ formStates, onSubmit }) => {
+export const BatchSubmitButton = ({ formStates, onSubmit, buttonProps }) => {
+  const { className, onClick, children, isLoading, onBatchSubmit, ...rest } = buttonProps || {};
+  const [loading, setLoading] = useState(false);
   return (
     <Button
-      className="ml-auto mt-4"
+      className={cn('mt-4 ml-auto', className)}
       size="sm"
       color="primary"
+      isLoading={loading}
       onClick={(e) => {
         const formData = {};
         const formKeys = Object.keys(formStates);
@@ -162,14 +166,54 @@ export const BatchSubmitButton = ({ formStates, onSubmit }) => {
             }
             formData[key] = data;
           } else {
-            console.error("formRef.current is null");
+            console.error('formRef.current is null');
             return;
           }
         }
-        onSubmit?.(formData);
+        onSubmit?.(formData, setLoading);
+        onBatchSubmit?.(formData, setLoading);
       }}
+      {...rest}
     >
-      Submit
+      {children || 'Submit'}
     </Button>
+  );
+};
+
+export const SubmitButton = ({ formKey, formState, buttonProps }) => {
+  const { className, onClick, children, isLoading, onAfterSubmit, ...rest } = buttonProps || {};
+  const [loading, setLoading] = useState(false);
+  return (
+    <div className="w-full flex">
+      <Button
+        className={cn('mt-4 ml-auto', className)}
+        type="submit"
+        color="primary"
+        size="sm"
+        isLoading={loading}
+        onClick={(e) => {
+          let formData = {};
+          const current = formState.formRef.current;
+          if (current) {
+            current.submit();
+            formData = current.state.formData;
+            const required = current.state.schema.required;
+            for (const i of required) {
+              if (!formData[i]) {
+                return;
+              }
+            }
+            const errors = current.state.errors;
+            if (errors.length > 0) {
+              return;
+            }
+          }
+          onAfterSubmit?.(formKey, formData, setLoading);
+        }}
+        {...rest}
+      >
+        {children || 'Submit'}
+      </Button>
+    </div>
   );
 };

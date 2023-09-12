@@ -31,7 +31,7 @@ const JSONViewModal = observer(() => {
     return null;
   }
 
-  const layoutConfig = JSON.parse(JSON.stringify(complexFormModal.layoutConfig));
+  const layoutConfig: any = { ...complexFormModal.layoutConfig };
   if (store.isMobile && layoutConfig.type === 'GridLayout') {
     layoutConfig.gridColumn = 1;
     Object.keys(layoutConfig).forEach((key) => {
@@ -61,18 +61,17 @@ const JSONViewModal = observer(() => {
               <JSONForm
                 formData={formData}
                 formConfig={complexFormModal.formConfig}
-                // @ts-ignore
                 layoutConfig={layoutConfig}
                 onBatchSubmit={
-                  complexFormModal.isAutomaticallyClose
-                    ? (data) => {
+                  complexFormModal.onBatchSubmit
+                    ? complexFormModal.onBatchSubmit
+                    : (data) => {
                       complexFormModal.event.emit('batchSubmit', data);
                     }
-                    : complexFormModal.onBatchSubmit
                 }
-                onSubmit={complexFormModal.onSubmit}
                 onSet={complexFormModal.onSet}
                 onChange={complexFormModal.onChange}
+                batchSubmitButtonProps={complexFormModal.batchSubmitButtonProps}
               />
             </ModalBody>
           </ModalContent>
@@ -81,5 +80,6 @@ const JSONViewModal = observer(() => {
     </Modal>
   );
 });
+
 
 export default JSONViewModal;

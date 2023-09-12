@@ -37,6 +37,7 @@ function InputWidget({
       label={label}
       placeholder=""
       value={value}
+      defaultValue=""
       isRequired={required}
       isDisabled={disabled}
       size={size}
