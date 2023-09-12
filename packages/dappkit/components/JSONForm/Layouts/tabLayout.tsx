@@ -3,19 +3,13 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
 
 import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
-import { BatchSubmitButton, getFormState } from "./format";
+import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
 
 export type TabLayoutProps = {};
 
-export const TabLayout = <T extends FormDataType, L extends LayoutType>(
-  props: JSONFormProps<T, L>,
-) => {
-  const { layoutConfig = {}, onBatchSubmit } = props;
-  const { type, ...formLayout } = layoutConfig as LayoutConfigType<
-    T,
-    "TabLayout"
-  >;
-  // @ts-ignore
+export const TabLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps } = props;
+  const { type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'TabLayout'>;
   const formStates = getFormState(props, formLayout);
 
   return (
@@ -29,20 +23,23 @@ export const TabLayout = <T extends FormDataType, L extends LayoutType>(
         </TabList>
         <TabPanels>
           {Object.keys(formStates).map((key) => {
+            const layout = formLayout[key];
             return (
               <TabPanel key={key}>
-                {/* @ts-ignore */}
-                <JSONSchemaForm formState={formStates[key]}></JSONSchemaForm>
+                <JSONSchemaForm formState={formStates[key]}>
+                  {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+                </JSONSchemaForm>
               </TabPanel>
             );
           })}
         </TabPanels>
       </TabGroup>
-      {onBatchSubmit && (
-        <div className="flex w-full">
-          <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} />
+      {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
+        <div className="w-full flex">
+          <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} buttonProps={batchSubmitButtonProps} />
         </div>
       )}
     </>
   );
 };
+

@@ -1,36 +1,34 @@
 import { Store } from "../../store/standard/base";
 import Provider from "./Provider";
-import { FormConfigType, FormDataOfKey, FormDataType, FormKey, LayoutConfigType, LayoutType } from "../../components/JSONForm";
+import { FormConfigType, FormDataOfKey, FormDataType, LayoutConfigType, LayoutType } from "../../components/JSONForm";
 import EventEmitter from "events";
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
 import { UiSchema } from "@rjsf/utils";
 import { makeAutoObservable } from "mobx";
-import { RootStore, rootStore } from "../../store";
-import React from "react";
+import { RootStore } from "../../store";
+import React, { Dispatch, SetStateAction } from "react";
+import { ButtonProps } from "@nextui-org/react";
 
 export class FormPlugin<T extends FormDataType> implements Store {
   sid = 'FormPlugin';
   provider = () => <Provider />;
+
   isOpen = false;
   title = '';
   formData?: T;
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, LayoutType>;
-  isAutomaticallyClose = true;
   className = '';
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   event = new EventEmitter();
-  onBatchSubmit?: (data: T) => void;
-  onSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>) => void;
+  onBatchSubmit?: (data: T, setLoading?: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
+  onChange?: (data: Partial<T>) => void;
+  batchSubmitButtonProps?: ButtonProps & { onBatchSubmit?: (formData: T, setLoading: Dispatch<SetStateAction<boolean>>) => void };
 
   constructor(args?: Partial<FormPlugin<T>>) {
     Object.assign(this, args);
     makeAutoObservable(this);
-  }
-
-  async form(v: Partial<FormPlugin<T>>) {
-    return await getComplexFormData(v);
   }
 
   setData(v: Partial<FormPlugin<T>>) {
@@ -43,16 +41,13 @@ export class FormPlugin<T extends FormDataType> implements Store {
     this.formData = undefined;
     this.formConfig = undefined;
     this.layoutConfig = undefined;
-    this.isAutomaticallyClose = true;
     this.className = '';
     this.modalSize = 'md';
     this.onBatchSubmit = undefined;
-    this.onSubmit = undefined;
     this.onSet = undefined;
+    this.onChange = undefined;
     this.event.removeAllListeners();
   }
-
-
 }
 
 export async function getComplexFormData<T extends FormDataType>(v: Partial<FormPlugin<T>>) {
@@ -64,11 +59,11 @@ export async function getComplexFormData<T extends FormDataType>(v: Partial<Form
       isOpen: true,
     });
     complexFormModal.event.on('batchSubmit', (formData: T) => {
-      if (complexFormModal.isAutomaticallyClose) {
+      if (complexFormModal.onBatchSubmit) {
+        complexFormModal.onBatchSubmit(formData);
+      } else {
         complexFormModal.close();
         resolve(formData);
-      } else {
-        complexFormModal.onBatchSubmit?.(formData);
       }
     });
     complexFormModal.event.on('abort', () => {
