@@ -30,7 +30,7 @@ function SelectWidget({
   disabled,
   schema,
 }: SelectWidgetProps) {
-  const { className, labelPlacement = "top", placeholder = 'Select an option', customProps } = options;
+  const { className, labelPlacement = "top", placeholder = 'Select an option', size, customProps } = options;
   const { selectOptions = [], description } = schema;
   useEffect(() => {
     if (!value && selectOptions.length > 0) {
@@ -71,9 +71,11 @@ function SelectWidget({
         </select> */}
         {/* @ts-ignore  */}
         <Select
+          size={size}
           items={selectOptions}
           placeholder={placeholder}
           className="max-w-xs"
+          defaultValue={value}
           onChange={(event) => onChange(event.target.value)}
           {...customProps}
         >
