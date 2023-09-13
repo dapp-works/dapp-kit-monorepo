@@ -83,7 +83,7 @@ const JSONTable = observer(<T,>(props: JSONTableProps<T>) => {
       <div className={cn("relative w-full overflow-auto h-[400px]", props.className)}>
         <Table>
           <TableHeader className="sticky top-0">
-            <TableRow className="bg-gray-100 dark:bg-gray-900">
+            <TableRow className={`bg-gray-100 dark:bg-gray-900 `}>
               {needExtendedTable && <TableHead></TableHead>}
               {columns.map((item) => (
                 <TableHead className="font-bold text-sm" key={item.key}>
@@ -174,7 +174,7 @@ function renderFieldValue(v: any) {
 function Body<T>({ item, columns, rowOnClick }: { item: T; columns: Column<T>[]; rowOnClick?: (item: T) => void }) {
   return (
     <TableRow
-      className="text-sm"
+      className={`text-sm ${rowOnClick && 'cursor-pointer'}`}
       onClick={() => {
         if (rowOnClick) {
           rowOnClick(item);
