@@ -1,8 +1,10 @@
 import React from 'react';
 import { showDialog } from '../../../module/Dialog';
-import JSONHighlight from '../../Common/JSONHighlight';
-import { TableDataEditor } from '../../TableDataEditor';
+import JSONHighlight from '../../../components/Common/JSONHighlight';
 import { ChartBox } from '../ChartBox';
+import dynamic from 'next/dynamic';
+
+const TableDataEditor = dynamic({ loader: () => import('../../../components/TableDataEditor').then((ctx) => ctx.TableDataEditor), ssr: false });
 
 export type TableCard = ChartBox & {
   type?: 'TableCard';
