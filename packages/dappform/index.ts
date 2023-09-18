@@ -4,7 +4,6 @@ export * from "./components/JSONFormWidgets";
 export * from "./components/JSONSchemaForm";
 export * from "./components/JSONTable";
 export * from "./components/JSONMetricsView";
-export * from "./components/TableDataEditor";
 
 export * from "./module/ComplexFormModal";
 export * from "./module/FormModal";
