@@ -1,65 +1,128 @@
 import React, { useEffect, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { ActionButtonType, Column, ExtendedTable, JSONSchemaTableState } from "../../store/standard/JSONSchemaState";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import JSONHighlight from "../../components/Common/JSONHighlight";
-import { Button, Pagination as NextuiPagination } from '@nextui-org/react';
+import { Button, ButtonProps, Pagination as NextuiPagination } from '@nextui-org/react';
 import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { _ } from "../../lib/lodash";
 import { showDialog } from "../../module/Dialog";
 import { cn } from "../../lib/utils";
+import { PaginationState } from "../../store/standard/PaginationState";
 
-export interface JSONTableProps<T> {
-  className?: string;
-  jsonstate: {
-    table: JSONSchemaTableState<T>;
+export type ActionButtonType = {
+  props?: ButtonProps;
+  children: React.ReactNode;
+};
+
+export type ColumnOptions<T = { [x: string]: any }> = {
+  [key in keyof T]?: {
+    label?: string;
+    hidden?: boolean;
+    sortable?: boolean;
+    order?: number;
+    render?: (item: T) => any;
   };
 }
 
-const JSONTable = observer(<T,>(props: JSONTableProps<T>) => {
-  const { columns, dataSource, rowKey, extendedTables = [], pagination, isServerPaging, rowOnClick } = props.jsonstate.table;
+export type Column<T = { [x: string]: any }> = {
+  key: string;
+  label: string;
+  render?: (item: T) => any;
+};
+
+export type ExtendedTable<U> = {
+  key: string;
+  columns: Column<U>[];
+};
+
+export interface JSONTableProps<T = { [x: string]: any }> {
+  className?: string;
+  dataSource: T[];
+  columnOptions?: ColumnOptions<T>;
+  isServerPaging?: boolean;
+  extendedTableOptions?: {
+    key: string;
+    columnOptions?: ColumnOptions<any>;
+    // actions?: (item: any) => ActionButtonType[];
+  }[];
+  rowKey?: string;
+  pagination?: PaginationState;
+  onRowClick?: (item: T) => void;
+  actions?: (item: T) => ActionButtonType[];
+}
+
+const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
+  const {
+    dataSource,
+    columnOptions,
+    isServerPaging,
+    pagination = new PaginationState({
+      page: 1,
+      limit: 8,
+    }),
+    extendedTableOptions = [],
+    rowKey = 'id',
+    onRowClick,
+    actions
+  } = props;
 
   const store = useLocalObservable<{
-    sortableColumns: { [k: string]: "asc" | "desc" | "none" };
+    columns: Column<T>[],
+    sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' };
     sortedData: T[];
+    extendedTables: ExtendedTable<any>[];
   }>(() => ({
+    columns: [],
     sortableColumns: {},
     sortedData: [],
+    extendedTables: [],
   }));
-
-  useEffect(() => {
-    columns.forEach((item) => {
-      if (item.sortable) {
-        store.sortableColumns[item.key] = "none";
-      }
-    });
-  }, [columns]);
 
   useEffect(() => {
     store.sortedData = dataSource;
     if (!isServerPaging) {
-      //@ts-ignore
       pagination.setData({
         total: dataSource.length,
       });
     }
-  }, [dataSource]);
+    if (dataSource?.length > 0) {
+      const _keys = columnOptions ? Object.keys(dataSource[0]).filter(key => !columnOptions[key]?.hidden) : Object.keys(dataSource[0]);
+      const columns: Column<T>[] = _keys
+        .map((key) => {
+          const sortable = columnOptions?.[key]?.sortable;
+          if (sortable) {
+            store.sortableColumns[key] = 'none';
+          }
+          return ({
+            key,
+            label: columnOptions?.[key]?.label || key,
+            render: columnOptions?.[key]?.render,
+          });
+        })
+        .sort((a, b) => {
+          const aOrder = columnOptions?.[a.key]?.order || 0;
+          const bOrder = columnOptions?.[b.key]?.order || 0;
+          return bOrder - aOrder;
+        });
+      store.columns = columns;
+    }
+  }, [dataSource, columnOptions]);
 
-  const onSort = (key: string, type: "asc" | "desc" | "none") => {
+  const onSort = (key: string, type: 'asc' | 'desc' | 'none') => {
     Object.keys(store.sortableColumns).map((k) => {
-      store.sortableColumns[k] = k === key ? type : "none";
+      store.sortableColumns[k] = k === key ? type : 'none';
     });
 
-    if (type === "none") {
+    if (type === 'none') {
       store.sortedData = dataSource;
     } else {
       const result = _.orderBy(
         dataSource,
         (o) => {
           if (o[key] == null) {
-            return type === "desc" ? "" : o[key];
+            return type === 'desc' ? '' : o[key];
           }
-          if (typeof o[key] === "string") {
+          if (typeof o[key] === 'string') {
             if (isNaN(o[key])) {
               return o[key].toLowerCase();
             } else {
@@ -68,73 +131,81 @@ const JSONTable = observer(<T,>(props: JSONTableProps<T>) => {
           }
           return o[key];
         },
-        type
+        type,
       );
       store.sortedData = result;
     }
   };
 
+  const { columns, extendedTables } = store;
   const needExtendedTable = !!extendedTables.length;
-  //@ts-ignore
   const data = isServerPaging ? store.sortedData : store.sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
   return (
     <>
-      <div className={cn("relative w-full overflow-auto h-[400px]", props.className)}>
+      <div className={cn('relative w-full overflow-auto h-[400px]', props.className)}>
         <Table>
           <TableHeader className="sticky top-0">
-            <TableRow className={`bg-gray-100 dark:bg-gray-900 `}>
+            <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
               {needExtendedTable && <TableHead></TableHead>}
-              {columns.map((item) => (
-                <TableHead className="font-bold text-sm" key={item.key}>
+              {columns.map((item, index) => (
+                <TableHead className={`font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300`} key={item.key}>
                   <div className="flex items-center">
-                    <div>{item.label}</div>
-                    {store.sortableColumns[item.key] === "asc" && (
+                    <div className="text-xs">{item.label}</div>
+                    {store.sortableColumns[item.key] === 'asc' && (
                       <ChevronUp
                         className="ml-1 cursor-pointer"
-                        size={20}
+                        size={14}
                         onClick={() => {
-                          onSort(item.key, "desc");
+                          onSort(item.key, 'none');
                         }}
                       />
                     )}
-                    {store.sortableColumns[item.key] === "desc" && (
+                    {store.sortableColumns[item.key] === 'desc' && (
                       <ChevronDown
                         className="ml-1 cursor-pointer"
-                        size={20}
+                        size={14}
                         onClick={() => {
-                          onSort(item.key, "none");
+                          onSort(item.key, 'asc');
                         }}
                       />
                     )}
-                    {store.sortableColumns[item.key] === "none" && (
+                    {store.sortableColumns[item.key] === 'none' && (
                       <ChevronsUpDown
                         className="ml-1 cursor-pointer"
-                        size={20}
+                        size={14}
                         onClick={() => {
-                          onSort(item.key, "asc");
+                          onSort(item.key, 'desc');
                         }}
                       />
                     )}
                   </div>
                 </TableHead>
               ))}
+              {actions && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">Actions</TableHead>}
             </TableRow>
           </TableHeader>
-          <TableBody>{data.map((item, index) => (needExtendedTable ? <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} /> : <Body key={item[rowKey] || index} item={item} columns={columns} rowOnClick={rowOnClick} />))}</TableBody>
+          <TableBody>
+            {data.map((item, index) =>
+              needExtendedTable ? (
+                <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} />
+              ) : (
+                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} actions={actions} />
+              ),
+            )}
+          </TableBody>
         </Table>
       </div>
-      {pagination && pagination.total > pagination.limit && (
+      {pagination.total > pagination.limit && (
         <div className="flex justify-center h-[30px] mt-4">
           <NextuiPagination
             showControls
             size="sm"
             radius="sm"
-            variant="flat"
             total={Math.ceil(pagination.total / pagination.limit)}
             page={pagination.page}
             initialPage={1}
-            onChange={currentPage => {
+            onChange={(currentPage) => {
               pagination.setData({
                 page: currentPage,
               });
@@ -146,12 +217,12 @@ const JSONTable = observer(<T,>(props: JSONTableProps<T>) => {
   );
 });
 
-function ActionButton({ props, text }: ActionButtonType) {
-  return <Button {...props}>{text}</Button>;
+function ActionButton({ props, children }: ActionButtonType) {
+  return <Button {...props}>{children}</Button>;
 }
 
 function renderFieldValue(v: any) {
-  if (typeof v == "string" || typeof v == "number") {
+  if (typeof v == 'string' || typeof v == 'number') {
     return v;
   }
   if (v == null) {
@@ -165,28 +236,35 @@ function renderFieldValue(v: any) {
         showDialog({
           content: <JSONHighlight className="w-full lg:w-[900px]" jsonStr={JSON.stringify(v, null, 2)} />,
         });
-      }}>
-      {JSON.stringify(v).slice(0, 50) + "..."}
+      }}
+    >
+      {JSON.stringify(v).slice(0, 50) + '...'}
     </p>
   );
 }
 
-function Body<T>({ item, columns, rowOnClick }: { item: T; columns: Column<T>[]; rowOnClick?: (item: T) => void }) {
+function Body<T>({ item, columns, onRowClick, actions }: { item: T; columns: Column<T>[]; onRowClick?: (item: T) => void; actions?: (item: T) => ActionButtonType[] }) {
   return (
     <TableRow
-      className={`text-sm ${rowOnClick && 'cursor-pointer'}`}
+      className="text-[13px]"
       onClick={() => {
-        if (rowOnClick) {
-          rowOnClick(item);
-        }
-      }}>
+        onRowClick?.(item);
+      }}
+    >
       {columns.map((column) => {
         return (
-          <TableCell key={column.key} className="max-w-[200px] border-b border-solid border-[#F5F5F5] overflow-x-auto dark:border-gray-700">
-            {column.actions ? column.actions(item).map((btn, index) => <ActionButton key={index} props={btn.props} text={btn.text} />) : column.render ? column.render(item) : renderFieldValue(item[column.key])}
+          <TableCell key={column.key} className="max-w-[200px] overflow-auto">
+            {column.render
+              ? column.render(item)
+              : renderFieldValue(item[column.key])}
           </TableCell>
         );
       })}
+      {actions && (
+        <TableCell className="max-w-[200px] overflow-auto space-x-2">
+          {actions(item).map((btn, index) => <ActionButton key={index} props={btn.props} children={btn.children} />)}
+        </TableCell>
+      )}
     </TableRow>
   );
 }
@@ -196,23 +274,26 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
   return (
     <>
       <TableRow
-        className="text-sm cursor-pointer"
+        className="text-[13px] cursor-pointer"
         onClick={(e: any) => {
           const { nodeName } = e.target;
-          if (nodeName === "TD" || nodeName === "svg") {
+          if (nodeName === 'TD' || nodeName === 'svg') {
             setIsOpen((v) => !v);
           }
-        }}>
+        }}
+      >
         <TableCell className="w-10">{isOpen ? <ChevronDown size={30} /> : <ChevronRight size={30} />}</TableCell>
         {columns.map((column) => {
           return (
-            <TableCell key={column.key} className="max-w-[200px] border-b border-solid border-[#F5F5F5] overflow-x-auto dark:border-gray-700">
-              {column.actions ? column.actions(item).map((btn, index) => <ActionButton key={index} props={btn.props} text={btn.text} />) : column.render ? column.render(item) : renderFieldValue(item[column.key])}
+            <TableCell key={column.key} className="max-w-[200px] overflow-auto">
+              {column.render
+                ? column.render(item)
+                : renderFieldValue(item[column.key])}
             </TableCell>
           );
         })}
       </TableRow>
-      <TableRow className={cn(isOpen ? "table-row" : "hidden")}>
+      <TableRow className={cn(isOpen ? 'table-row' : 'hidden')}>
         <TableCell></TableCell>
         <TableCell colSpan={columns.length}>
           {extendedTables.map((ex) => {
@@ -221,10 +302,10 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
             return (
               <Table className="mt-[10px]" key={ex.key}>
                 <TableHeader>
-                  <TableRow className="bg-gray-100 dark:bg-gray-800">
+                  <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45]">
                     {exColumns.map((exC) => {
                       return (
-                        <TableHead key={exC.key} className="font-bold text-sm">
+                        <TableHead key={exC.key} className="font-bold text-sm dark:text-gray-300">
                           {exC.label}
                         </TableHead>
                       );
@@ -236,8 +317,10 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
                     <TableRow className="text-sm" key={exItem.key}>
                       {exColumns.map((exC) => {
                         return (
-                          <TableCell key={exC.key} className="max-w-[200px] border-b border-solid border-[#F5F5F5] overflow-x-auto dark:border-gray-700">
-                            {exC.actions ? exC.actions(exItem).map((btn, index) => <ActionButton key={index} props={btn.props} text={btn.text} />) : exC.render ? exC.render(exItem) : renderFieldValue(exItem[exC.key])}
+                          <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
+                            {exC.render
+                              ? exC.render(exItem)
+                              : renderFieldValue(exItem[exC.key])}
                           </TableCell>
                         );
                       })}

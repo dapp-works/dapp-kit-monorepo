@@ -1,16 +1,13 @@
 import { createRef, LegacyRef, Ref } from "react";
-import { ButtonProps } from "@nextui-org/react";
 import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv6";
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 
 import { helper } from "../../lib/helper";
-import { PaginationState } from "./PaginationState";
 
 export class JSONSchemaFormState<T, U = UiSchema> {
-  formRef: LegacyRef<Form<any, RJSFSchema, any>> &
-    Ref<Form<any, RJSFSchema, any>>;
+  formRef: LegacyRef<Form<any, RJSFSchema, any>> & Ref<Form<any, RJSFSchema, any>>;
   value: JSONValue<T> = new JSONValue();
   schema: RJSFSchema;
   uiSchema: U;
@@ -102,58 +99,5 @@ export abstract class JSONSchemaValue<T> {
 export class JSONValue<T> extends JSONSchemaValue<T> {
   constructor(args: Partial<JSONValue<T>> = {}) {
     super(args);
-  }
-}
-
-export class JSONModalValue extends JSONSchemaValue<{
-  show: boolean;
-  title: string;
-  autoReset: boolean;
-}> {
-  constructor(args: Partial<JSONModalValue> = {}) {
-    super(args);
-  }
-}
-
-export type ActionButtonType = {
-  props: ButtonProps;
-  text: string;
-};
-export type Column<T = any> = {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  render?: (item: T) => any;
-  actions?: (item: T) => ActionButtonType[];
-};
-export type ExtendedTable<U> = {
-  key: string;
-  columns: Column<U>[];
-};
-export class JSONSchemaTableState<T = { [x: string]: any }> {
-  columns: Column<T>[] = [];
-  dataSource: T[] = [];
-  rowKey: string = "";
-  extendedTables?: ExtendedTable<any>[] = [];
-  pagination?: PaginationState = new PaginationState({
-    page: 1,
-    limit: 8,
-  });
-  isServerPaging?: boolean = false;
-  className?: string = "";
-  rowOnClick?: (item: T) => void;
-
-  set(v: Partial<JSONSchemaTableState<T>>) {
-    Object.assign(this, v);
-  }
-
-  constructor(args: Partial<JSONSchemaTableState<T>> = {}) {
-    Object.assign(this, args);
-    makeObservable(this, {
-      columns: observable,
-      dataSource: observable,
-      pagination: observable,
-      set: action,
-    });
   }
 }
