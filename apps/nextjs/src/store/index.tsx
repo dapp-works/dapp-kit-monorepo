@@ -1,9 +1,8 @@
 "use client";
-import { rootStore, Store, AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, JSONViewPlugin, StoragePlugin, ThemePlugin, WalletConnectButton, } from "@dappworks/kit";
+import { rootStore, Store, AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, StoragePlugin, ThemePlugin, WalletConnectButton, } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
 import { Project } from "./project";
-
-
+import { JSONViewPlugin } from "@dappworks/jsonview";
 
 export const init = () => {
   rootStore.addStores([
