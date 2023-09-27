@@ -1,0 +1,41 @@
+{
+  "name": "@dappworks/core",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup index.ts --format cjs --dts"
+  },
+  "peerDependencies": {
+    "@nextui-org/react": "^2.1.10"
+  },
+  "dependencies": {
+    "@thirdweb-dev/chains": "^0.1.41",
+    "@thirdweb-dev/wallets": "^1.1.8",
+    "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
+    "mobx": "^6.9.0",
+    "mobx-react-lite": "^3.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "siwe": "^2.1.4",
+    "tailwind-merge": "^1.13.0"
+  },
+  "author": "uuz",
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^7.2.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
