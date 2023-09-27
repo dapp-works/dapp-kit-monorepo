@@ -1,9 +1,4 @@
-import { observer } from "mobx-react-lite";
 import { Store } from "../../store/standard/base";
-import { Collection } from "../../module/Core/standard/Collection";
-import { getFormState } from "../FormModal";
-import { JSONSchemaForm } from "../../components/JSONSchemaForm";
-import { cn } from "../../lib/utils";
 import RootStore from "../../store/root";
 import React, { ReactNode } from "react";
 

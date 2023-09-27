@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import axios from "axios";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";

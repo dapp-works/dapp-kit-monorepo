@@ -1,11 +1,10 @@
 "use client";
 
-import { rootStore, RootStore, useStore } from "../../store";
+import { rootStore, RootStore } from "../../store";
 import { observer } from "mobx-react-lite";
 import { RouterStore } from "./Router";
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 import { NextUIProvider } from "@nextui-org/react";
-import { SessionProvider } from "next-auth/react";
 import { UserStore } from "../../store/user";
 import ErrorBoundary from "../../components/Common/ErrorBoundary";
 

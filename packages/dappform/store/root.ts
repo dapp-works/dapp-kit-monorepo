@@ -1,10 +1,8 @@
 import { EventEmitter } from "events";
 import { makeAutoObservable, makeObservable } from "mobx";
 import TypedEmitter from "typed-emitter";
-import { useHotkeys } from 'react-hotkeys-hook'
 import { Store, StoreClass } from "./standard/base";
-import { useEffect } from "react";
-import hotkeys from 'hotkeys-js';
+import { useLocalObservable } from "mobx-react-lite";
 
 export type EventMap = {
   "*": (args: any) => void;
@@ -150,5 +148,11 @@ export default class RootStore<T extends EventMap = any> {
 
   static Get<T extends Store>(store: StoreClass<T>, config: { sid?: string; args?: Partial<T> } = {}): T {
     return this.init().get(store, config);
+  }
+
+  static Local<T>(func: () => T, config: { sid?: string; args?: Partial<T> } = {}, ann?: any): T {
+    const val = useLocalObservable(func, ann);
+    RootStore.init().instance["Local." + config.sid] = val;
+    return val;
   }
 }

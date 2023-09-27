@@ -2,7 +2,8 @@ import { EventEmitter } from "events";
 import { makeAutoObservable, makeObservable } from "mobx";
 import TypedEmitter from "typed-emitter";
 import { Store, StoreClass } from "./standard/base";
-import { StoragePlugin, helper } from "..";
+import { helper } from "../lib/helper";
+import { StoragePlugin } from "../module/Core/Storage";
 import hotkeys from "hotkeys-js";
 import { useLocalObservable } from "mobx-react-lite";
 
