@@ -1,10 +1,8 @@
 import React from "react";
 import { makeAutoObservable } from "mobx";
-
 import { rootStore } from "../../store";
 import { Store } from "../../store/standard/base";
 import Provider from "./Provider";
-
 
 export class DialogStore implements Store {
   sid = 'DialogStore';
@@ -14,6 +12,9 @@ export class DialogStore implements Store {
   title = '';
   size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   className: string = '';
+  classNames: Partial<{
+    [key in 'wrapper' | 'base' | 'backdrop' | 'header' | 'body' | 'footer' | 'closeButton']: string;
+  }> = {};
   content: JSX.Element | string = '';
 
   constructor(args?: Partial<DialogStore>) {
@@ -29,6 +30,9 @@ export class DialogStore implements Store {
     this.isOpen = false;
     this.title = '';
     this.content = '';
+    this.size = 'md';
+    this.className = '';
+    this.classNames = {};
   }
 }
 

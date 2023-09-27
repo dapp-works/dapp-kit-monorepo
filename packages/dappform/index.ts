@@ -8,4 +8,6 @@ export * from "./components/JSONMetricsView";
 export * from "./module/ComplexFormModal";
 export * from "./module/FormModal";
 export * from "./module/JSONView";
+export * from "./module/Dialog";
+
 export * from "./store/standard/PaginationState";

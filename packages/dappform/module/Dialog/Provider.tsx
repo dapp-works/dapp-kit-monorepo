@@ -1,16 +1,14 @@
 import React from "react";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
-
 import { DialogStore } from ".";
 import { cn } from "../../lib/utils";
 import { useStore } from "../../store/index";
 
-
 const Dialog = observer(() => {
   const rootStore = useStore();
   const modal = rootStore.get(DialogStore);
-  const { className, isOpen, title, size, content } = modal;
+  const { className, classNames, isOpen, title, size, content } = modal;
   return (
     <Modal
       isOpen={isOpen}
@@ -20,6 +18,7 @@ const Dialog = observer(() => {
           modal.close();
         }
       }}
+      classNames={classNames}
     >
       <ModalContent className={cn("max-h-screen overflow-auto", className)}>
         {() => (
