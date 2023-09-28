@@ -21,7 +21,6 @@ export * from "./module/Layout/nav";
 export * from "./module/Core/Theme";
 
 
-export * from "./components/WalletConnectButton";
 export * from "./components/Common/PanelCard";
 export * from "./components/Common/Copy";
 export * from "./components/Common/CopyButton";
