@@ -1,1 +1,2 @@
-export * from "@dappworks/kit"
+export { RootStore, rootStore, useStore } from "@dappworks/kit"
+
