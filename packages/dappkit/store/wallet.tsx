@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { TransactionReceipt, TransactionRequest } from "@ethersproject/providers";
 //allChains,
-import { Chain, getChainByChainId, IotexNetwork, IotexNetworkTestnet, } from "@thirdweb-dev/chains";
+import { Chain, getChainByChainId, IotexNetwork, IotexNetworkTestnet, Polygon } from "@thirdweb-dev/chains";
 import { InjectedWallet, WalletOptions } from "@thirdweb-dev/wallets";
 import { WalletMeta } from "@thirdweb-dev/wallets/dist/declarations/src/evm/wallets/base";
 import { ethers } from "ethers";
@@ -45,7 +45,8 @@ export type NetworkObject = {
 };
 export class WalletStore implements Store {
   sid = "wallet";
-  activeChain = 'iotex'
+  activeChain = ''
+  rpcCilentId = ''
   autoObervable = true;
   chainId: number = 0;
   signer: ethers.Signer;
