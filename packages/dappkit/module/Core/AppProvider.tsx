@@ -33,7 +33,7 @@ export const AppProvider = observer(({ children, errorBoundaryFallback }: { chil
       <ThirdwebProvider
         supportedChains={wallet.supportedChains}
         supportedWallets={wallet.supportedWallets}
-        activeChain="polygon"
+        activeChain={wallet.activeChain}
         clientId="YOUR_CLIENT_ID"
       >
         <NextUIProvider>

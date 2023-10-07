@@ -45,6 +45,7 @@ export type NetworkObject = {
 };
 export class WalletStore implements Store {
   sid = "wallet";
+  activeChain = 'iotex'
   autoObervable = true;
   chainId: number = 0;
   signer: ethers.Signer;
