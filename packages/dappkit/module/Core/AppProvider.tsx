@@ -10,14 +10,6 @@ import ErrorBoundary from "../../components/Common/ErrorBoundary";
 import { WalletStore } from "../../store/wallet";
 import {
   ThirdwebProvider,
-  ConnectWallet,
-  metamaskWallet,
-  coinbaseWallet,
-  walletConnect,
-  trustWallet,
-  zerionWallet,
-  rainbowWallet,
-  phantomWallet,
 } from "@thirdweb-dev/react";
 
 export const AppProvider = observer(({ children, errorBoundaryFallback }: { children: ReactNode, errorBoundaryFallback?: ReactNode }) => {
@@ -34,7 +26,7 @@ export const AppProvider = observer(({ children, errorBoundaryFallback }: { chil
         supportedChains={wallet.supportedChains}
         supportedWallets={wallet.supportedWallets}
         activeChain={wallet.activeChain}
-        clientId="YOUR_CLIENT_ID"
+        clientId={wallet.rpcCilentId}
       >
         <NextUIProvider>
           {rootStore.providers.map((store) => {
