@@ -19,7 +19,7 @@ export * from "./module/Toast/Toast";
 export * from "./module/Layout/header";
 export * from "./module/Layout/nav";
 export * from "./module/Core/Theme";
-
+export * from "@thirdweb-dev/react";
 
 export * from "./components/Common/PanelCard";
 export * from "./components/Common/Copy";
@@ -30,4 +30,5 @@ export * from "./lib/helper";
 export * from "./lib/context";
 export * from "./lib/utils";
 export * from "./lib/lodash";
+
 export { dayjs } from "./lib/dayjs";

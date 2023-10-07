@@ -18,9 +18,6 @@ const HomePage = observer(() => {
   return (
     <div className="px-4">
       <headerStore.Header />
-      {
-        wallet.balance.format
-      }
       <ConnectWallet
         theme={"light"}
         modalSize={"wide"}
