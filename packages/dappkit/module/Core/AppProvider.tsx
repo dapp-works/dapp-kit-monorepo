@@ -8,8 +8,17 @@ import { NextUIProvider } from "@nextui-org/react";
 import { UserStore } from "../../store/user";
 import ErrorBoundary from "../../components/Common/ErrorBoundary";
 import { WalletStore } from "../../store/wallet";
-import { ThirdwebProvider } from "@thirdweb-dev/react";
-
+import {
+  ThirdwebProvider,
+  ConnectWallet,
+  metamaskWallet,
+  coinbaseWallet,
+  walletConnect,
+  trustWallet,
+  zerionWallet,
+  rainbowWallet,
+  phantomWallet,
+} from "@thirdweb-dev/react";
 
 export const AppProvider = observer(({ children, errorBoundaryFallback }: { children: ReactNode, errorBoundaryFallback?: ReactNode }) => {
   const userStore = RootStore.Get(UserStore);
@@ -24,7 +33,8 @@ export const AppProvider = observer(({ children, errorBoundaryFallback }: { chil
       <ThirdwebProvider
         supportedChains={wallet.supportedChains}
         supportedWallets={wallet.supportedWallets}
-      // clientId="YOUR_CLIENT_ID"
+        activeChain="polygon"
+        clientId="YOUR_CLIENT_ID"
       >
         <NextUIProvider>
           {rootStore.providers.map((store) => {

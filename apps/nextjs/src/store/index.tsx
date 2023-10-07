@@ -1,5 +1,5 @@
 "use client";
-import { rootStore, WalletStore, Store, AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, StoragePlugin, ThemePlugin, WalletConnectButton, } from "@dappworks/kit";
+import { rootStore, WalletStore, Store, AsyncStorage, DevInspectorPlugin, DevTool, HeaderStore, helper, StoragePlugin, ThemePlugin, } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
 import { Project } from "./project";
 
