@@ -13,7 +13,6 @@ import {
 } from "@thirdweb-dev/react";
 
 export const AppProvider = observer(({ children, errorBoundaryFallback }: { children: ReactNode, errorBoundaryFallback?: ReactNode }) => {
-  const [refresh, setRefresh] = useState(false)
   const userStore = RootStore.Get(UserStore);
   const routerStore = RootStore.Get(RouterStore);
   const wallet = RootStore.Get(WalletStore);
