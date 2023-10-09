@@ -16,7 +16,7 @@ const HomePage = observer(() => {
     }
   });
   const signer = useSigner()
-  wallet.use(signer)
+  wallet.use()
   return (
     <div className="px-4">
       <headerStore.Header />
