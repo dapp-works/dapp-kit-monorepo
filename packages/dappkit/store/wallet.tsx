@@ -76,7 +76,6 @@ export class WalletStore implements Store {
     this.account = useAddress();
     this.sdk = useSDK();
     this.signer = useSigner();
-    console.log(this.signer)
     const balance = useBalance(NATIVE_TOKEN_ADDRESS)
     if (balance?.data?.value?.toString()) {
       this.balance.value = new BigNumber(balance?.data?.value?.toString() ?? '0')
@@ -115,14 +114,20 @@ export class WalletStore implements Store {
   async prepare(chainId?: number): Promise<WalletStore> {
     const promise = new Promise<void>(async (res, rej) => {
       if (this.account) {
+        if (this.chainId != chainId) {
+          await this.switchChain(chainId)
+          setTimeout(async () => {
+            res()
+          }, 1000)
+          return
+        }
         res();
       } else {
         try {
           const address = await this.connect(this.supportedWallets[0], { chainId: chainId ?? (this.activeChain.chainId) })
           if (address) {
-            setTimeout(() => {
+            setTimeout(async () => {
               this.signer = this.sdk.getSigner()
-              // console.log(this.signer)
               res()
             }, 500)
           }
