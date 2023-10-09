@@ -2,18 +2,18 @@ import { EventEmitter } from "events";
 import { TransactionReceipt, TransactionRequest } from "@ethersproject/providers";
 //allChains,
 import { Chain, getChainByChainId, IotexNetwork, IotexNetworkTestnet, Polygon } from "@thirdweb-dev/chains";
-import { InjectedWallet, WalletOptions } from "@thirdweb-dev/wallets";
+import { InjectedWallet, MetaMaskWallet, WalletOptions } from "@thirdweb-dev/wallets";
 import { WalletMeta } from "@thirdweb-dev/wallets/dist/declarations/src/evm/wallets/base";
 import { ethers } from "ethers";
 import { Deferrable } from "ethers/lib/utils";
 import { makeAutoObservable } from "mobx";
 import { SiweMessage } from "siwe";
-import { rootStore } from ".";
+import { RootStore, rootStore } from ".";
 import { _ } from "../lib/lodash";
 import { ToastPlugin } from "../module/Toast/Toast";
 import { BigNumberState } from "./standard/BigNumberState";
 import { helper, Store } from "..";
-import { useAddress, useConnect, useSDK, useSwitchChain, useBalance, useConnectionStatus } from "@thirdweb-dev/react";
+import { useAddress, useConnect, useSDK, useSwitchChain, useBalance, useConnectionStatus, ThirdwebSDK, useMetamask, WalletInstance, useSigner } from "@thirdweb-dev/react";
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 
 import {
@@ -45,21 +45,23 @@ export type NetworkObject = {
 };
 export class WalletStore implements Store {
   sid = "wallet";
-  activeChain = ''
+  activeChain = IotexNetwork
   rpcCilentId = ''
   autoObervable = true;
   chainId: number = 0;
   signer: ethers.Signer;
   account: string;
+  autoConnect: boolean = true;
+  connectWithMetamask: any;
+  connect: any;
+  sdk: ThirdwebSDK;
   isConnect = false;
   balance = new BigNumberState({});
   autoSign = true; //auto use swie sign
-  reconnectCount = 0;
   event = new EventEmitter();
   supportedWallets: any = [metamaskWallet(), walletConnect()]
   supportedChains = [IotexNetwork, IotexNetworkTestnet]
   switchChain = null;
-  connect = null;
   constructor(args?: Partial<WalletStore>) {
     Object.assign(this, args);
     if (typeof window !== "undefined") {
@@ -72,10 +74,9 @@ export class WalletStore implements Store {
 
   use() {
     this.account = useAddress();
-    const sdk = useSDK();
-    this.signer = sdk?.getSigner();
-    this.switchChain = useSwitchChain();
-    this.connect = useConnect();
+    this.sdk = useSDK();
+    this.signer = useSigner();
+    console.log(this.signer)
     const balance = useBalance(NATIVE_TOKEN_ADDRESS)
     if (balance?.data?.value?.toString()) {
       this.balance.value = new BigNumber(balance?.data?.value?.toString() ?? '0')
@@ -87,6 +88,10 @@ export class WalletStore implements Store {
       this.isConnect = false
       this.balance.value = new BigNumber('0')
     }
+
+    this.switchChain = useSwitchChain();
+    this.connect = useConnect()
+    this.connectWithMetamask = useMetamask()
   }
 
   set(args: Partial<WalletStore>) {
@@ -107,12 +112,23 @@ export class WalletStore implements Store {
     return { account };
   }
 
-  async prepare() {
+  async prepare(chainId?: number): Promise<WalletStore> {
     const promise = new Promise<void>(async (res, rej) => {
       if (this.account) {
         res();
       } else {
-        this.event.once("connect", res);
+        try {
+          const address = await this.connect(this.supportedWallets[0], { chainId: chainId ?? (this.activeChain.chainId) })
+          if (address) {
+            setTimeout(() => {
+              this.signer = this.sdk.getSigner()
+              // console.log(this.signer)
+              res()
+            }, 500)
+          }
+        } catch (error) {
+          rej(error)
+        }
       }
     });
 
@@ -157,17 +173,10 @@ export class WalletStore implements Store {
     onError?: ({ res }: { res: TransactionReceipt }) => void;
   }): Promise<TransactionReceipt> {
     chainId = Number(chainId);
-    const toast = rootStore.get(ToastPlugin);
+    const toast = RootStore.Get(ToastPlugin);
     try {
       if (!chainId || !address || !data) throw new Error("chainId, address, data is required");
-      if (!this.account) {
-        await this.connect();
-      }
-
-      if (this.chainId !== chainId) {
-        await this.switchChain(chainId);
-      }
-
+      const wallet = await RootStore.Get(WalletStore).prepare(chainId);
       let sendTransactionParam: Deferrable<TransactionRequest> = _.omitBy(
         {
           to: address,
@@ -177,7 +186,7 @@ export class WalletStore implements Store {
         },
         _.isNil,
       );
-      const res = await this.signer.sendTransaction(sendTransactionParam);
+      const res = await wallet.signer.sendTransaction(sendTransactionParam);
 
       onSended ? onSended({ res }) : null;
       const receipt = await res.wait();
@@ -190,17 +199,16 @@ export class WalletStore implements Store {
       }
       return receipt;
     } catch (error) {
-      console.log(typeof error);
-      console.log(error.message);
+      console.log(error.message)
       const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
-      if (error?.message?.includes("user rejected transaction")) {
+      if (error?.message?.includes("user rejected transaction") || String(error).toLowerCase().includes("user rejected")) {
         autoAlert && toast.error("user rejected transaction");
         return;
       }
       if (msg) {
         autoAlert && toast.error(msg as unknown as string);
       } else {
-        autoAlert && toast.error(error);
+        autoAlert && toast.error(String(error));
       }
     }
   }

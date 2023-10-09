@@ -261,8 +261,8 @@ export class StoragePlugin implements Store {
     const data = storagePlugin.get(args);
     //@ts-ignore
     return observable({
-      // ...args,
-      // ...data,
+      ...args,
+      ...data,
       get value() {
         return data.value;
       },
