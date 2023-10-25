@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/jsonview",
-  "version": "0.1.43",
+  "version": "0.1.44",
   "description": "",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
