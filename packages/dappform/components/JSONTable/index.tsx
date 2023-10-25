@@ -248,7 +248,7 @@ function renderFieldValue(v: any) {
 function Body<T>({ item, columns, onRowClick, actions }: { item: T; columns: Column<T>[]; onRowClick?: (item: T) => void; actions?: (item: T) => ActionButtonType[] }) {
   return (
     <TableRow
-      className="text-[13px]"
+      className="text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]"
       onClick={() => {
         onRowClick?.(item);
       }}
