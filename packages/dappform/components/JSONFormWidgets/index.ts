@@ -1,4 +1,3 @@
-export * from "./BlockNoteEditorWidget";
 export * from "./CheckboxWidget";
 export * from "./EditorWidget";
 export * from "./IconSelectWidget";
