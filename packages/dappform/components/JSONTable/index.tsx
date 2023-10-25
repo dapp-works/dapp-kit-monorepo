@@ -37,6 +37,8 @@ export type ExtendedTable<U> = {
   columns: Column<U>[];
 };
 
+export type ActionsType<T> = (item: T) => ActionButtonType[] | React.ReactNode;
+
 export interface JSONTableProps<T = { [x: string]: any }> {
   className?: string;
   dataSource: T[];
@@ -50,7 +52,11 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   rowKey?: string;
   pagination?: PaginationState;
   onRowClick?: (item: T) => void;
-  actions?: (item: T) => ActionButtonType[];
+  actions?: ActionsType<T>;
+  actionsOptions?: {
+    headLabel?: string;
+    placement?: 'left' | 'right';
+  };
 }
 
 const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
@@ -65,8 +71,12 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     extendedTableOptions = [],
     rowKey = 'id',
     onRowClick,
-    actions
+    actions,
+    actionsOptions,
   } = props;
+
+  const actionsHeadLabel = actionsOptions?.headLabel || '';
+  const actionsPlacement = actionsOptions?.placement || 'right';
 
   const store = useLocalObservable<{
     columns: Column<T>[],
@@ -150,6 +160,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
           <TableHeader className="sticky top-0">
             <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
               {needExtendedTable && <TableHead></TableHead>}
+              {actionsPlacement === 'left' && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
               {columns.map((item, index) => (
                 <TableHead className={`font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300`} key={item.key}>
                   <div className="flex items-center">
@@ -184,7 +195,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
                   </div>
                 </TableHead>
               ))}
-              {actions && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">Actions</TableHead>}
+              {actionsPlacement === 'right' && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -192,7 +203,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
               needExtendedTable ? (
                 <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} />
               ) : (
-                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} actions={actions} />
+                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} actions={actions} actionsPlacement={actionsPlacement} />
               ),
             )}
           </TableBody>
@@ -245,7 +256,38 @@ function renderFieldValue(v: any) {
   );
 }
 
-function Body<T>({ item, columns, onRowClick, actions }: { item: T; columns: Column<T>[]; onRowClick?: (item: T) => void; actions?: (item: T) => ActionButtonType[] }) {
+function Actions<T>({ actions, item }: { item: T; actions?: ActionsType<T> }) {
+  if (!actions) {
+    return null;
+  }
+
+  const Com = actions(item);
+  if (Array.isArray(Com)) {
+    return (
+      <TableCell className="max-w-[200px] overflow-auto space-x-2">
+        {Com.map((btn, index) => (
+          <ActionButton key={index} props={btn.props} children={btn.children} />
+        ))}
+      </TableCell>
+    );
+  }
+
+  return <TableCell className="max-w-[200px] overflow-auto space-x-2">{Com}</TableCell>;
+}
+
+function Body<T>({
+  item,
+  columns,
+  onRowClick,
+  actions,
+  actionsPlacement
+}: {
+  item: T;
+  columns: Column<T>[];
+  onRowClick?: (item: T) => void;
+  actions?: ActionsType<T>;
+  actionsPlacement: 'left' | 'right';
+}) {
   return (
     <TableRow
       className="text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]"
@@ -253,6 +295,7 @@ function Body<T>({ item, columns, onRowClick, actions }: { item: T; columns: Col
         onRowClick?.(item);
       }}
     >
+      {actionsPlacement === 'left' && <Actions item={item} actions={actions} />}
       {columns.map((column) => {
         return (
           <TableCell key={column.key} className="max-w-[200px] overflow-auto">
@@ -262,11 +305,7 @@ function Body<T>({ item, columns, onRowClick, actions }: { item: T; columns: Col
           </TableCell>
         );
       })}
-      {actions && (
-        <TableCell className="max-w-[200px] overflow-auto space-x-2">
-          {actions(item).map((btn, index) => <ActionButton key={index} props={btn.props} children={btn.children} />)}
-        </TableCell>
-      )}
+      {actionsPlacement === 'right' && <Actions item={item} actions={actions} />}
     </TableRow>
   );
 }
