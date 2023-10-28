@@ -52,6 +52,7 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   rowKey?: string;
   pagination?: PaginationState;
   onRowClick?: (item: T) => void;
+  tableRowClassName?: string | ((item: T) => string);
   actions?: ActionsType<T>;
   actionsOptions?: {
     headLabel?: string;
@@ -71,12 +72,13 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     extendedTableOptions = [],
     rowKey = 'id',
     onRowClick,
+    tableRowClassName,
     actions,
     actionsOptions,
   } = props;
 
   const actionsHeadLabel = actionsOptions?.headLabel || '';
-  const actionsPlacement = actionsOptions?.placement || 'right';
+  const actionsPlacement = actionsOptions?.placement;
 
   const store = useLocalObservable<{
     columns: Column<T>[],
@@ -203,7 +205,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
               needExtendedTable ? (
                 <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} />
               ) : (
-                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} actions={actions} actionsPlacement={actionsPlacement} />
+                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} tableRowClassName={tableRowClassName} actions={actions} actionsPlacement={actionsPlacement} />
               ),
             )}
           </TableBody>
@@ -279,18 +281,21 @@ function Body<T>({
   item,
   columns,
   onRowClick,
+  tableRowClassName,
   actions,
   actionsPlacement
 }: {
   item: T;
   columns: Column<T>[];
   onRowClick?: (item: T) => void;
+  tableRowClassName?: string | ((item: T) => string);
   actions?: ActionsType<T>;
-  actionsPlacement: 'left' | 'right';
+  actionsPlacement?: 'left' | 'right';
 }) {
+  const className = typeof tableRowClassName === 'function' ? tableRowClassName(item) : tableRowClassName;
   return (
     <TableRow
-      className="text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]"
+      className={cn('text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', className)}
       onClick={() => {
         onRowClick?.(item);
       }}
