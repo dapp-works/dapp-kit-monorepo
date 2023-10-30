@@ -13,10 +13,13 @@ import { useMemo } from "react";
 import React from "react";
 import { Card } from "@nextui-org/react";
 import JSONEditor from "../../../dappform/components/JSONEditor";
-import { JSONSchemaForm } from "../../../dappform/components/JSONSchemaForm";
-import { getFormState } from "../../../dappform/module/FormModal";
+
 
 function filterState(obj) {
+  if (obj.toJSON) {
+    return obj.toJSON()
+  }
+
   if (typeof obj !== "object" || obj === null) {
     return obj;
   }
@@ -30,8 +33,8 @@ function filterState(obj) {
   for (const [key, value] of Object.entries(obj)) {
     try {
       if (
-        !["sid", "disabled", "autoObservable", "promiseState", "autoAsyncable"].includes(key) &&
-        !(value instanceof PromiseState) &&
+        !["sid", "disabled", "autoObservable", "promiseState", "autoAsyncable", "stype"].includes(key) &&
+        // !(value instanceof PromiseState) &&
         !(value instanceof EventEmitter) &&
         !value?.hasOwnProperty("$$typeof")
       ) {
@@ -48,6 +51,7 @@ function filterState(obj) {
 
 export class DevTool implements Store {
   sid = "DevTool";
+  stype = "Plugin"
   provider = ({ rootStore }: { rootStore: RootStore }) => <DevToolProvider rootStore={rootStore} />;
   disabled?: boolean = false;
   autoObservable?: boolean = true;
@@ -57,7 +61,6 @@ export class DevTool implements Store {
     {
       title: "Store",
       render: observer(({ rootStore }: { rootStore: RootStore }) => {
-        const stores = Object.keys(rootStore.instance).sort((a, b) => a.length - b.length);
         const state = useLocalObservable<{
           curStore: Store;
           curPromiseStateList: { name: string; promiseState: PromiseState<any, any> }[];
@@ -73,43 +76,52 @@ export class DevTool implements Store {
           return JSON.stringify(toJS(filteredData), null, 2);
         }, [state.curStore]);
         return (
-          <div className="h-full flex flex-col md:flex-row text-sm">
-            <div className="w-full md:w-[300px] space-y-1 pr-2 overflow-auto">
-              {stores.map((key) => {
-                const store = rootStore.instance[key];
-                return (
-                  <div
-                    key={store?.sid}
-                    className={cn("px-2 rounded-md hover:bg-green-600 hover:text-white cursor-pointer", { "bg-green-600 text-white": state.curStore?.sid === store.sid })}
-                    onClick={() => {
-                      state.curStore = store;
-                      const promiseStateList = [];
-                      Object.keys(store).forEach((key) => {
-                        const promiseState: PromiseState<any, any> = store[key];
-                        if (promiseState instanceof PromiseState && promiseState.debug) {
-                          //@ts-ignore
-                          promiseStateList.push({ name: key, promiseState });
-                        }
-                      });
-                      state.curPromiseStateList = promiseStateList;
-                    }}
-                  >
-                    {key}
-                  </div>
-                );
-              })}
+          <div className="flex flex-col md:flex-row text-sm">
+            <div>
+              <Tabs
+                size="sm"
+                radius="none"
+                variant="underlined"
+                items={[{ title: "Store", value: "Store" }, { title: "Plugin", value: "Plugin" }]}
+              >
+                {(item) => {
+                  const stores = Object.values(rootStore.instance).filter(i => i.stype == item.value && i.sid).sort((a, b) => a.sid.length - b.sid.length);
+                  return (
+                    <Tab key={item.title} title={item.title} >
+                      <div>
+                        <div className="w-full md:w-[300px] space-y-1 pr-2 overflow-auto">
+                          {stores.map((store) => {
+                            return (
+                              <div
+                                key={store?.sid}
+                                className={cn("px-2 rounded-md hover:bg-green-600 hover:text-white cursor-pointer", { "bg-green-600 text-white": state.curStore?.sid === store.sid })}
+                                onClick={() => {
+                                  state.curStore = store;
+                                }}
+                              >
+                                {store.sid}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </Tab>
+                  )
+                }}
+              </Tabs>
             </div>
+
             <div className="mt-4 w-full overflow-auto md:mt-0">
               <JSONEditor
-                className={state.curPromiseStateList.length > 0 ? "" : "h-full"}
-                height={state.curPromiseStateList.length > 0 ? 400 : "100%"}
+                className={"h-full"}
+                height={450}
                 initialJson={initialJson}
                 onChange={(data) => {
                   console.log("onChange", data);
                   helper.deepMerge(state.curStore, data);
                 }}
               />
-              <PromiseStateDebug promiseStateList={state.curPromiseStateList} />
+              {/* <PromiseStateDebug promiseStateList={state.curPromiseStateList} /> */}
             </div>
           </div>
         );
@@ -132,32 +144,32 @@ export class DevTool implements Store {
   }
 }
 
-const PromiseStateDebug = ({ promiseStateList }: { promiseStateList: { name: string; promiseState: PromiseState<any, any> }[] }) => {
-  if (promiseStateList.length === 0) return null;
-  return (
-    <>
-      <div className="mt-6 mb-2 pt-2 border-t-[1px] font-bold dark:border-gray-600">Debug PromiseState</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {promiseStateList.map((item, index) => {
-          const formData = item.promiseState.debug.input;
-          return (
-            <Card className="p-2 dark:border-gray-800" key={index}>
-              <div className="font-bold text-xs">{item.name}</div>
-              <JSONSchemaForm
-                formState={getFormState({
-                  data: formData,
-                  onSubmit: (data) => {
-                    item.promiseState.call(data);
-                  },
-                })}
-              />
-            </Card>
-          );
-        })}
-      </div>
-    </>
-  );
-};
+// const PromiseStateDebug = ({ promiseStateList }: { promiseStateList: { name: string; promiseState: PromiseState<any, any> }[] }) => {
+//   if (promiseStateList.length === 0) return null;
+//   return (
+//     <>
+//       <div className="mt-6 mb-2 pt-2 border-t-[1px] font-bold dark:border-gray-600">Debug PromiseState</div>
+//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+//         {promiseStateList.map((item, index) => {
+//           const formData = item.promiseState.debug.input;
+//           return (
+//             <Card className="p-2 dark:border-gray-800" key={index}>
+//               <div className="font-bold text-xs">{item.name}</div>
+//               <JSONSchemaForm
+//                 formState={getFormState({
+//                   data: formData,
+//                   onSubmit: (data) => {
+//                     item.promiseState.call(data);
+//                   },
+//                 })}
+//               />
+//             </Card>
+//           );
+//         })}
+//       </div>
+//     </>
+//   );
+// };
 
 export const DevToolProvider = observer(({ rootStore }: { rootStore: RootStore }) => {
   const devTool = rootStore.get(DevTool);
@@ -222,7 +234,7 @@ export const DevToolProvider = observer(({ rootStore }: { rootStore: RootStore }
               const Component = panel.render || (() => null);
               return (
                 <Tab key={panel.title} title={panel.title}>
-                  <div className="p-2" style={{ height: `calc(${store.sheetHeight}px - 50px)` }}>
+                  <div className="p-0" style={{ height: `calc(${store.sheetHeight}px - 50px)` }}>
                     <Component rootStore={rootStore} />
                   </div>
                 </Tab>

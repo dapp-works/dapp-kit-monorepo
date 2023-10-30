@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 
 export class SlotPlugin implements Store {
   sid = "SlotPlugin";
+  stype = "Plugin"
   autoObservable?: boolean = false;
 
   slotMap: Store["slots"] = {};
@@ -65,6 +66,10 @@ export class SlotPlugin implements Store {
         this.slotMap = { ...this.slotMap, ...store.slots };
       }
     });
+  }
+
+  toJSON() {
+    return this.slotMap
   }
 
   static Slot = ({ name, ...props }: { name } & any): ReactNode => {

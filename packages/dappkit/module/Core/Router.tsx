@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 
 export class RouterStore implements Store {
   sid = "RouterStore";
-  autoObservable?: boolean = true;
+  autoObservable?: boolean = false;
   //@ts-ignore
   router: any = null;
 

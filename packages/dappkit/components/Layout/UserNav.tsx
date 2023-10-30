@@ -21,26 +21,26 @@ import { StoragePlugin } from "../../module/Core/Storage";
 //   DropdownMenuTrigger,
 // } from "../ui/dropdown-menu";
 
+const nav = StoragePlugin.Get<{ text: string, href: string, clickEvent: string }[]>({
+  key: "UserNavs",
+  defaultValue: [
+    {
+      text: "Profile",
+      href: "/profile",
+      clickEvent: "userNavs.click"
+    },
+    {
+      text: "Settings",
+      href: "/settings",
+      clickEvent: "settings.click"
+    },
+  ],
+  engine: StoragePlugin.engines.memory
+})
+
 export const UserNav = observer(
   ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
     const user = RootStore.Get(UserStore);
-    const nav = StoragePlugin.Get<{ text: string, href: string, clickEvent: string }[]>({
-      key: "UserNavs",
-      defaultValue: [
-        {
-          text: "Profile",
-          href: "/profile",
-          clickEvent: "userNavs.click"
-        },
-        {
-          text: "Settings",
-          href: "/settings",
-          clickEvent: "settings.click"
-        },
-      ],
-      engine: StoragePlugin.engines.asyncStorage
-    })
-
     if (!user.isLogin) {
       return (
         <Button
@@ -70,17 +70,18 @@ export const UserNav = observer(
               </div>
             </DropdownItem>
 
-            {/* @ts-ignore  */}
-            {nav?.value?.map((i) => {
-              return (
-                <DropdownItem key={i.text} onClick={() => {
-                  //@ts-ignore
-                  i.clickEvent && rootStore.events.emit(i.clickEvent)
-                }}>
-                  {i.href ? <Link href={i.href ?? '/'}>{i.text}</Link> : i.text}
-                </DropdownItem>
-              );
-            })}
+            {
+              //@ts-ignore
+              nav?.value?.map((i) => {
+                return (
+                  <DropdownItem key={i.text} onClick={() => {
+                    //@ts-ignore
+                    i.clickEvent && rootStore.events.emit(i.clickEvent)
+                  }}>
+                    {i.href ? <Link href={i.href ?? '/'}>{i.text}</Link> : i.text}
+                  </DropdownItem>
+                );
+              })}
 
             <DropdownItem key="delete" className="text-danger" color="danger" onClick={() => user.logout()}>
               Log out

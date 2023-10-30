@@ -5,6 +5,7 @@ import { Store, StoreClass } from "./standard/base";
 import { StoragePlugin, helper } from "..";
 import hotkeys from "hotkeys-js";
 import { useLocalObservable } from "mobx-react-lite";
+import { useEffect } from "react";
 
 export type EventMap = {
   "*": (args: any) => void;
@@ -33,6 +34,8 @@ export class MyEmitter extends EventEmitter {
 }
 
 export default class RootStore<T extends EventMap = any> {
+  isInited = false;
+
   instanceMap = new Map<Function, Map<string, Store>>();
   instance: Record<string, Store> = {};
 
@@ -52,6 +55,10 @@ export default class RootStore<T extends EventMap = any> {
   add(store: Store, { sid }: { sid?: string } = {}) {
     if (store.disabled) {
       return;
+    }
+
+    if (!store.stype) {
+      store.stype = "Store";
     }
 
     const instanceMapId = sid ? sid : "singleton";
@@ -115,23 +122,24 @@ export default class RootStore<T extends EventMap = any> {
   }
 
   useKeyBindings() {
-    if (!helper.env.isBrowser) return;
-
-    const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] });
-    Object.entries(this.instance).forEach(([key, store]) => {
-      if (store.onKeyBindings) {
-        const res = store.onKeyBindings();
-        res.forEach(({ key, fn }) => {
-          if (events.value.find((i: any) => i == key)) {
-            return;
-          }
-          hotkeys(key, (event, handler) => {
-            fn();
+    // if (!helper.env.isBrowser) return;
+    useEffect(() => {
+      const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] });
+      Object.entries(this.instance).forEach(([key, store]) => {
+        if (store.onKeyBindings) {
+          const res = store.onKeyBindings();
+          res.forEach(({ key, fn }) => {
+            if (events.value.find((i: any) => i == key)) {
+              return;
+            }
+            hotkeys(key, (event, handler) => {
+              fn();
+            });
+            events.value.push(key);
           });
-          events.value.push(key);
-        });
-      }
-    });
+        }
+      });
+    }, []);
   }
 
   addStores(store: Store[]) {
