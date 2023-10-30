@@ -1,6 +1,5 @@
 import { rootStore } from "../../store";
 import { Store } from "../../store/standard/base";
-import { NextSeoProps } from "next-seo";
 import { RouterStore } from "./Router";
 
 export class PageStore implements Store {
@@ -8,7 +7,7 @@ export class PageStore implements Store {
   autoObservable?: boolean = true;
   autoAsyncable?: boolean = true;
 
-  private PageType: {} & NextSeoProps;
+  private PageType: {}
   pages: Record<string, PageStore["PageType"]> = {
     "/": {
       title: "Home",
