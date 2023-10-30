@@ -34,17 +34,18 @@ export class DialogStore implements Store {
     this.className = '';
     this.classNames = {};
   }
+
+  static show(v: Partial<DialogStore>) {
+    const modal = rootStore.get(DialogStore);
+    modal.setData({
+      ...v,
+      isOpen: true,
+    });
+  }
+
+  static close() {
+    const modal = rootStore.get(DialogStore);
+    modal.close();
+  }
 }
 
-export async function showDialog(v: Partial<DialogStore>) {
-  const modal = rootStore.get(DialogStore);
-  modal.setData({
-    ...v,
-    isOpen: true,
-  });
-}
-
-export async function closeDialog() {
-  const modal = rootStore.get(DialogStore);
-  modal.close();
-}

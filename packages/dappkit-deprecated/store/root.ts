@@ -1,8 +1,11 @@
 import { EventEmitter } from "events";
 import { makeAutoObservable, makeObservable } from "mobx";
-import type TypedEmitter from "typed-emitter";
-import { type Store, type StoreClass } from "./standard/base";
+import TypedEmitter from "typed-emitter";
+import { Store, StoreClass } from "./standard/base";
+import { StoragePlugin, helper } from "..";
+import hotkeys from "hotkeys-js";
 import { useLocalObservable } from "mobx-react-lite";
+import { useEffect } from "react";
 
 export type EventMap = {
   "*": (args: any) => void;
@@ -30,14 +33,15 @@ export class MyEmitter extends EventEmitter {
   }
 }
 
-export class RootStore<T extends EventMap = any> {
+export default class RootStore<T extends EventMap = any> {
+  isInited = false;
+
   instanceMap = new Map<Function, Map<string, Store>>();
   instance: Record<string, Store> = {};
 
   providers: Store[] = [];
 
   events: TypedEmitter<T> = new MyEmitter() as TypedEmitter<T>;
-  isInited = false;
 
   static init<T extends EventMap>(args: Partial<RootStore<T>> = {}): RootStore<T> {
     if (!globalThis.store) {
@@ -51,6 +55,10 @@ export class RootStore<T extends EventMap = any> {
   add(store: Store, { sid }: { sid?: string } = {}) {
     if (store.disabled) {
       return;
+    }
+
+    if (!store.stype) {
+      store.stype = "Store";
     }
 
     const instanceMapId = sid ? sid : "singleton";
@@ -111,6 +119,27 @@ export class RootStore<T extends EventMap = any> {
       store.init();
     }
     // this.crawlStore(store);
+  }
+
+  useKeyBindings() {
+    // if (!helper.env.isBrowser) return;
+    useEffect(() => {
+      const events = StoragePlugin.Get({ key: "kingBinding.events", value: [] });
+      Object.entries(this.instance).forEach(([key, store]) => {
+        if (store.onKeyBindings) {
+          const res = store.onKeyBindings();
+          res.forEach(({ key, fn }) => {
+            if (events.value.find((i: any) => i == key)) {
+              return;
+            }
+            hotkeys(key, (event, handler) => {
+              fn();
+            });
+            events.value.push(key);
+          });
+        }
+      });
+    }, []);
   }
 
   addStores(store: Store[]) {

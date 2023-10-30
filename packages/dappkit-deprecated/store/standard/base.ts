@@ -1,10 +1,10 @@
 import { makeAutoObservable } from "mobx";
 
-import { RootStore } from "../root";
+import RootStore from "../root";
 
 export abstract class Store {
   sid?: string;
-  stype?: "Plugin" | "Store";
+  stype?: "Plugin" | "Store" | string;
   disabled?: boolean;
   autoObservable?: boolean;
   autoAsyncable?: boolean;

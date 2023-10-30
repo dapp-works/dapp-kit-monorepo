@@ -1,4 +1,4 @@
-import RootStore, { EventMap } from "./root";
+import { RootStore, EventMap } from "./root";
 
 export type DefaultEventMap = {
   "next.signIn.github": () => void;
