@@ -22,7 +22,6 @@ import {
 } from "@thirdweb-dev/react";
 import { iopayWallet } from "../components/InjectedWallet/iopayWallet"
 import BigNumber from "bignumber.js";
-import { useEffect } from "react";
 
 export class MyInjectedWallet extends InjectedWallet {
   constructor(options?: WalletOptions) {

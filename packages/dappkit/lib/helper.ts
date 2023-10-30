@@ -15,10 +15,7 @@ const valMap = {
 
 export const helper = {
   env: {
-    isIopayMobile: () =>
-      navigator.userAgent &&
-      (navigator.userAgent.includes("IoPayAndroid") ||
-        navigator.userAgent.includes("IoPayiOs")),
+    isIopayMobile: () => navigator.userAgent && (navigator.userAgent.includes("IoPayAndroid") || navigator.userAgent.includes("IoPayiOs")),
     isBrowser: () => typeof window === "object",
     onBrowser(func) {
       if (this.isBrowser()) {
@@ -30,12 +27,8 @@ export const helper = {
     async sleep(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     },
-    async runAsync<T, U = Error>(
-      promise: Promise<T>,
-    ): Promise<[U | null, T | null]> {
-      return promise
-        .then<[null, T]>((data: T) => [null, data])
-        .catch<[U, null]>((err) => [err, null]);
+    async runAsync<T, U = Error>(promise: Promise<T>): Promise<[U | null, T | null]> {
+      return promise.then<[null, T]>((data: T) => [null, data]).catch<[U, null]>((err) => [err, null]);
     },
   },
   object: {
@@ -59,8 +52,8 @@ export const helper = {
   },
   json: {
     isJsonString(str: string) {
-      if (!str || typeof str !== 'string') return false;
-      if (!str?.includes('{')) return false;
+      if (!str || typeof str !== "string") return false;
+      if (!str?.includes("{")) return false;
       try {
         JSON.parse(str);
       } catch (e) {
@@ -77,12 +70,7 @@ export const helper = {
     },
     clearUUID(val: any) {
       try {
-        return JSON.parse(
-          JSON.stringify(val).replace(
-            /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/g,
-            uuid(),
-          ),
-        );
+        return JSON.parse(JSON.stringify(val).replace(/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/g, uuid()));
       } catch (e) {
         return val;
       }
@@ -159,11 +147,7 @@ export const helper = {
         frontChars = Math.ceil(charsToShow / 2),
         backChars = Math.floor(charsToShow / 2);
 
-      return (
-        fullStr.substr(0, frontChars) +
-        separator +
-        fullStr.substr(fullStr.length - backChars)
-      );
+      return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
     },
     validAbi(abi: string): { abi: any[]; address: string } {
       try {
@@ -211,47 +195,28 @@ export const helper = {
       }
     },
   },
-  encode: async (jwtClaims: {
-    sub: string;
-    name: string;
-    iat: number;
-    exp: number;
-  }) => {
-    return jwt.sign(jwtClaims, "JWT_SECRET", { algorithm: "HS256" });
+  encode: async (jwtClaims: { sub: string; name: string; iat: number; exp: number }) => {
+    return jwt.sign(jwtClaims, process.env["JWT_SECRET"], { algorithm: "HS256" });
   },
-  decode: async (
-    token: string,
-  ): Promise<{ sub: string; name: string; iat: number; exp: number }> => {
+  decode: async (token: string): Promise<{ sub: string; name: string; iat: number; exp: number }> => {
     //@ts-ignore
-    return jwt.verify(token, "JWT_SECRET", { algorithms: ["HS256"] });
+    return jwt.verify(token, process.env["JWT_SECRET"], { algorithms: ["HS256"] });
   },
   number: {
     countNonZeroNumbers: (str: string) => {
       let index = 0;
       const length = str.length;
-      for (
-        ;
-        index < length && (str[index] === "0" || str[index] === ".");
-        index += 1
-      );
+      for (; index < length && (str[index] === "0" || str[index] === "."); index += 1);
       return length - index - Number(str.includes("."));
     },
     numberWithCommas(num: number) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    toPrecisionFloor: (
-      str: number | string,
-      options?: { decimals?: number; format?: string; toLocalString?: boolean },
-    ) => {
-      const {
-        decimals = 6,
-        format = "",
-        toLocalString = false,
-      } = options || {};
+    toPrecisionFloor: (str: number | string, options?: { decimals?: number; format?: string; toLocalString?: boolean }) => {
+      const { decimals = 6, format = "", toLocalString = false } = options || {};
       if (!str || isNaN(Number(str))) return "";
 
-      if (helper.number.countNonZeroNumbers(String(str)) <= decimals)
-        return String(str);
+      if (helper.number.countNonZeroNumbers(String(str)) <= decimals) return String(str);
       const numStr = new BN(str).toFixed();
       let result = "";
       let index = 0;
@@ -264,21 +229,12 @@ export const helper = {
       if (numStr[index] === ".") {
         // number < 0
         result = "0";
-        for (
-          ;
-          (numStr[index] === "0" || numStr[index] === ".") && index < numLength;
-          index += 1
-        ) {
+        for (; (numStr[index] === "0" || numStr[index] === ".") && index < numLength; index += 1) {
           result = result + numStr[index];
         }
       }
       let resultNumLength = 0;
-      for (
-        ;
-        index < numLength &&
-        (resultNumLength < decimals || !result.includes("."));
-        index += 1
-      ) {
+      for (; index < numLength && (resultNumLength < decimals || !result.includes(".")); index += 1) {
         result = result + numStr[index];
 
         if (numStr[index] !== ".") resultNumLength += 1;
@@ -288,20 +244,14 @@ export const helper = {
       }
 
       if (toLocalString) {
-        console.log(
-          helper.number.numberWithCommas(Number(new BN(result).toFixed())),
-        );
+        console.log(helper.number.numberWithCommas(Number(new BN(result).toFixed())));
         return helper.number.numberWithCommas(Number(new BN(result).toFixed()));
       }
 
       return new BN(result).toFixed();
     },
     getBN: (value: number | string | BN) => {
-      return value instanceof BN
-        ? value
-        : typeof value === "string"
-          ? new BN(Number(value))
-          : new BN(value);
+      return value instanceof BN ? value : typeof value === "string" ? new BN(Number(value)) : new BN(value);
     },
   },
 };

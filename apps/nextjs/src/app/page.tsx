@@ -17,6 +17,7 @@ const HomePage = observer(() => {
   const headerStore = RootStore.Get(HeaderStore);
   const wallet = RootStore.Get(WalletStore)
 
+
   wallet.use()
   return (
     <div className="px-4">
