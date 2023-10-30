@@ -65,6 +65,11 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     this._onSelect(index);
   }
 
+  toJSON() {
+    return {
+      value: this.value,
+    };
+  }
   //@ts-ignore
   async waitItem(): Promise<Awaited<U>[0]> {
     await this.wait();
