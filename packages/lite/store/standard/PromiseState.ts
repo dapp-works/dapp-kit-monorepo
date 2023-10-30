@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { makeAutoObservable } from "mobx";
 
 import { ToastPlugin } from "../../module/Toast/Toast";
-import RootStore from "../root";
+import { RootStore } from "../root";
 import { BaseState, BooleanState, NumberState } from "./base";
 
 export interface Events {
@@ -65,12 +65,6 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     this._onSelect(index);
   }
 
-  toJSON() {
-    return {
-      value: this.value,
-    };
-  }
-
   //@ts-ignore
   async waitItem(): Promise<Awaited<U>[0]> {
     await this.wait();
@@ -111,12 +105,6 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     } else {
       makeAutoObservable(this);
     }
-  }
-
-  toJSON() {
-    return {
-      value: this.value,
-    };
   }
 
   setValue(val) {
