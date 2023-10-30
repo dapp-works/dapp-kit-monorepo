@@ -4,6 +4,7 @@ import { Inspector, InspectParams } from 'react-dev-inspector';
 
 export class DevInspectorPlugin implements Store {
   sid = 'DevInspectorPlugin';
+  stype = "Plugin"
   autoObservable = false;
   disabled = false;
 

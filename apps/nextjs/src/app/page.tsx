@@ -7,15 +7,16 @@ import { Button, Input } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
+const inputValue = StoragePlugin.Input({
+  key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
+    console.log('test.inputValue onset', v);
+  }
+});
+
 const HomePage = observer(() => {
   const headerStore = RootStore.Get(HeaderStore);
   const wallet = RootStore.Get(WalletStore)
-  const inputValue = StoragePlugin.Input({
-    key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
-      console.log('test.inputValue onset', v);
-    }
-  });
-  const signer = useSigner()
+
   wallet.use()
   return (
     <div className="px-4">

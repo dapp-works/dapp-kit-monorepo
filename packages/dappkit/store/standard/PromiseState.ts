@@ -14,10 +14,7 @@ export interface Events {
   wait: () => void;
 }
 
-export class PromiseState<
-  T extends (...args: any[]) => Promise<any>,
-  U = ReturnType<T>,
-> {
+export class PromiseState<T extends (...args: any[]) => Promise<any>, U = ReturnType<T>> {
   sid = "PromiseState";
   key?: string;
   loading = new BooleanState();
@@ -52,11 +49,7 @@ export class PromiseState<
   // list selector plugin
   currentIndex: BaseState = new NumberState({ value: 0 });
   get current() {
-    if (
-      Array.isArray(this.value) &&
-      this.value.length > 0 &&
-      !this.value[this.currentIndex.value]
-    ) {
+    if (Array.isArray(this.value) && this.value.length > 0 && !this.value[this.currentIndex.value]) {
       this.currentIndex.setValue(0);
     }
     //@ts-ignore
@@ -112,6 +105,12 @@ export class PromiseState<
     } else {
       makeAutoObservable(this);
     }
+  }
+
+  toJSON() {
+    return {
+      value: this.value,
+    };
   }
 
   setValue(val) {

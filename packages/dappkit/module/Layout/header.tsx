@@ -38,22 +38,18 @@ export class HeaderStore implements Store {
   slots = {
     Logo: {
       name: "Logo",
-      input: {},
       render: (props) => <Logo {...props} />,
     },
     DesktopNav: {
       name: "DesktopNav",
-      input: {},
       render: (props) => <DesktopNav {...props} />,
     },
     MobileNav: {
       name: "MobileNav",
-      input: {},
       render: (props) => <MobileNav {...props} />,
     },
     UserNav: {
       name: "UserNav",
-      input: {},
       render: (props) => <UserNav {...props} />,
     }
   };

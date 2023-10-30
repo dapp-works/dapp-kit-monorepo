@@ -1,16 +1,25 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { rootStore, Store, HeaderStore, helper, JSONViewPlugin, StoragePlugin, } from "@dappworks/kit";
+import { rootStore, Store, HeaderStore, helper, StoragePlugin, PromiseState, } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
 
 
 export class Project implements Store {
   sid = 'project';
   autoObservable?: boolean = false;
-  title = StoragePlugin.Get({ key: "project.title", value: "@dappworks/kit", engine: StoragePlugin.engines.asyncStorage })
-  description = StoragePlugin.Get({ key: "project.description", value: "This is dapp kit template project", engine: StoragePlugin.engines.asyncStorage })
-  script = StoragePlugin.Get({ key: "project.script", value: "console.log('from script')", engine: StoragePlugin.engines.asyncStorage })
-  body = StoragePlugin.Get({ key: "project.body", value: "", engine: StoragePlugin.engines.asyncStorage })
+  title = StoragePlugin.Get({ key: "project.title", value: "@dappworks/kit", engine: StoragePlugin.engines.memory })
+  description = StoragePlugin.Get({ key: "project.description", value: "This is dapp kit template project", engine: StoragePlugin.engines.memory })
+  script = StoragePlugin.Get({ key: "project.script", value: "console.log('from script')", engine: StoragePlugin.engines.memory })
+  body = StoragePlugin.Get({ key: "project.body", value: "", engine: StoragePlugin.engines.memory })
+
+  data = new PromiseState({
+    context: this,
+    value: { test: "123" },
+    function: async () => {
+      return { test: "123" }
+    },
+  })
+
 
   static Copy = observer(({ text, className, ...props }: { [key: string]: any }) => {
     const copied = StoragePlugin.Get({ key: "copied", defaultValue: false })
@@ -49,7 +58,6 @@ export class Project implements Store {
 
   slots = {
     Logo: {
-      ...HeaderStore.slots.Logo,
       render: () => {
         return <div className="flex items-center">
           <div className="text-lg font-bold">Custom Logo in store/project/slots</div>

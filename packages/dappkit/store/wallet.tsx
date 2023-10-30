@@ -22,6 +22,7 @@ import {
 } from "@thirdweb-dev/react";
 import { iopayWallet } from "../components/InjectedWallet/iopayWallet"
 import BigNumber from "bignumber.js";
+import { useEffect } from "react";
 
 export class MyInjectedWallet extends InjectedWallet {
   constructor(options?: WalletOptions) {
@@ -45,6 +46,7 @@ export type NetworkObject = {
 };
 export class WalletStore implements Store {
   sid = "wallet";
+  autoObservable = true
   activeChain = IotexNetwork
   rpcCilentId = ''
   autoObervable = true;
@@ -69,7 +71,7 @@ export class WalletStore implements Store {
         this.supportedWallets.unshift(iopayWallet);
       }
     }
-    makeAutoObservable(this);
+    // makeAutoObservable(this);
   }
 
   use() {

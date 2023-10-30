@@ -46,6 +46,7 @@ const memory = {};
 
 export class StoragePlugin implements Store {
   sid = 'StoragePlugin';
+  stype = "Plugin"
   autoObservable?: boolean = true;
   static engines = {
     memory: {
@@ -148,13 +149,19 @@ export class StoragePlugin implements Store {
             formConfig={{
               data: dataConfig,
             }}
-            onSet={(v) => {
-              //TODO:  only udpate changed filed
-              Object.entries(v).forEach(([key, value]) => {
+            onChange={(v) => {
+              Object.entries(v.data).forEach(([key, value]) => {
                 data[key].set(StoragePlugin.safeParse(value));
               });
               return v;
             }}
+          // onSet={(v) => {
+          //   //TODO:  only udpate changed filed
+          //   Object.entries(v).forEach(([key, value]) => {
+          //     data[key].set(StoragePlugin.safeParse(value));
+          //   });
+          //   return v;
+          // }}
           />
         </div>
       </div>
@@ -192,6 +199,10 @@ export class StoragePlugin implements Store {
   get = <T,>({ key, value, defaultValue, engine = this.engines.memory, ...other }: StorageParams<T>): StorageParams<T> => {
     if (typeof window == 'undefined' && engine.name == 'localStorage') {
       engine = this.engines.memory;
+    }
+
+    if (value && !defaultValue) {
+      defaultValue = value
     }
     const that = this;
     if (!this.dataMeta[key]) {

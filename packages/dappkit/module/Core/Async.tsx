@@ -13,8 +13,15 @@ import { StoragePlugin } from "./Storage";
 import { Input } from "@nextui-org/react";
 import JSONEditor from "../../../dappform/components/JSONEditor";
 
+export const jwt = StoragePlugin.Get({
+  key: "asyncStorage.token",
+  value: "",
+  engine: StoragePlugin.engines.localStorage,
+});
+
 export class AsyncStorage implements Store {
   sid = "AsyncStorage";
+  stype = "Plugin"
   url = `https://dappkit-async-api.deno.dev/project/${process.env.NEXT_PUBLIC_PROJECT_ID}`;
   forceUpdate = false;
   autoObservable?: boolean = true;
@@ -51,11 +58,7 @@ export class AsyncStorage implements Store {
       {
         title: "AsyncStorage",
         render: observer(() => {
-          const jwt = StoragePlugin.Get({
-            key: "asyncStorage.token",
-            value: "",
-            engine: StoragePlugin.engines.localStorage,
-          });
+
           return (
             <div className="h-full w-full overflow-auto">
               <Input
