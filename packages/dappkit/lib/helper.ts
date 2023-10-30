@@ -1,6 +1,5 @@
 import BN from "bignumber.js";
 import JSONFormat from "json-format";
-import jwt from "jsonwebtoken";
 import numeral from "numeral";
 import { v4 as uuid } from "uuid";
 
@@ -194,13 +193,6 @@ export const helper = {
         console.error(error);
       }
     },
-  },
-  encode: async (jwtClaims: { sub: string; name: string; iat: number; exp: number }) => {
-    return jwt.sign(jwtClaims, process.env["JWT_SECRET"], { algorithm: "HS256" });
-  },
-  decode: async (token: string): Promise<{ sub: string; name: string; iat: number; exp: number }> => {
-    //@ts-ignore
-    return jwt.verify(token, process.env["JWT_SECRET"], { algorithms: ["HS256"] });
   },
   number: {
     countNonZeroNumbers: (str: string) => {

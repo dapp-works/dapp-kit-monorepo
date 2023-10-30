@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { type User } from "next-auth";
 import EventEmitter from "events";
-import { type Store } from "./standard/base";
+import { Store } from "./standard/base";
 import { rootStore } from ".";
 import axios from "axios";
 import { useEffect } from "react";

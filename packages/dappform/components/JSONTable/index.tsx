@@ -7,7 +7,7 @@ import JSONHighlight from "../../components/Common/JSONHighlight";
 import { Button, ButtonProps, Pagination as NextuiPagination } from '@nextui-org/react';
 import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { _ } from "../../lib/lodash";
-import { showDialog } from "../../module/Dialog";
+import { DialogStore } from "../../module/Dialog";
 import { cn } from "../../lib/utils";
 import { PaginationState } from "../../store/standard/PaginationState";
 
@@ -248,7 +248,7 @@ function renderFieldValue(v: any) {
       className="cursor-pointer"
       onClick={(e) => {
         e.stopPropagation();
-        showDialog({
+        DialogStore.show({
           content: <JSONHighlight className="w-full lg:w-[900px]" jsonStr={JSON.stringify(v, null, 2)} />,
         });
       }}

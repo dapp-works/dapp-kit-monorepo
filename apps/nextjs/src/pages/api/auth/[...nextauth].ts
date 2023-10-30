@@ -1,16 +1,17 @@
-"use client"
-import { helper } from '@dappworks/kit';
-import NextAuth from 'next-auth';
-import GithubProvider from 'next-auth/providers/github';
+"use client";
+import { helper } from "@dappworks/kit";
+import NextAuth from "next-auth";
+import GithubProvider from "next-auth/providers/github";
+import jwt from "jsonwebtoken";
 
 export default NextAuth({
   providers: [
     GithubProvider({
       clientId: "14f83b848722e38be86a",
-      clientSecret:"5885b3c007e3940bd1f3fdd8da563a5f19b670a4",
+      clientSecret: "5885b3c007e3940bd1f3fdd8da563a5f19b670a4",
       authorization: {
-        url: 'https://github.com/login/oauth/authorize',
-        params: { scope: 'read:user user:email' },
+        url: "https://github.com/login/oauth/authorize",
+        params: { scope: "read:user user:email" },
       },
       // checks: ['none'],
     }),
@@ -18,14 +19,14 @@ export default NextAuth({
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (user) {
-        console.log(user,account,profile,email,credentials)
-        return true          
+        console.log(user, account, profile, email, credentials);
+        return true;
       }
       return false;
     },
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
@@ -34,18 +35,21 @@ export default NextAuth({
       if (user) {
         const iat = Date.now() / 1000;
         const exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
-        console.log(user.id,'user.id')
-        token.token = await helper.encode({
-          sub: user.id ?? '',
-          name: user.name as string,
-          iat,
-          exp,
-        });
+        console.log(user.id, "user.id");
+        token.token = await jwt.encode(
+          {
+            sub: user.id ?? "",
+            name: user.name as string,
+            iat,
+            exp,
+          },
+          process.env["JWT_SECRET"],
+          { algorithm: "HS256" },
+        );
       }
       return token;
     },
     async session({ session, user, token }) {
-    
       // @ts-ignore
       session.user.id = token.sub;
       // @ts-ignore

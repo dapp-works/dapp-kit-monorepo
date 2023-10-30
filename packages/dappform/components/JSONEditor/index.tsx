@@ -7,7 +7,7 @@ import * as jsonpatch from "fast-json-patch";
 import { cn } from "../../lib/utils";
 import { Button } from '@nextui-org/react';
 
-const Editor = ({ className, height = "100%", initialJson, onChange, onSubmit }: { className?: string; height?: string | number; initialJson: string; onChange?: (value: Record<string, any>) => void; onSubmit?: (value: Record<string, any>) => void }) => {
+export const Editor = ({ className, height = "100%", initialJson, onChange, onSubmit }: { className?: string; height?: string | number; initialJson: string; onChange?: (value: Record<string, any>) => void; onSubmit?: (value: Record<string, any>) => void }) => {
   const valueRef = useRef<string>(initialJson);
   const changeValueRef = useRef(
     _.debounce((initialJson: string, currentJson: string) => {
@@ -96,4 +96,3 @@ const Editor = ({ className, height = "100%", initialJson, onChange, onSubmit }:
   );
 };
 
-export default Editor;
