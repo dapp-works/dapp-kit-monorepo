@@ -5,28 +5,28 @@ import "~/store/index";
 
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-// const JSONMetricsView = dynamic(() => import('@dappworks/kit/metrics').then(t => t.JSONMetricsView), { ssr: false })
-// const JSONForm = dynamic(() => import('@dappworks/kit/form').then(t => t.JSONForm), { ssr: false })
+const JSONMetricsView = dynamic(() => import('@dappworks/kit/metrics').then(t => t.JSONMetricsView), { ssr: false })
+const JSONForm = dynamic(() => import('@dappworks/kit/form').then(t => t.JSONForm), { ssr: false })
 
-// import { StoragePlugin } from "@dappworks/kit/plugins";
+import { StoragePlugin } from "@dappworks/kit/plugins";
+import { Input } from "@nextui-org/react";
 
-// const inputValue = StoragePlugin.Get({
-//   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
-//     console.log('test.inputValue onset', v);
-//   }
-// });
+const inputValue = StoragePlugin.Get({
+  key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
+    console.log('test.inputValue onset', v);
+  }
+});
 
 const HomePage = observer(() => {
   // const headerStore = RootStore.Get(HeaderStore);
 
-
   return (
     <div className="px-4">
-      <div>test</div>
-      {/* <JSONForm formData={{ a: { b: 1 } }} /> */}
+      <div>test1</div>
+      <JSONForm formData={{ a: { b: 1 } }} />
       {/* <headerStore.Header /> */}
-      {/* <Input value={inputValue.value} onChange={e => inputValue.set!(e.target.value)}></Input> */}
-      {/* <JSONMetricsView data={[{
+      <Input value={inputValue.value} onChange={e => inputValue.set!(e.target.value)}></Input>
+      <JSONMetricsView data={[{
         type: 'KPICard',
         title: 'Data Messages',
         description: 'Total number of messages received from all devices',
@@ -40,7 +40,7 @@ const HomePage = observer(() => {
         metricTitle: 'Total Events',
         metric: 124,
         chartType: 'area',
-      }]} /> */}
+      }]} />
     </div>
   );
 })

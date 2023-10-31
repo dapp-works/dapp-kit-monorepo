@@ -2,6 +2,9 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   // Outputs `dist/a.js` and `dist/b.js`.
   // Outputs `dist/foo.js` and `dist/bar.js`
+  splitting: true,
+  sourcemap: false,
+  clean: true,
   entry: {
     index: "index.ts",
     metrics: "metrics.ts",

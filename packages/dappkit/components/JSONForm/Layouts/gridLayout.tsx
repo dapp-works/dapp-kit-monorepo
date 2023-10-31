@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "@nextui-org/react";
-import { Col, Grid, Text } from "@tremor/react";
+import { Col, Grid, Text } from "@nextui-org/react";
 
 import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
