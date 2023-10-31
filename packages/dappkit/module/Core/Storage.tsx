@@ -1,15 +1,12 @@
 "use client";
 
-import RootStore from "../../store/root";
+import { RootStore } from "../../store/root";
 import { Store } from "../../store/standard/base";
 import { makeAutoObservable, observable, toJS } from "mobx";
-import { observer } from "mobx-react-lite";
 import { _ } from "../../lib/lodash";
 import { AsyncStorage } from "./Async";
-import React from "react";
-import { cn } from '@nextui-org/react';
-import { Collection } from './standard/Collection';
-import { JSONForm } from '../../components/JSONForm';
+
+// import { JSONForm } from "../../components/JSONForm"
 
 export type Engine = {
   name: string;
@@ -117,65 +114,65 @@ export class StoragePlugin implements Store {
     return tree;
   }
 
-  StorageTools = observer(() => {
-    const collection = RootStore.Get(Collection<any>, { sid: 'StoragePlugin.current', args: { data: this.dataGroup } });
-    const data = collection.current as Record<string, StorageParams<any>>;
+  // StorageTools = observer(() => {
+  //   const collection = RootStore.Get(Collection<any>, { sid: 'StoragePlugin.current', args: { data: this.dataGroup } });
+  //   const data = collection.current as Record<string, StorageParams<any>>;
 
-    const dataConfig = Object.entries(data).reduce((p, [key, value]) => {
-      p[key] = {
-        title: `${key} (${value.engine.name})`,
-      };
-      return p;
-    }, {});
+  //   const dataConfig = Object.entries(data).reduce((p, [key, value]) => {
+  //     p[key] = {
+  //       title: `${key} (${value.engine.name})`,
+  //     };
+  //     return p;
+  //   }, {});
 
-    return (
-      <div className="h-full flex flex-col md:flex-row text-sm">
-        <div className="w-full md:w-[300px] space-y-1 pr-2 md:border-r-[1px] border-gray-200 dark:border-gray-700 overflow-auto">
-          {Object.keys(collection.data)
-            .sort((a, b) => a.length - b.length)
-            .map((i) => (
-              <div
-                key={i}
-                className={cn('px-2 rounded-md hover:bg-green-600 hover:text-white cursor-pointer', { 'bg-green-600 text-white': collection.key === i })}
-                onClick={() => collection.setKey(i)}
-              >
-                {i}
-              </div>
-            ))}
-        </div>
-        <div className="mt-4 w-full overflow-auto md:mt-0">
-          <JSONForm
-            formData={{ data: JSON.parse(JSON.stringify(data, null, 2)) }}
-            formConfig={{
-              data: dataConfig,
-            }}
-            onChange={(v) => {
-              Object.entries(v.data).forEach(([key, value]) => {
-                data[key].set(StoragePlugin.safeParse(value));
-              });
-              return v;
-            }}
-          // onSet={(v) => {
-          //   //TODO:  only udpate changed filed
-          //   Object.entries(v).forEach(([key, value]) => {
-          //     data[key].set(StoragePlugin.safeParse(value));
-          //   });
-          //   return v;
-          // }}
-          />
-        </div>
-      </div>
-    );
-  });
+  //   return (
+  //     <div className="h-full flex flex-col md:flex-row text-sm">
+  //       <div className="w-full md:w-[300px] space-y-1 pr-2 md:border-r-[1px] border-gray-200 dark:border-gray-700 overflow-auto">
+  //         {Object.keys(collection.data)
+  //           .sort((a, b) => a.length - b.length)
+  //           .map((i) => (
+  //             <div
+  //               key={i}
+  //               className={cn('px-2 rounded-md hover:bg-green-600 hover:text-white cursor-pointer', { 'bg-green-600 text-white': collection.key === i })}
+  //               onClick={() => collection.setKey(i)}
+  //             >
+  //               {i}
+  //             </div>
+  //           ))}
+  //       </div>
+  //       <div className="mt-4 w-full overflow-auto md:mt-0">
+  //         <JSONForm
+  //           formData={{ data: JSON.parse(JSON.stringify(data, null, 2)) }}
+  //           formConfig={{
+  //             data: dataConfig,
+  //           }}
+  //           onChange={(v) => {
+  //             Object.entries(v.data).forEach(([key, value]) => {
+  //               data[key].set(StoragePlugin.safeParse(value));
+  //             });
+  //             return v;
+  //           }}
+  //         // onSet={(v) => {
+  //         //   //TODO:  only udpate changed filed
+  //         //   Object.entries(v).forEach(([key, value]) => {
+  //         //     data[key].set(StoragePlugin.safeParse(value));
+  //         //   });
+  //         //   return v;
+  //         // }}
+  //         />
+  //       </div>
+  //     </div>
+  //   );
+  // });
 
-  devtools = {
-    panels: [
-      {
-        title: 'Storage',
-        render: this.StorageTools,
-      },
-    ],
-  };
+  // devtools = {
+  //   panels: [
+  //     {
+  //       title: 'Storage',
+  //       render: this.StorageTools,
+  //     },
+  //   ],
+  // };
 
   static safeParse(val: any) {
     try {

@@ -1,7 +1,7 @@
 import { Sheet, SheetClose, SheetContent } from "../../components/ui/sheet";
 import { Tabs, Tab } from "@nextui-org/react";
 import { cn } from "../../lib/utils";
-import RootStore from "../../store/root";
+import { RootStore } from "../../store/root";
 import { PromiseState } from "../../store/standard/PromiseState";
 import { Store } from "../../store/standard/base";
 import { Wrench } from "lucide-react";
@@ -11,8 +11,7 @@ import { helper } from "../../lib/helper";
 import EventEmitter from "events";
 import { useMemo } from "react";
 import React from "react";
-import JSONEditor from "../../components/JSONEditor";
-
+import { JSONEditor } from "../../components/JSONEditor"
 
 function filterState(obj) {
   if (obj.toJSON) {

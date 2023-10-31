@@ -2,11 +2,13 @@
 
 import "~/store/index";
 
-import { RootStore, AppProvider, } from "@dappworks/kit";
-import { Button, Input } from "@nextui-org/react";
+
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-const JSONMetricsView = dynamic(() => import('@dappworks/jsonview').then(t => t.JSONMetricsView), { ssr: false })
+// const JSONMetricsView = dynamic(() => import('@dappworks/kit/metrics').then(t => t.JSONMetricsView), { ssr: false })
+// const JSONForm = dynamic(() => import('@dappworks/kit/form').then(t => t.JSONForm), { ssr: false })
+
+// import { StoragePlugin } from "@dappworks/kit/plugins";
 
 // const inputValue = StoragePlugin.Get({
 //   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -21,9 +23,10 @@ const HomePage = observer(() => {
   return (
     <div className="px-4">
       <div>test</div>
+      {/* <JSONForm formData={{ a: { b: 1 } }} /> */}
       {/* <headerStore.Header /> */}
       {/* <Input value={inputValue.value} onChange={e => inputValue.set!(e.target.value)}></Input> */}
-      <JSONMetricsView data={[{
+      {/* <JSONMetricsView data={[{
         type: 'KPICard',
         title: 'Data Messages',
         description: 'Total number of messages received from all devices',
@@ -37,7 +40,7 @@ const HomePage = observer(() => {
         metricTitle: 'Total Events',
         metric: 124,
         chartType: 'area',
-      }]} />
+      }]} /> */}
     </div>
   );
 })

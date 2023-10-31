@@ -1,5 +1,4 @@
 "use client";
-import { helper } from "@dappworks/kit";
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import jwt from "jsonwebtoken";

@@ -4,7 +4,7 @@ import { RootStore } from "../root";
 
 export abstract class Store {
   sid?: string;
-  stype?: "Plugin" | "Store";
+  stype?: string;
   disabled?: boolean;
   autoObservable?: boolean;
   autoAsyncable?: boolean;
@@ -30,7 +30,7 @@ export abstract class Store {
 
   events?: Record<string, { name: string; handler(args: { e: MouseEvent; v?: any }): any }>;
 
-  provider?(args: { rootStore: RootStore }): any;
+  provider?({ rootStore }: { rootStore: RootStore }): any;
 
   onNewStore?({ rootStore, store }: { rootStore: RootStore; store: Store }): void;
   onAddedStores?({ rootStore }: { rootStore: RootStore }): void;
