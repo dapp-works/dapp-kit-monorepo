@@ -1,9 +1,8 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.3.6",
+  "version": "0.3.26",
   "description": "",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -13,55 +12,71 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.js",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
     "./metrics": {
-      "import": "./dist/metrics.mjs",
-      "default": "./dist/metrics.js",
+      "import": "./dist/metrics.js",
       "require": "./dist/metrics.js"
     },
     "./form": {
-      "import": "./dist/form.mjs",
-      "default": "./dist/form.js",
+      "import": "./dist/form.js",
       "require": "./dist/form.js"
     },
     "./plugins": {
-      "import": "./dist/plugins.mjs",
-      "default": "./dist/plugins.js",
+      "import": "./dist/plugins.js",
       "require": "./dist/plugins.js"
     },
     "./dev": {
-      "import": "./dist/dev.mjs",
-      "default": "./dist/dev.js",
+      "import": "./dist/dev.js",
       "require": "./dist/dev.js"
     },
     "./ui": {
-      "import": "./dist/ui.mjs",
-      "default": "./dist/ui.js",
+      "import": "./dist/ui.js",
       "require": "./dist/ui.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "metrics": [
+        "./dist/metrics.d.ts"
+      ],
+      "form": [
+        "./dist/form.d.ts"
+      ],
+      "plugins": [
+        "./dist/plugins.d.ts"
+      ],
+      "dev": [
+        "./dist/dev.d.ts"
+      ],
+      "ui": [
+        "./dist/ui.d.ts"
+      ]
     }
   },
   "scripts": {
     "dev": "npm run build -- --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup --format cjs,esm --dts",
+    "build": "tsup --format cjs --dts",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "@blocknote/core": ">=0.8.2",
     "@blocknote/react": ">=0.8.2",
     "@monaco-editor/react": ">=4.5.1",
-    "@rjsf/core": "^5.9.0",
-    "@rjsf/utils": "^5.9.0",
-    "@rjsf/validator-ajv6": "^5.9.0",
+    "@rjsf/core": ">=5.9.0",
+    "@rjsf/utils": ">=5.9.0",
+    "@rjsf/validator-ajv6": ">=5.9.0",
     "@tremor/react": ">=3.0.1",
     "axios": ">=1.4.0",
-    "lodash": "^4.17.21",
+    "lodash": ">=4.17.21",
     "mobx": ">=6.9.0",
     "mobx-react-lite": ">=3.4.3",
-    "next-auth": "^4.24.4",
+    "next-auth": ">=4.24.4",
     "react": ">=18.2.0",
     "react-dom": ">=18.2.0",
     "react-draggable": ">=4.4.6",

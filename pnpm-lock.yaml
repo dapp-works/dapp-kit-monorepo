@@ -305,14 +305,14 @@ importers:
         specifier: '>=4.5.1'
         version: 4.6.0(monaco-editor@0.44.0)(react-dom@18.2.0)(react@18.2.0)
       '@rjsf/core':
-        specifier: ^5.9.0
-        version: 5.13.2(@rjsf/utils@5.13.2)(react@18.2.0)
+        specifier: ^5.13.3
+        version: 5.13.3(@rjsf/utils@5.13.3)(react@18.2.0)
       '@rjsf/utils':
-        specifier: ^5.9.0
-        version: 5.13.2(react@18.2.0)
+        specifier: ^5.13.3
+        version: 5.13.3(react@18.2.0)
       '@rjsf/validator-ajv6':
-        specifier: ^5.9.0
-        version: 5.13.2(@rjsf/utils@5.13.2)
+        specifier: ^5.13.3
+        version: 5.13.3(@rjsf/utils@5.13.3)
       '@tremor/react':
         specifier: '>=3.0.1'
         version: 3.10.0(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
@@ -4675,14 +4675,14 @@ packages:
       type-fest: 2.19.0
     dev: false
 
-  /@rjsf/core@5.13.2(@rjsf/utils@5.13.2)(react@18.2.0):
-    resolution: {integrity: sha512-Zn6BCTk0v8iVV2rKOYa2F34Q2CMYFgindAnLFmZEGalwC35hP93L68q3cfhbHoHmtUdkjAyUaa2vua6LpgzfQw==}
+  /@rjsf/core@5.13.3(@rjsf/utils@5.13.3)(react@18.2.0):
+    resolution: {integrity: sha512-9jFHqI5yBZz0a2FNZefx6ZvUTLVkoBkoFIsaN827Q4VaDAe8bSCXb45Vb/Xur0CJwx9E4GTLrLbNRrGmaujtMQ==}
     engines: {node: '>=14'}
     peerDependencies:
       '@rjsf/utils': ^5.12.x
       react: ^16.14.0 || >=17
     dependencies:
-      '@rjsf/utils': 5.13.2(react@18.2.0)
+      '@rjsf/utils': 5.13.3(react@18.2.0)
       lodash: 4.17.21
       lodash-es: 4.17.21
       markdown-to-jsx: 7.3.2(react@18.2.0)
@@ -4691,8 +4691,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@rjsf/utils@5.13.2(react@18.2.0):
-    resolution: {integrity: sha512-iluvCOQDwZkp66RRZdIV3TgJnI+I2xv7Ks+UVqjO9lG8U9ygoWuH85zGPAojqapJUuC+frVRZsEBsTwGegDWIw==}
+  /@rjsf/utils@5.13.3(react@18.2.0):
+    resolution: {integrity: sha512-a4vmjvoC7fdVTUGw7MMw94/x4TT5C4Y5Gzy/a5x4rnVqy0jV3QBSYngaZUB3wLp0vavPQhKPIUTR7KoMu71OuA==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^16.14.0 || >=17
@@ -4705,13 +4705,13 @@ packages:
       react-is: 18.2.0
     dev: false
 
-  /@rjsf/validator-ajv6@5.13.2(@rjsf/utils@5.13.2):
-    resolution: {integrity: sha512-SGaxeWQHeZOthTVNXORh7yAZGmtb/aw/OuqgpICrqQz/WbpROR+57WFqf150fHjfEyIHsa2q+rPucA4f+SAnog==}
+  /@rjsf/validator-ajv6@5.13.3(@rjsf/utils@5.13.3):
+    resolution: {integrity: sha512-wVqsBz0Lu8tQieVWnbQ0FlNo46EaZwlhVCsDwGx4ALVUsdjFGx0JPoYEbLEMszjlQ5eIb8F7fk+NAzSWzZf6dQ==}
     engines: {node: '>=14'}
     peerDependencies:
       '@rjsf/utils': ^5.12.x
     dependencies:
-      '@rjsf/utils': 5.13.2(react@18.2.0)
+      '@rjsf/utils': 5.13.3(react@18.2.0)
       ajv: 6.12.6
       lodash: 4.17.21
       lodash-es: 4.17.21
