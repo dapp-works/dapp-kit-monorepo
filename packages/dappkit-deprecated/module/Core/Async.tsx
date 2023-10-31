@@ -11,7 +11,7 @@ import { PromiseState } from "../../store/standard/PromiseState";
 import { ToastPlugin } from "../Toast/Toast";
 import { StoragePlugin } from "./Storage";
 import { Input } from "@nextui-org/react";
-import JSONEditor from "../../../dappform/components/JSONEditor";
+import JSONEditor from "../../components/JSONEditor";
 
 export const jwt = StoragePlugin.Get({
   key: "asyncStorage.token",

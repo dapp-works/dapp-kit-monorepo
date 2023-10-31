@@ -1,15 +1,28 @@
 "use client";
 import { rootStore, Store, helper, } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
-import { Project } from "./project";
+import { DevTool, DevInspectorPlugin } from "@dappworks/kit/dev"
+// import { StoragePlugin } from "@dappworks/kit/plugins"
+
+
 
 export const init = () => {
   if (rootStore.isInited) return
   rootStore.isInited = true
+  if (process.env.NODE_ENV == "development") {
+    rootStore.addStores([
+      //@ts-ignore
+      new DevTool(),
+      // new WalletStore(),
+      // new StoragePlugin(),
+      // new AsyncStorage(),
+      // new DevInspectorPlugin(),
+      // new ThemePlugin(),
+      // new Project(),
+    ]);
+  }
+
   rootStore.addStores([
-    // new DevTool({
-    //   disabled: process.env.NODE_ENV != "development",
-    // }),
     // new WalletStore(),
     // new StoragePlugin(),
     // new AsyncStorage(),
