@@ -23,16 +23,22 @@ function FieldTemplate(props: FieldTemplateProps) {
 
   // const hideLabel = schema.type === 'object' || schema.type === 'boolean';
 
+  const isDate = uiSchema && uiSchema['ui:widget'] === 'date';
+  const isDateTime = uiSchema && uiSchema['ui:widget'] === 'date-time';
+  const isTime = uiSchema && uiSchema['ui:widget'] === 'time';
+  const showLabel = isDate || isDateTime || isTime;
+
   return (
     <div className={cn(classNames)}>
-      {/* {!hideLabel && (
+      {showLabel && (
         <label htmlFor={id} className={cn('flex items-center h-8')}>
-          <span className="text-gray-900 dark:text-gray-100 text-sm font-medium">{label}</span>
+          <span className="text-sm">{label}</span>
           {required && <span className="font-bold text-red-600">*</span>}
         </label>
-      )} */}
+      )}
+
       {/* {description} */}
-      {/* <div className={cn("json-schema-form-field")}>{children}</div> */}
+      {/* {children} */}
       {/* {help} */}
 
       {children}
