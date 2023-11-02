@@ -16,6 +16,8 @@ const JSONFormModal = observer(() => {
   return (
     <Modal
       className={formModal.className}
+      classNames={formModal.classNames}
+      scrollBehavior={formModal.scrollBehavior}
       isOpen={formModal.isOpen}
       size={formModal.modalSize}
       isDismissable={!closeOnOverlayClick}
