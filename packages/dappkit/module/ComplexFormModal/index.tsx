@@ -7,7 +7,7 @@ import { UiSchema } from "@rjsf/utils";
 import { makeAutoObservable } from "mobx";
 import { RootStore } from "../../store";
 import React, { Dispatch, SetStateAction } from "react";
-import { ButtonProps } from "@nextui-org/react";
+import { ButtonProps, SlotsToClasses, ModalSlots } from "@nextui-org/react";
 
 export class FormPlugin<T extends FormDataType> implements Store {
   sid = 'FormPlugin';
@@ -19,7 +19,9 @@ export class FormPlugin<T extends FormDataType> implements Store {
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, LayoutType>;
   className = '';
+  classNames?: SlotsToClasses<ModalSlots>;
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
+  scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
   event = new EventEmitter();
   onBatchSubmit?: (data: T, setLoading?: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
@@ -42,7 +44,9 @@ export class FormPlugin<T extends FormDataType> implements Store {
     this.formConfig = undefined;
     this.layoutConfig = undefined;
     this.className = '';
+    this.classNames = undefined;
     this.modalSize = 'md';
+    this.scrollBehavior = 'normal';
     this.onBatchSubmit = undefined;
     this.onSet = undefined;
     this.onChange = undefined;

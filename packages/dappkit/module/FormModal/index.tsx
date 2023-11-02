@@ -14,6 +14,7 @@ import SelectWidget from "../../components/JSONFormWidgets/SelectWidget";
 import InputWidget from "../../components/JSONFormWidgets/InputWidget";
 import CheckboxWidget from "../../components/JSONFormWidgets/CheckboxWidget";
 import { RootStore } from "../../store";
+import { SlotsToClasses, ModalSlots } from "@nextui-org/react";
 
 export class FormModalStore<T = { [key: string]: any }> implements Store {
   sid = 'FormModalStore';
@@ -24,7 +25,9 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
   //@ts-ignore
   form: JSONSchemaFormState<T> = null;
   className: string = '';
+  classNames?: SlotsToClasses<ModalSlots>;
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
+  scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
   closeOnOverlayClick = false;
   event = new EventEmitter();
   onAfterSubmit?: (data: T) => void;
@@ -43,7 +46,9 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
     this.title = '';
     this.form = null;
     this.className = '';
+    this.classNames = undefined;
     this.modalSize = 'md';
+    this.scrollBehavior = 'normal';
     this.closeOnOverlayClick = false;
     this.onAfterSubmit = undefined;
     this.event.removeAllListeners();

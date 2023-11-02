@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.3.32",
+  "version": "0.3.33",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

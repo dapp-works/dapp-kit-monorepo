@@ -45,6 +45,8 @@ const JSONViewModal = observer(() => {
   return (
     <Modal
       className={complexFormModal.className}
+      classNames={complexFormModal.classNames}
+      scrollBehavior={complexFormModal.scrollBehavior}
       isOpen={isOpen}
       size={complexFormModal.modalSize}
       onOpenChange={(open: boolean) => {
