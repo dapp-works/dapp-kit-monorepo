@@ -46,7 +46,7 @@ const renderLayout = (layout: any[], fields: { [k: string]: React.ReactElement }
     if (Array.isArray(item)) {
       const even = (n & 1) === 0;
       return (
-        <div key={index} className={cn('json-schema-form-layout', even ? 'flex-row' : 'flex-col')}>
+        <div key={index} className={cn('w-full flex justify-between items-center space-x-2', even ? 'flex-row' : 'flex-col')}>
           {renderLayout(item, fields, n)}
         </div>
       );
