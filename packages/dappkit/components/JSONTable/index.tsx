@@ -18,7 +18,7 @@ export type ActionButtonType = {
 
 export type ColumnOptions<T = { [x: string]: any }> = {
   [key in keyof T]?: {
-    label?: string;
+    label?: React.ReactNode;
     hidden?: boolean;
     sortable?: boolean;
     order?: number;
@@ -28,7 +28,7 @@ export type ColumnOptions<T = { [x: string]: any }> = {
 
 export type Column<T = { [x: string]: any }> = {
   key: string;
-  label: string;
+  label: React.ReactNode;
   render?: (item: T) => any;
 };
 
