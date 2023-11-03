@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import JSONHighlight from "../Common/JSONHighlight";
-import { Button, ButtonProps, Pagination as NextuiPagination } from '@nextui-org/react';
+import { Button, ButtonProps, Pagination as NextuiPagination, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react';
 import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { _ } from "../../lib/lodash";
 import { DialogStore } from "../../module/Dialog";
@@ -167,33 +167,49 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
                 <TableHead className={`font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300`} key={item.key}>
                   <div className="flex items-center">
                     <div className="text-xs">{item.label}</div>
-                    {store.sortableColumns[item.key] === 'asc' && (
-                      <ChevronUp
-                        className="ml-1 cursor-pointer"
-                        size={14}
-                        onClick={() => {
-                          onSort(item.key, 'none');
-                        }}
-                      />
-                    )}
-                    {store.sortableColumns[item.key] === 'desc' && (
-                      <ChevronDown
-                        className="ml-1 cursor-pointer"
-                        size={14}
-                        onClick={() => {
-                          onSort(item.key, 'asc');
-                        }}
-                      />
-                    )}
-                    {store.sortableColumns[item.key] === 'none' && (
-                      <ChevronsUpDown
-                        className="ml-1 cursor-pointer"
-                        size={14}
-                        onClick={() => {
-                          onSort(item.key, 'desc');
-                        }}
-                      />
-                    )}
+                    <Dropdown
+                      showArrow
+                      backdrop="opaque"
+                      placement="bottom"
+                      classNames={{
+                        base: 'p-2 border border-default-200 bg-gradient-to-br from-white to-default-250 dark:from-default-100 dark:to-default-50',
+                        arrow: 'bg-default-200',
+                      }}
+                    >
+                      <DropdownTrigger>
+                        <div className="cursor-pointer">
+                          {store.sortableColumns[item.key] === 'desc' && <ChevronDown size={14} />}
+                          {store.sortableColumns[item.key] === 'asc' && <ChevronUp size={14} />}
+                          {store.sortableColumns[item.key] === 'none' && <ChevronsUpDown size={14} />}
+                        </div>
+                      </DropdownTrigger>
+                      <DropdownMenu selectionMode="single" selectedKeys={[store.sortableColumns[item.key]]}>
+                        <DropdownItem
+                          key="asc"
+                          onClick={() => {
+                            onSort(item.key, 'asc');
+                          }}
+                        >
+                          <span className="text-sm font-bold">Sort ascending</span>
+                        </DropdownItem>
+                        <DropdownItem
+                          key="desc"
+                          onClick={() => {
+                            onSort(item.key, 'desc');
+                          }}
+                        >
+                          <span className="text-sm font-bold">Sort descending</span>
+                        </DropdownItem>
+                        <DropdownItem
+                          key="none"
+                          onClick={() => {
+                            onSort(item.key, 'none');
+                          }}
+                        >
+                          <span className="text-sm font-bold">Sort none</span>
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
                   </div>
                 </TableHead>
               ))}
