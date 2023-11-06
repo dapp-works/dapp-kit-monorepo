@@ -43,6 +43,7 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   className?: string;
   dataSource: T[];
   columnOptions?: ColumnOptions<T>;
+  headerKeys?: string[];
   isServerPaging?: boolean;
   extendedTableOptions?: {
     key: string;
@@ -64,6 +65,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
   const {
     dataSource,
     columnOptions,
+    headerKeys,
     isServerPaging,
     pagination = new PaginationState({
       page: 1,
@@ -100,7 +102,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
       });
     }
     if (dataSource?.length > 0) {
-      const _keys = columnOptions ? Object.keys(dataSource[0]).filter(key => !columnOptions[key]?.hidden) : Object.keys(dataSource[0]);
+      const _keys = headerKeys ? headerKeys : columnOptions ? Object.keys(dataSource[0]).filter((key) => !columnOptions[key]?.hidden) : Object.keys(dataSource[0]);
       const columns: Column<T>[] = _keys
         .map((key) => {
           const sortable = columnOptions?.[key]?.sortable;
