@@ -25,7 +25,6 @@ export const getFormState = <T, L>(
     [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>;
   } = {};
 
-  //@ts-ignore
   Object.keys(formData).forEach((key) => {
     const metadata = formData[key];
     const formConfigData = formConfig?.[key] || {};
@@ -40,6 +39,7 @@ export const getFormState = <T, L>(
       if (!formConfigData[k]) {
         formConfigData[k] = {};
       }
+      const uiOptions = formConfigData[k]['ui:options'] || {};
       if (type === "string" || type === "number") {
         if (formConfigData[k]?.selectOptions) {
           formConfigData[k]["ui:widget"] = SelectWidget;
@@ -50,11 +50,11 @@ export const getFormState = <T, L>(
             formConfigData[k]["ui:options"] = {
               labelPlacement: "inside",
               size: "sm",
+              ...uiOptions,
             };
             if (type === "number") {
               p[k].inputType = "number";
             }
-
             if (helper.json.isJsonString(v)) {
               formConfigData[k]['ui:widget'] = EditorWidget;
             }
@@ -65,6 +65,7 @@ export const getFormState = <T, L>(
         formConfigData[k]["ui:widget"] = CheckboxWidget;
         formConfigData[k]["ui:options"] = {
           size: "sm",
+          ...uiOptions,
         };
       }
       if (formConfigData[k]?.inputType) {
