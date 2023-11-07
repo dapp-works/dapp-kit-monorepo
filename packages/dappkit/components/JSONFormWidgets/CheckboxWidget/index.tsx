@@ -33,6 +33,8 @@ function CheckboxWidget({
     <Checkbox
       id={id}
       defaultSelected={value}
+      isRequired={required}
+      isDisabled={disabled}
       icon={<PlusIcon color="white" />}
       color="success"
       size={size}
