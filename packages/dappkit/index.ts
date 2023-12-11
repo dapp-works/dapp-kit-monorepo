@@ -1,5 +1,6 @@
 export { type DefaultEventMap, rootStore, useStore } from "./store";
 export { PromiseState } from "./store/standard/PromiseState";
+export { BigNumberState } from "./store/standard/BigNumberState";
 export { UserStore } from "./store/user";
 export * from "./store/standard/base";
 export { RootStore } from "./store/root";
