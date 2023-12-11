@@ -2,6 +2,7 @@ import BN from "bignumber.js";
 import JSONFormat from "json-format";
 import { _ } from "./lodash";
 import copy from "copy-to-clipboard";
+import numeral from 'numeral';
 
 const valMap = {
   undefined: "",
@@ -196,6 +197,43 @@ export const helper = {
     },
     getBN: (value: number | string | BN) => {
       return value instanceof BN ? value : typeof value === "string" ? new BN(Number(value)) : new BN(value);
+    },
+    toPrecisionFloor: (str: number | string, options?: { decimals?: number; format?: string; toLocalString?: boolean }) => {
+      const { decimals = 6, format = '', toLocalString = false } = options || {};
+      if (!str || isNaN(Number(str))) return '';
+
+      if (helper.number.countNonZeroNumbers(String(str)) <= decimals) return String(str);
+      const numStr = new BN(str).toFixed();
+      let result = '';
+      let index = 0;
+      const numLength = numStr.length;
+
+      for (; numStr[index] === '0' && index < numLength; index += 1);
+
+      if (index === numLength) return '0';
+
+      if (numStr[index] === '.') {
+        // number < 0
+        result = '0';
+        for (; (numStr[index] === '0' || numStr[index] === '.') && index < numLength; index += 1) {
+          result = result + numStr[index];
+        }
+      }
+      let resultNumLength = 0;
+      for (; index < numLength && (resultNumLength < decimals || !result.includes('.')); index += 1) {
+        result = result + numStr[index];
+
+        if (numStr[index] !== '.') resultNumLength += 1;
+      }
+      if (format) {
+        return numeral(Number(result)).format(format);
+      }
+
+      if (toLocalString) {
+        return helper.number.numberWithCommas(Number(new BN(result).toFixed()));
+      }
+
+      return new BN(result).toFixed();
     },
   },
 };
