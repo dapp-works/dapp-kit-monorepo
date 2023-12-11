@@ -135,17 +135,19 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
       const result = _.orderBy(
         dataSource,
         (o) => {
-          if (o[key] == null) {
-            return type === 'desc' ? '' : o[key];
+          const v = o[key];
+          if (v == null) {
+            return type === 'desc' ? '' : v;
           }
-          if (typeof o[key] === 'string') {
-            if (isNaN(o[key])) {
-              return o[key].toLowerCase();
+          if (typeof v === 'string') {
+            const _v = Number(v);
+            if (isNaN(_v)) {
+              return v.toLowerCase();
             } else {
-              return Number(o[key]);
+              return _v;
             }
           }
-          return o[key];
+          return v;
         },
         type,
       );
