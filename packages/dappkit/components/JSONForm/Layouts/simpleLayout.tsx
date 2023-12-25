@@ -1,13 +1,11 @@
 import React from 'react';
-import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from '..';
+import { FormDataType, JSONFormProps, LayoutConfigType } from '..';
 import { JSONSchemaForm } from '../../../components/JSONSchemaForm';
 import { BatchSubmitButton, SubmitButton, getFormState } from './format';
 
-export type SimpleLayoutProps = {};
-
-export const SimpleLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+export const SimpleLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
   const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps } = props;
-  const { type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'SimpleLayout'>;
+  const { $type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'SimpleLayout'>;
   const formStates = getFormState(props, formLayout);
 
   return (

@@ -5,17 +5,13 @@ import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
 
-export type GridLayoutProps = {
-  gridColumn?: number;
-};
-
-export const GridLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+export const GridLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
   const { layoutConfig, onBatchSubmit, batchSubmitButtonProps } = props;
-  const { type, gridColumn, ...formLayout } = layoutConfig as LayoutConfigType<T, 'GridLayout'>;
+  const { $type, $gridColumn, ...formLayout } = layoutConfig as LayoutConfigType<T, 'GridLayout'>;
   const formStates = getFormState(props, formLayout);
   return (
     <>
-      <Grid numItems={gridColumn ?? 1} className="gap-2">
+      <Grid numItems={$gridColumn ?? 1} className="gap-2">
         {Object.keys(formStates).map((key) => {
           const layout = formLayout[key];
           return (

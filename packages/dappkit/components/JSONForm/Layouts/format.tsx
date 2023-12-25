@@ -1,22 +1,20 @@
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { UiSchema } from "@rjsf/utils";
-
 import { FormDataOfKey, JSONFormProps } from "..";
 import CheckboxWidget from "../../../components/JSONFormWidgets/CheckboxWidget";
 import InputWidget from "../../../components/JSONFormWidgets/InputWidget";
 import SelectWidget from "../../../components/JSONFormWidgets/SelectWidget";
+import EditorWidget from '../../../components/JSONFormWidgets/EditorWidget';
 import {
   JSONSchemaFormState,
   JSONValue,
 } from "../../../store/standard/JSONSchemaState";
 import { helper } from "../../../lib/helper";
-import EditorWidget from '../../../components/JSONFormWidgets/EditorWidget';
 import { cn } from "../../../lib/utils";
 
-
-export const getFormState = <T, L>(
-  props: JSONFormProps<T, L>,
+export const getFormState = <T,>(
+  props: JSONFormProps<T>,
   formLayout: { [x: string]: { fieldLayout?: any[] } } = {},
 ) => {
   const { formData, formConfig, onSet, onChange } = props;

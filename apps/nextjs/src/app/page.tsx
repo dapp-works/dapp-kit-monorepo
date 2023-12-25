@@ -23,9 +23,89 @@ const HomePage = observer(() => {
   return (
     <div className="px-4">
       <div>test1</div>
-      <JSONForm formData={{ a: { b: 1 } }} />
-      {/* <headerStore.Header /> */}
-      <Input value={inputValue.value} onChange={e => inputValue.set!(e.target.value)}></Input>
+      <JSONForm
+        className="my-10"
+        formData={{
+          personalInfo: {
+            name: '',
+            age: 18,
+            phone: '',
+            city: 'city1',
+            date: '2021-01-01',
+            dateTime: '2021-01-01T00:00:00',
+            time: '00:00:00',
+            boolean: true,
+          },
+          extraInfo: {
+            address: '',
+            code: '',
+          },
+        }}
+        formConfig={{
+          personalInfo: {
+            name: {
+              // Optional field
+              title: 'Name',
+              // Optional field
+              required: true,
+            },
+            // age: {
+            //   required: true,
+            // },
+            phone: {
+              required: true,
+              // 'ui:options': {
+              //   disabled: true,
+              // },
+            },
+            city: {
+              // Optional field
+              selectOptions: [
+                { label: 'city 1', value: 'city1' },
+                { label: 'city 2', value: 'city2' },
+                { label: 'city 3', value: 'city3' },
+              ],
+              required: true,
+              description: 'This is a description',
+              'ui:options': {
+                placeholder: 'Select a city',
+                // disabled: true,
+              },
+            },
+            date: {
+              title: 'Date',
+              'ui:widget': 'date',
+            },
+            dateTime: {
+              title: 'Date Time',
+              'ui:widget': 'date-time',
+            },
+            time: {
+              title: 'Time',
+              'ui:widget': 'time',
+            },
+            boolean: {
+              title: 'Boolean',
+              // 'ui:options': {
+              //   disabled: true,
+              // },
+            },
+          },
+        }}
+        layoutConfig={{
+          $type: 'GridLayout',
+          $gridColumn: 2,
+          personalInfo: {
+            title: 'Personal Information',
+            fieldLayout: [['name', 'age'], 'phone', 'city'],
+          },
+          extraInfo: {
+            title: 'Extra Information',
+          },
+        }}
+      />
+
+
       <JSONMetricsView data={[{
         type: 'KPICard',
         title: 'Data Messages',

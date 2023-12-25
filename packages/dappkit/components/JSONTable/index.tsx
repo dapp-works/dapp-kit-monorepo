@@ -80,7 +80,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
   } = props;
 
   const actionsHeadLabel = actionsOptions?.headLabel || '';
-  const actionsPlacement = actionsOptions?.placement;
+  const actionsPlacement = actions ? actionsOptions?.placement || 'right' : undefined;
 
   const store = useLocalObservable<{
     columns: Column<T>[],
