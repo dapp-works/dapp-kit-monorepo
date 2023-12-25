@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { UiSchema } from "@rjsf/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-
-import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
+import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { cn } from "../../../lib/utils";
 import { JSONSchemaFormState } from "../../../store/standard/JSONSchemaState";
 import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
-
-export type ListLayoutProps = {};
 
 const CollapsibleBox = ({ key, title, formState, submitButtonProps }: { key: string; title: string; formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>; submitButtonProps: any }) => {
   const [opened, setOpened] = useState(true);
@@ -28,9 +25,9 @@ const CollapsibleBox = ({ key, title, formState, submitButtonProps }: { key: str
   );
 };
 
-export const ListLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+export const ListLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
   const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps } = props;
-  const { type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'ListLayout'>;
+  const { $type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'ListLayout'>;
   const formStates = getFormState(props, formLayout);
 
   return (

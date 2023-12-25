@@ -1,15 +1,12 @@
 import React from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
-
-import { FormDataType, JSONFormProps, LayoutConfigType, LayoutType } from "..";
+import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
 
-export type TabLayoutProps = {};
-
-export const TabLayout = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
+export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
   const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps } = props;
-  const { type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'TabLayout'>;
+  const { $type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'TabLayout'>;
   const formStates = getFormState(props, formLayout);
 
   return (

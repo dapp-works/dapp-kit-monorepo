@@ -1,18 +1,17 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { UiSchema } from "@rjsf/utils";
-
-import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
-import { GridLayout, GridLayoutProps } from "./Layouts/gridLayout";
-import { ListLayout, ListLayoutProps } from "./Layouts/listLayout";
-import { SimpleLayout, SimpleLayoutProps } from "./Layouts/simpleLayout";
-import { TabLayout, TabLayoutProps } from "./Layouts/tabLayout";
 import { ButtonProps } from "@nextui-org/react";
+import { UiSchema } from "@rjsf/utils";
+import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
+import { GridLayout } from "./Layouts/gridLayout";
+import { ListLayout } from "./Layouts/listLayout";
+import { SimpleLayout } from "./Layouts/simpleLayout";
+import { TabLayout } from "./Layouts/tabLayout";
 
 export type LayoutType = 'TabLayout' | 'GridLayout' | 'ListLayout' | 'SimpleLayout';
 
 export type FieldLayoutType<T, F extends keyof T> = Array<keyof NonNullable<T[F]>> | Array<Array<keyof NonNullable<T[F]>> | keyof NonNullable<T[F]>>;
 
-export type SubLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'SimpleLayout'
+export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'SimpleLayout'
   ? {
     [F in keyof T]?: {
       title?: string;
@@ -32,13 +31,13 @@ export type SubLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simple
   : never;
 
 export type LayoutConfigType<T, L> = L extends 'TabLayout'
-  ? { type: 'TabLayout' } & SubLayoutType<T, L> & TabLayoutProps
+  ? { $type: 'TabLayout' } & FormLayoutType<T, L>
   : L extends 'GridLayout'
-  ? { type: 'GridLayout' } & SubLayoutType<T, L> & GridLayoutProps
+  ? { $type: 'GridLayout'; $gridColumn?: number } & FormLayoutType<T, L>
   : L extends 'ListLayout'
-  ? { type: 'ListLayout' } & SubLayoutType<T, L> & ListLayoutProps
+  ? { $type: 'ListLayout' } & FormLayoutType<T, L>
   : L extends 'SimpleLayout'
-  ? { type: 'SimpleLayout' } & SubLayoutType<T, L> & SimpleLayoutProps
+  ? { $type: 'SimpleLayout' } & FormLayoutType<T, L>
   : never;
 
 export type FormDataType = {
@@ -62,11 +61,11 @@ export type FormKey<T = FormDataType> = keyof T;
 
 export type FormDataOfKey<T = FormDataType> = T[FormKey<T>];
 
-export type JSONFormProps<T = FormDataType, L = LayoutType> = {
+export type JSONFormProps<T = FormDataType> = {
   className?: string;
   formData: T;
   formConfig?: FormConfigType<T>;
-  layoutConfig?: LayoutConfigType<T, L>;
+  layoutConfig?: LayoutConfigType<T, LayoutType>;
   children?: any;
   onBatchSubmit?: (data: T, setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
@@ -81,8 +80,8 @@ const components = {
   SimpleLayout,
 };
 
-export const JSONForm = <T extends FormDataType, L extends LayoutType>(props: JSONFormProps<T, L>) => {
-  const type = props.layoutConfig?.type || 'SimpleLayout';
+export const JSONForm = <T extends FormDataType>(props: JSONFormProps<T>) => {
+  const type = props.layoutConfig?.$type || 'SimpleLayout';
   const Component = components[type];
   return (
     <div className={props.className}>

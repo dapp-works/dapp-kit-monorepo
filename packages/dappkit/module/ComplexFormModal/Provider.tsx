@@ -32,8 +32,8 @@ const JSONViewModal = observer(() => {
   }
 
   const layoutConfig = { ...complexFormModal.layoutConfig };
-  if (store.isMobile && layoutConfig.type === 'GridLayout') {
-    layoutConfig.gridColumn = 1;
+  if (store.isMobile && layoutConfig.$type === 'GridLayout') {
+    layoutConfig.$gridColumn = 1;
     Object.keys(layoutConfig).forEach((key) => {
       if (typeof layoutConfig[key] === 'object') {
         // @ts-ignore
