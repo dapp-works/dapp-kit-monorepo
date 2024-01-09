@@ -8,6 +8,7 @@ type Options = {
   className?: string;
   labelPlacement?: "inside" | "outside" | "outside-left";
   size: "sm" | "md" | "lg";
+  placeholder?: string;
 };
 
 export interface InputWidgetProps extends WidgetProps {
@@ -19,23 +20,25 @@ export interface InputWidgetUIOptions {
   "ui:options": Options;
 }
 
-function InputWidget({
-  onChange,
-  options,
-  id,
-  label,
-  value,
-  required,
-  disabled,
-  schema,
-}: InputWidgetProps) {
+function InputWidget(props: InputWidgetProps) {
+  const {
+    onChange,
+    options,
+    id,
+    label,
+    value,
+    required,
+    disabled,
+    schema,
+  } = props;
   const { className, labelPlacement = "inside", size = "md" } = options;
+  const placeholder = props.placeholder || options.placeholder;
   return (
     <Input
       id={id}
       className={cn("w-full", className)}
       label={label}
-      placeholder=""
+      placeholder={placeholder}
       value={value}
       defaultValue=""
       isRequired={required}
