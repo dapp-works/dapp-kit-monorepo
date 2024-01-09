@@ -23,6 +23,7 @@ export type ColumnOptions<T = { [x: string]: any }> = {
     sortable?: boolean;
     order?: number;
     render?: (item: T) => any;
+    className?: string;
   };
 }
 
@@ -30,6 +31,7 @@ export type Column<T = { [x: string]: any }> = {
   key: string;
   label: React.ReactNode;
   render?: (item: T) => any;
+  className?: string;
 };
 
 export type ExtendedTable<U> = {
@@ -53,7 +55,7 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   rowKey?: string;
   pagination?: PaginationState;
   onRowClick?: (item: T) => void;
-  tableRowClassName?: string | ((item: T) => string);
+  rowCss?: string | ((item: T) => string | undefined);
   actions?: ActionsType<T>;
   actionsOptions?: {
     headLabel?: string;
@@ -74,7 +76,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     extendedTableOptions = [],
     rowKey = 'id',
     onRowClick,
-    tableRowClassName,
+    rowCss,
     actions,
     actionsOptions,
   } = props;
@@ -227,7 +229,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
               needExtendedTable ? (
                 <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} />
               ) : (
-                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} tableRowClassName={tableRowClassName} actions={actions} actionsPlacement={actionsPlacement} />
+                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} rowCss={rowCss} actions={actions} actionsPlacement={actionsPlacement} />
               ),
             )}
           </TableBody>
@@ -303,21 +305,20 @@ function Body<T>({
   item,
   columns,
   onRowClick,
-  tableRowClassName,
+  rowCss,
   actions,
   actionsPlacement
 }: {
   item: T;
   columns: Column<T>[];
   onRowClick?: (item: T) => void;
-  tableRowClassName?: string | ((item: T) => string);
+  rowCss?: string | ((item: T) => string | undefined);
   actions?: ActionsType<T>;
   actionsPlacement?: 'left' | 'right';
 }) {
-  const className = typeof tableRowClassName === 'function' ? tableRowClassName(item) : tableRowClassName;
   return (
     <TableRow
-      className={cn('text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', className)}
+      className={cn('text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
       onClick={() => {
         onRowClick?.(item);
       }}
@@ -325,7 +326,7 @@ function Body<T>({
       {actionsPlacement === 'left' && <Actions item={item} actions={actions} />}
       {columns.map((column) => {
         return (
-          <TableCell key={column.key} className="max-w-[200px] overflow-auto">
+          <TableCell key={column.key} className={cn('max-w-[200px] overflow-auto', column.className)}>
             {column.render
               ? column.render(item)
               : renderFieldValue(item[column.key])}
