@@ -89,51 +89,59 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' };
     sortedData: T[];
     extendedTables: ExtendedTable<any>[];
+    setData: (data: Partial<typeof store>) => void;
   }>(() => ({
     columns: [],
     sortableColumns: {},
     sortedData: [],
     extendedTables: [],
+    setData(data: Partial<typeof store>) {
+      Object.assign(store, data);
+    },
   }));
 
   useEffect(() => {
-    store.sortedData = dataSource;
+    const _keys = dataSource.length > 0 ? Object.keys(dataSource[0]) : [];
+    const keys = headerKeys ? headerKeys : columnOptions ? _keys.filter((key) => !columnOptions[key]?.hidden) : _keys;
+    const sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' } = {};
+    const columns: Column<T>[] = keys
+      .map((key) => {
+        const sortable = columnOptions?.[key]?.sortable;
+        if (sortable) {
+          sortableColumns[key] = 'none';
+        }
+        return {
+          key,
+          label: columnOptions?.[key]?.label || key,
+          render: columnOptions?.[key]?.render,
+          className: columnOptions?.[key]?.className,
+        };
+      })
+      .sort((a, b) => {
+        const aOrder = columnOptions?.[a.key]?.order || 0;
+        const bOrder = columnOptions?.[b.key]?.order || 0;
+        return bOrder - aOrder;
+      });
+    store.setData({
+      sortableColumns,
+      columns,
+      sortedData: dataSource,
+    });
     if (!isServerPaging) {
       pagination.setData({
         total: dataSource.length,
       });
     }
-    if (dataSource?.length > 0) {
-      const _keys = headerKeys ? headerKeys : columnOptions ? Object.keys(dataSource[0]).filter((key) => !columnOptions[key]?.hidden) : Object.keys(dataSource[0]);
-      const columns: Column<T>[] = _keys
-        .map((key) => {
-          const sortable = columnOptions?.[key]?.sortable;
-          if (sortable) {
-            store.sortableColumns[key] = 'none';
-          }
-          return ({
-            key,
-            label: columnOptions?.[key]?.label || key,
-            render: columnOptions?.[key]?.render,
-          });
-        })
-        .sort((a, b) => {
-          const aOrder = columnOptions?.[a.key]?.order || 0;
-          const bOrder = columnOptions?.[b.key]?.order || 0;
-          return bOrder - aOrder;
-        });
-      store.columns = columns;
-    }
   }, [dataSource, columnOptions]);
 
   const onSort = (key: string, type: 'asc' | 'desc' | 'none') => {
+    const sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' } = {};
     Object.keys(store.sortableColumns).map((k) => {
-      store.sortableColumns[k] = k === key ? type : 'none';
+      sortableColumns[k] = k === key ? type : 'none';
     });
 
-    if (type === 'none') {
-      store.sortedData = dataSource;
-    } else {
+    let sortedData = dataSource;
+    if (type !== 'none') {
       const result = _.orderBy(
         dataSource,
         (o) => {
@@ -153,8 +161,13 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
         },
         type,
       );
-      store.sortedData = result;
+      sortedData = result;
     }
+
+    store.setData({
+      sortableColumns,
+      sortedData,
+    });
   };
 
   const { columns, extendedTables } = store;
