@@ -22,6 +22,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   value?: Awaited<U> = null;
   defaultValue: any = null;
   function: T;
+  transform?: (value: any) => Promise<Awaited<U>> | Awaited<U>;
 
   autoAlert = true;
   context: any = undefined;
@@ -112,8 +113,12 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     }
   }
 
-  setValue(val) {
-    this.value = val;
+  async setValue(val) {
+    let _val = val;
+    if (this.transform) {
+      _val = await this.transform(val);
+    }
+    this.value = _val;
     this.event.emit("data", val);
     this.event.emit("update");
   }
