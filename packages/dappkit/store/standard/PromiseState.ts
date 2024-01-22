@@ -22,7 +22,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   value?: Awaited<U> = null;
   defaultValue: any = null;
   function: T;
-  transform?: (value: any) => Promise<Awaited<U>> | Awaited<U>;
+  transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
 
   autoAlert = true;
   context: any = undefined;
