@@ -49,6 +49,7 @@ const JSONViewModal = observer(() => {
       scrollBehavior={complexFormModal.scrollBehavior}
       isOpen={isOpen}
       size={complexFormModal.modalSize}
+      isDismissable={complexFormModal.isDismissable}
       onOpenChange={(open: boolean) => {
         if (!open) {
           complexFormModal.event.emit('abort');
@@ -63,7 +64,6 @@ const JSONViewModal = observer(() => {
               <JSONForm
                 formData={formData}
                 formConfig={complexFormModal.formConfig}
-                // @ts-ignore
                 layoutConfig={layoutConfig}
                 onBatchSubmit={
                   complexFormModal.onBatchSubmit

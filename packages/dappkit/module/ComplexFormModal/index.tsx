@@ -22,6 +22,7 @@ export class FormPlugin<T extends FormDataType> implements Store {
   classNames?: SlotsToClasses<ModalSlots>;
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
+  isDismissable = true;
   event = new EventEmitter();
   onBatchSubmit?: (data: T, setLoading?: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
@@ -47,6 +48,7 @@ export class FormPlugin<T extends FormDataType> implements Store {
     this.classNames = undefined;
     this.modalSize = 'md';
     this.scrollBehavior = 'normal';
+    this.isDismissable = true;
     this.onBatchSubmit = undefined;
     this.onSet = undefined;
     this.onChange = undefined;
