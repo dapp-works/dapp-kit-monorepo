@@ -16,6 +16,7 @@ export class DialogStore implements Store {
     [key in 'wrapper' | 'base' | 'backdrop' | 'header' | 'body' | 'footer' | 'closeButton']: string;
   }> = {};
   content: React.ReactNode | ((props: any) => React.ReactNode) = '';
+  isDismissable = true;
 
   constructor(args?: Partial<DialogStore>) {
     Object.assign(this, args);
@@ -33,6 +34,7 @@ export class DialogStore implements Store {
     this.size = 'md';
     this.className = '';
     this.classNames = {};
+    this.isDismissable = true;
   }
 
   static show(v: Partial<DialogStore>) {

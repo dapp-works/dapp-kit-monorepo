@@ -8,7 +8,7 @@ import { useStore } from "../../store/index";
 const Dialog = observer(() => {
   const rootStore = useStore();
   const modal = rootStore.get(DialogStore);
-  const { className, classNames, isOpen, title, size, content } = modal;
+  const { className, classNames, isOpen, title, size, content, isDismissable } = modal;
   const Content = typeof content === 'function' ? content : () => content;
   return (
     <Modal
@@ -20,6 +20,7 @@ const Dialog = observer(() => {
         }
       }}
       classNames={classNames}
+      isDismissable={isDismissable}
     >
       <ModalContent className={cn("max-h-screen overflow-auto", className)}>
         {() => (
