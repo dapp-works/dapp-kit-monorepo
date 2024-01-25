@@ -15,7 +15,7 @@ export class DialogStore implements Store {
   classNames: Partial<{
     [key in 'wrapper' | 'base' | 'backdrop' | 'header' | 'body' | 'footer' | 'closeButton']: string;
   }> = {};
-  content: JSX.Element | string = '';
+  content: React.ReactNode | ((props: any) => React.ReactNode) = '';
 
   constructor(args?: Partial<DialogStore>) {
     Object.assign(this, args);

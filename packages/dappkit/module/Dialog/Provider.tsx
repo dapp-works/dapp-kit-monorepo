@@ -9,6 +9,7 @@ const Dialog = observer(() => {
   const rootStore = useStore();
   const modal = rootStore.get(DialogStore);
   const { className, classNames, isOpen, title, size, content } = modal;
+  const Content = typeof content === 'function' ? content : () => content;
   return (
     <Modal
       isOpen={isOpen}
@@ -25,7 +26,7 @@ const Dialog = observer(() => {
           <>
             {title && <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>}
             <ModalBody>
-              {content}
+              <Content />
             </ModalBody>
           </>
         )}

@@ -47,9 +47,9 @@ const JSONViewModal = observer(() => {
       className={complexFormModal.className}
       classNames={complexFormModal.classNames}
       scrollBehavior={complexFormModal.scrollBehavior}
+      isDismissable={complexFormModal.isDismissable}
       isOpen={isOpen}
       size={complexFormModal.modalSize}
-      isDismissable={complexFormModal.isDismissable}
       onOpenChange={(open: boolean) => {
         if (!open) {
           complexFormModal.event.emit('abort');
