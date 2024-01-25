@@ -139,19 +139,18 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       if (this.autoAlert) {
         const message = error.message;
         const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
-        if (message?.includes('user rejected transaction') || String(error).toLowerCase().includes('user rejected')) {
-          toast.error(message);
-          return
-        }
-        if (msg) {
-          toast.error(message);
-          return
-        }
-        if (message.includes("UNAUTHORIZED")) {
-          // logout
+        if (message?.includes('User rejected the request') || String(error).toLowerCase().includes('user rejected')) {
+          toast.error('User rejected the request');
+        } else if (message.includes("UNAUTHORIZED")) {
         } else {
-          this.errMsg = message;
-          toast.error(message);
+          if (msg) {
+            console.log(4567)
+            this.errMsg = msg as unknown as string;
+            toast.error(msg as unknown as string);
+          } else {
+            this.errMsg = message;
+            toast.error(message);
+          }
         }
       } else {
         this.event.emit("error", error);
