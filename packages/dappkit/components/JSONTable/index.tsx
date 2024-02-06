@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import JSONHighlight from "../Common/JSONHighlight";
-import { Button, ButtonProps, Pagination as NextuiPagination, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react';
+import { Button, ButtonProps, Card, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Pagination as NextuiPagination } from '@nextui-org/react';
 import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { _ } from "../../lib/lodash";
 import { DialogStore } from "../../module/Dialog";
@@ -16,22 +16,31 @@ export type ActionButtonType = {
   children: React.ReactNode;
 };
 
+export type ActionsOptions = {
+  headLabel?: string;
+  placement?: 'left' | 'right';
+  className?: string;
+};
+
 export type ColumnOptions<T = { [x: string]: any }> = {
   [key in keyof T]?: {
     label?: React.ReactNode;
     hidden?: boolean;
     sortable?: boolean;
+    sortKey?: string;
     order?: number;
     render?: (item: T) => any;
-    className?: string;
+    thClassName?: string;
+    tdClassName?: string;
+    labelClassName?: string;
+    valueClassName?: string;
   };
-}
+};
 
 export type Column<T = { [x: string]: any }> = {
   key: string;
   label: React.ReactNode;
   render?: (item: T) => any;
-  className?: string;
 };
 
 export type ExtendedTable<U> = {
@@ -40,6 +49,14 @@ export type ExtendedTable<U> = {
 };
 
 export type ActionsType<T> = (item: T) => ActionButtonType[] | React.ReactNode;
+
+export type CardOptions = {
+  boxClassName?: string;
+  cardClassName?: string;
+  itemClassName?: string;
+  showDivider?: boolean;
+  dividerClassName?: string;
+};
 
 export interface JSONTableProps<T = { [x: string]: any }> {
   className?: string;
@@ -57,10 +74,9 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   onRowClick?: (item: T) => void;
   rowCss?: string | ((item: T) => string | undefined);
   actions?: ActionsType<T>;
-  actionsOptions?: {
-    headLabel?: string;
-    placement?: 'left' | 'right';
-  };
+  actionsOptions?: ActionsOptions;
+  asCardOnMobile?: boolean;
+  cardOptions?: CardOptions;
 }
 
 const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
@@ -79,6 +95,14 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     rowCss,
     actions,
     actionsOptions,
+    asCardOnMobile = false,
+    cardOptions = {
+      boxClassName: '',
+      cardClassName: '',
+      itemClassName: '',
+      showDivider: true,
+      dividerClassName: '',
+    },
   } = props;
 
   const actionsHeadLabel = actionsOptions?.headLabel || '';
@@ -134,7 +158,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     }
   }, [dataSource, columnOptions]);
 
-  const onSort = (key: string, type: 'asc' | 'desc' | 'none') => {
+  const onSort = ({ sortKey, key, type }: { sortKey: string; key: string; type: 'asc' | 'desc' | 'none' }) => {
     const sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' } = {};
     Object.keys(store.sortableColumns).map((k) => {
       sortableColumns[k] = k === key ? type : 'none';
@@ -145,7 +169,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
       const result = _.orderBy(
         dataSource,
         (o) => {
-          const v = o[key];
+          const v = _.get(o, sortKey || key);
           if (v == null) {
             return type === 'desc' ? '' : v;
           }
@@ -174,6 +198,21 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
   const needExtendedTable = !!extendedTables.length;
   const data = isServerPaging ? store.sortedData : store.sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
+  if (asCardOnMobile) {
+    return (
+      <CardOnMobile
+        className={props.className}
+        data={data}
+        columns={columns}
+        columnOptions={columnOptions}
+        actions={actions}
+        actionsOptions={actionsOptions}
+        cardOptions={cardOptions}
+        pagination={pagination}
+      />
+    );
+  }
+
   return (
     <>
       <div className={cn('relative w-full overflow-auto h-[400px]', props.className)}>
@@ -183,7 +222,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
               {needExtendedTable && <TableHead></TableHead>}
               {actionsPlacement === 'left' && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
               {columns.map((item, index) => (
-                <TableHead className={`font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300`} key={item.key}>
+                <TableHead className={cn('font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300', columnOptions?.[item.key]?.thClassName)} key={item.key}>
                   <div className="flex items-center">
                     <div className="text-xs">{item.label}</div>
                     {!!store.sortableColumns[item.key] && (
@@ -191,10 +230,6 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
                         showArrow
                         backdrop="opaque"
                         placement="bottom"
-                        classNames={{
-                          base: 'p-2 border border-default-200 bg-gradient-to-br from-white to-default-250 dark:from-default-100 dark:to-default-50',
-                          arrow: 'bg-default-200',
-                        }}
                       >
                         <DropdownTrigger>
                           <div className="cursor-pointer">
@@ -207,7 +242,11 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
                           <DropdownItem
                             key="asc"
                             onClick={() => {
-                              onSort(item.key, 'asc');
+                              onSort({
+                                type: 'asc',
+                                key: item.key,
+                                sortKey: columnOptions?.[item.key]?.sortKey,
+                              });
                             }}
                           >
                             <span className="text-sm font-bold">Sort ascending</span>
@@ -215,7 +254,11 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
                           <DropdownItem
                             key="desc"
                             onClick={() => {
-                              onSort(item.key, 'desc');
+                              onSort({
+                                type: 'desc',
+                                key: item.key,
+                                sortKey: columnOptions?.[item.key]?.sortKey,
+                              });
                             }}
                           >
                             <span className="text-sm font-bold">Sort descending</span>
@@ -223,7 +266,11 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
                           <DropdownItem
                             key="none"
                             onClick={() => {
-                              onSort(item.key, 'none');
+                              onSort({
+                                type: 'none',
+                                key: item.key,
+                                sortKey: columnOptions?.[item.key]?.sortKey,
+                              });
                             }}
                           >
                             <span className="text-sm font-bold">Sort none</span>
@@ -242,7 +289,16 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
               needExtendedTable ? (
                 <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} />
               ) : (
-                <Body key={item[rowKey] || index} item={item} columns={columns} onRowClick={onRowClick} rowCss={rowCss} actions={actions} actionsPlacement={actionsPlacement} />
+                <Body
+                  key={item[rowKey] || index}
+                  item={item}
+                  columns={columns}
+                  onRowClick={onRowClick}
+                  rowCss={rowCss}
+                  actions={actions}
+                  actionsPlacement={actionsPlacement}
+                  columnOptions={columnOptions}
+                />
               ),
             )}
           </TableBody>
@@ -295,13 +351,22 @@ function renderFieldValue(v: any) {
   );
 }
 
-function Actions<T>({ actions, item }: { item: T; actions?: ActionsType<T> }) {
+function Actions<T>({ actions, actionsOptions, item, asCardOnMobile }: { item: T; actions?: ActionsType<T>; actionsOptions?: ActionsOptions; asCardOnMobile?: boolean }) {
   if (!actions) {
     return null;
   }
 
   const Com = actions(item);
   if (Array.isArray(Com)) {
+    if (asCardOnMobile) {
+      return (
+        <div className={cn('w-full flex items-center space-x-2', actionsOptions?.className)}>
+          {Com.map((btn, index) => (
+            <ActionButton key={index} props={btn.props} children={btn.children} />
+          ))}
+        </div>
+      );
+    }
     return (
       <TableCell className="max-w-[200px] overflow-auto space-x-2">
         {Com.map((btn, index) => (
@@ -311,19 +376,24 @@ function Actions<T>({ actions, item }: { item: T; actions?: ActionsType<T> }) {
     );
   }
 
+  if (asCardOnMobile) {
+    return <div className={cn('w-full flex items-center space-x-2', actionsOptions?.className)}>{Com}</div>;
+  }
   return <TableCell className="max-w-[200px] overflow-auto space-x-2">{Com}</TableCell>;
 }
 
 function Body<T>({
   item,
   columns,
+  columnOptions,
   onRowClick,
   rowCss,
   actions,
-  actionsPlacement
+  actionsPlacement,
 }: {
   item: T;
   columns: Column<T>[];
+  columnOptions?: ColumnOptions<T>;
   onRowClick?: (item: T) => void;
   rowCss?: string | ((item: T) => string | undefined);
   actions?: ActionsType<T>;
@@ -339,7 +409,7 @@ function Body<T>({
       {actionsPlacement === 'left' && <Actions item={item} actions={actions} />}
       {columns.map((column) => {
         return (
-          <TableCell key={column.key} className={cn('max-w-[200px] overflow-auto', column.className)}>
+          <TableCell key={column.key} className={cn('max-w-[200px] overflow-auto', columnOptions?.[column.key]?.tdClassName)}>
             {column.render
               ? column.render(item)
               : renderFieldValue(item[column.key])}
@@ -420,3 +490,68 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
 
 export default JSONTable;
 export { JSONTable }
+
+function CardOnMobile<T>({
+  className,
+  data,
+  columns,
+  columnOptions,
+  rowKey,
+  actions,
+  actionsOptions,
+  cardOptions,
+  pagination,
+}: {
+  className?: string;
+  data: T[];
+  columns: Column<T>[];
+  columnOptions?: ColumnOptions<T>;
+  rowKey?: string;
+  actions?: ActionsType<T>;
+  actionsOptions?: ActionsOptions;
+  cardOptions?: CardOptions;
+  pagination: PaginationState;
+}) {
+  return (
+    <div className={className}>
+      <div className={cn('space-y-2', cardOptions?.boxClassName)}>
+        {data.map((item, index) => {
+          return (
+            <Card key={item[rowKey] || index} className={cn('shadow-none p-4', cardOptions?.cardClassName)}>
+              {columns.map((column, i) => {
+                const option = columnOptions?.[column.key];
+                return (
+                  <div key={column.key}>
+                    <div className={cn('w-full', cardOptions?.itemClassName)}>
+                      <div className={option?.labelClassName}>{column.label}</div>
+                      <div className={option?.valueClassName}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                    </div>
+                    {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
+                  </div>
+                );
+              })}
+              <Actions asCardOnMobile item={item} actions={actions} actionsOptions={actionsOptions} />
+            </Card>
+          );
+        })}
+      </div>
+      {pagination.total > pagination.limit && (
+        <div className="flex justify-center h-[30px] mt-4">
+          <NextuiPagination
+            showControls
+            size="sm"
+            radius="sm"
+            total={Math.ceil(pagination.total / pagination.limit)}
+            page={pagination.page}
+            initialPage={1}
+            onChange={(currentPage) => {
+              pagination.setData({
+                page: currentPage,
+              });
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
