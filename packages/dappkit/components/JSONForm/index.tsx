@@ -31,7 +31,7 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
   : never;
 
 export type LayoutConfigType<T, L> = L extends 'TabLayout'
-  ? { $type: 'TabLayout' } & FormLayoutType<T, L>
+  ? { $type: 'TabLayout'; $variant?: 'line' | 'solid' } & FormLayoutType<T, L>
   : L extends 'GridLayout'
   ? { $type: 'GridLayout'; $gridColumn?: number } & FormLayoutType<T, L>
   : L extends 'ListLayout'
@@ -70,6 +70,7 @@ export type JSONFormProps<T = FormDataType> = {
   onBatchSubmit?: (data: T, setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
   onChange?: (data: Partial<T>) => void;
+  onReady?: (formStates: { [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema> }) => void;
   batchSubmitButtonProps?: ButtonProps & { onBatchSubmit?: (formData: T, setLoading: Dispatch<SetStateAction<boolean>>) => void };
 };
 

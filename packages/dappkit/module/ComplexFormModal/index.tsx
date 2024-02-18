@@ -27,6 +27,7 @@ export class FormPlugin<T extends FormDataType> implements Store {
   onBatchSubmit?: (data: T, setLoading?: Dispatch<SetStateAction<boolean>>) => void;
   onSet?: (v: FormDataOfKey<T>, form: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => FormDataOfKey<T>;
   onChange?: (data: Partial<T>) => void;
+  onReady?: (formStates: { [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema> }) => void;
   batchSubmitButtonProps?: ButtonProps & { onBatchSubmit?: (formData: T, setLoading: Dispatch<SetStateAction<boolean>>) => void };
 
   constructor(args?: Partial<FormPlugin<T>>) {
@@ -52,6 +53,7 @@ export class FormPlugin<T extends FormDataType> implements Store {
     this.onBatchSubmit = undefined;
     this.onSet = undefined;
     this.onChange = undefined;
+    this.onReady = undefined;
     this.event.removeAllListeners();
   }
 }
