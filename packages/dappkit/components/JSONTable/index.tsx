@@ -75,7 +75,7 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   rowCss?: string | ((item: T) => string | undefined);
   actions?: ActionsType<T>;
   actionsOptions?: ActionsOptions;
-  asCardOnMobile?: boolean;
+  asCard?: boolean;
   cardOptions?: CardOptions;
 }
 
@@ -95,7 +95,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     rowCss,
     actions,
     actionsOptions,
-    asCardOnMobile = false,
+    asCard = false,
     cardOptions = {
       boxClassName: '',
       cardClassName: '',
@@ -198,7 +198,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
   const needExtendedTable = !!extendedTables.length;
   const data = isServerPaging ? store.sortedData : store.sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
-  if (asCardOnMobile) {
+  if (asCard) {
     return (
       <CardOnMobile
         className={props.className}
@@ -351,14 +351,14 @@ function renderFieldValue(v: any) {
   );
 }
 
-function Actions<T>({ actions, actionsOptions, item, asCardOnMobile }: { item: T; actions?: ActionsType<T>; actionsOptions?: ActionsOptions; asCardOnMobile?: boolean }) {
+function Actions<T>({ actions, actionsOptions, item, asCard }: { item: T; actions?: ActionsType<T>; actionsOptions?: ActionsOptions; asCard?: boolean }) {
   if (!actions) {
     return null;
   }
 
   const Com = actions(item);
   if (Array.isArray(Com)) {
-    if (asCardOnMobile) {
+    if (asCard) {
       return (
         <div className={cn('w-full flex items-center space-x-2', actionsOptions?.className)}>
           {Com.map((btn, index) => (
@@ -376,7 +376,7 @@ function Actions<T>({ actions, actionsOptions, item, asCardOnMobile }: { item: T
     );
   }
 
-  if (asCardOnMobile) {
+  if (asCard) {
     return <div className={cn('w-full flex items-center space-x-2', actionsOptions?.className)}>{Com}</div>;
   }
   return <TableCell className="max-w-[200px] overflow-auto space-x-2">{Com}</TableCell>;
@@ -530,7 +530,7 @@ function CardOnMobile<T>({
                   </div>
                 );
               })}
-              <Actions asCardOnMobile item={item} actions={actions} actionsOptions={actionsOptions} />
+              <Actions asCard item={item} actions={actions} actionsOptions={actionsOptions} />
             </Card>
           );
         })}
