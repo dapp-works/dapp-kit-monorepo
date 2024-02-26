@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react-lite';
-import RootStore from '../../../store/root';
+
 import { Store } from '../../../store/standard/base';
 
 export class Collection<T = any> implements Store {

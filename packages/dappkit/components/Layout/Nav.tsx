@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { HeaderStore } from "../../module/Layout/header";
-import RootStore from "../../store/root";
+import { RootStore } from "../../store/root";
 import { Logo } from "./Logo";
 import { SlotPlugin } from "../../module/Core/Slot";
 

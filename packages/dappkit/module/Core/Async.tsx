@@ -1,17 +1,10 @@
-import React, { lazy, Suspense } from "react";
 import axios from "axios";
-import { toJS } from "mobx";
-import { observer } from "mobx-react-lite";
-
-import { helper } from "../../lib/helper";
 import { _ } from "../../lib/lodash";
-import RootStore from "../../store/root";
+import { RootStore } from "../../store/root";
 import { Store } from "../../store/standard/base";
 import { PromiseState } from "../../store/standard/PromiseState";
-import { ToastPlugin } from "../Toast/Toast";
 import { StoragePlugin } from "./Storage";
-import { Input } from "@nextui-org/react";
-import JSONEditor from "../../../dappform/components/JSONEditor";
+
 
 export const jwt = StoragePlugin.Get({
   key: "asyncStorage.token",
@@ -53,60 +46,60 @@ export class AsyncStorage implements Store {
     });
   }
 
-  devtools = {
-    panels: [
-      {
-        title: "AsyncStorage",
-        render: observer(() => {
+  // devtools = {
+  //   panels: [
+  //     {
+  //       title: "AsyncStorage",
+  //       render: observer(() => {
 
-          return (
-            <div className="h-full w-full overflow-auto">
-              <Input
-                placeholder="Please enter your asyncStorage token here"
-                value={jwt.value}
-                onChange={(e) => jwt.set(e.target.value)}
-              />
-              <JSONEditor
-                className="h-full"
-                initialJson={JSON.stringify(toJS(this.data.value), null, 2)}
-                onChange={(data) => {
-                  console.log("onChange", data);
-                  helper.deepMerge(this.data.value, data);
-                  this.syncStorage();
-                }}
-                onSubmit={async (data) => {
-                  if (!jwt.value) {
-                    RootStore.Get(ToastPlugin).error(
-                      "Please enter your asyncStorage token first",
-                    );
-                  } else {
-                    if (!process.env.NEXT_PUBLIC_PROJECT_ID) {
-                      RootStore.Get(ToastPlugin).error(
-                        "Please set your project id first",
-                      );
-                    }
-                    await axios.post(
-                      `https://dappkit-async-api.deno.dev/update/${process.env.NEXT_PUBLIC_PROJECT_ID}`,
-                      data,
-                      {
-                        headers: {
-                          Authorization: `${jwt.value}`,
-                        },
-                      },
-                    );
-                  }
-                  this.forceUpdate = true;
-                  await this.data.wait({ call: true });
-                  RootStore.Get(ToastPlugin).success("Update success");
-                  console.log("onSubmit", data);
-                }}
-              />
-            </div>
-          );
-        }),
-      },
-    ],
-  };
+  //         return (
+  //           <div className="h-full w-full overflow-auto">
+  //             <Input
+  //               placeholder="Please enter your asyncStorage token here"
+  //               value={jwt.value}
+  //               onChange={(e) => jwt.set(e.target.value)}
+  //             />
+  //             <JSONEditor
+  //               className="h-full"
+  //               initialJson={JSON.stringify(toJS(this.data.value), null, 2)}
+  //               onChange={(data) => {
+  //                 console.log("onChange", data);
+  //                 helper.deepMerge(this.data.value, data);
+  //                 this.syncStorage();
+  //               }}
+  //               onSubmit={async (data) => {
+  //                 if (!jwt.value) {
+  //                   RootStore.Get(ToastPlugin).error(
+  //                     "Please enter your asyncStorage token first",
+  //                   );
+  //                 } else {
+  //                   if (!process.env.NEXT_PUBLIC_PROJECT_ID) {
+  //                     RootStore.Get(ToastPlugin).error(
+  //                       "Please set your project id first",
+  //                     );
+  //                   }
+  //                   await axios.post(
+  //                     `https://dappkit-async-api.deno.dev/update/${process.env.NEXT_PUBLIC_PROJECT_ID}`,
+  //                     data,
+  //                     {
+  //                       headers: {
+  //                         Authorization: `${jwt.value}`,
+  //                       },
+  //                     },
+  //                   );
+  //                 }
+  //                 this.forceUpdate = true;
+  //                 await this.data.wait({ call: true });
+  //                 RootStore.Get(ToastPlugin).success("Update success");
+  //                 console.log("onSubmit", data);
+  //               }}
+  //             />
+  //           </div>
+  //         );
+  //       }),
+  //     },
+  //   ],
+  // };
 
   constructor(args: Partial<AsyncStorage> = {}) {
     Object.assign(this, args);

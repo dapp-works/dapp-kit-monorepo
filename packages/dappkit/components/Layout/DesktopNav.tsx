@@ -6,11 +6,8 @@ import { observer } from "mobx-react-lite";
 
 import { cn } from "../../lib/utils";
 import { HeaderStore } from "../../module/Layout/header";
-import { NavStore } from "../../module/Layout/nav";
-import RootStore from "../../store/root";
-import { StoragePlugin } from "../../module/Core/Storage";
+import { RootStore } from "../../store/root";
 import { SlotPlugin } from "../../module/Core/Slot";
-import ErrorBoundary from "../Common/ErrorBoundary";
 
 export const DesktopNav = observer(
   ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {

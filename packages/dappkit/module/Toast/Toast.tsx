@@ -5,7 +5,6 @@ import { Store } from "../../store/standard/base";
 
 export class ToastPlugin implements Store {
   sid = "ToastPlugin";
-  stype = "Plugin";
   provider = () => <Toaster />;
 
   success = toast.success;

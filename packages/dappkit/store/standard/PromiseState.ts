@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { makeAutoObservable } from "mobx";
 
 import { ToastPlugin } from "../../module/Toast/Toast";
-import RootStore from "../root";
+import { RootStore } from "../root";
 import { BaseState, BooleanState, NumberState } from "./base";
 
 export interface Events {
@@ -22,6 +22,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   value?: Awaited<U> = null;
   defaultValue: any = null;
   function: T;
+  transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
 
   autoAlert = true;
   context: any = undefined;
@@ -65,6 +66,11 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     this._onSelect(index);
   }
 
+  toJSON() {
+    return {
+      value: this.value,
+    };
+  }
   //@ts-ignore
   async waitItem(): Promise<Awaited<U>[0]> {
     await this.wait();
@@ -107,14 +113,12 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     }
   }
 
-  toJSON() {
-    return {
-      value: this.value,
-    };
-  }
-
-  setValue(val) {
-    this.value = val;
+  async setValue(val) {
+    let _val = val;
+    if (this.transform) {
+      _val = await this.transform(val);
+    }
+    this.value = _val;
     this.event.emit("data", val);
     this.event.emit("update");
   }
@@ -134,11 +138,19 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     } catch (error) {
       if (this.autoAlert) {
         const message = error.message;
-        if (message.includes("UNAUTHORIZED")) {
-          // logout
+        const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
+        if (message?.includes('User rejected the request') || String(error).toLowerCase().includes('user rejected')) {
+          toast.error('User rejected the request');
+        } else if (message.includes("UNAUTHORIZED")) {
         } else {
-          this.errMsg = message;
-          toast.error(message);
+          if (msg) {
+            console.log(4567)
+            this.errMsg = msg as unknown as string;
+            toast.error(msg as unknown as string);
+          } else {
+            this.errMsg = message;
+            toast.error(message);
+          }
         }
       } else {
         this.event.emit("error", error);

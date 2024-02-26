@@ -1,6 +1,6 @@
 import React from 'react';
-import { Store } from '../../store/standard/base';
 import { Inspector, InspectParams } from 'react-dev-inspector';
+import { Store } from '../../store/standard/base';
 
 export class DevInspectorPlugin implements Store {
   sid = 'DevInspectorPlugin';
