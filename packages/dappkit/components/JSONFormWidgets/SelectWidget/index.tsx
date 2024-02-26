@@ -35,7 +35,7 @@ function SelectWidget(props: SelectWidgetProps) {
       >
         {labelText && (
           <label
-            className={cn("flex items-center text-sm", {
+            className={cn("flex items-center text-sm whitespace-nowrap", {
               "mb-2": labelPlacement === "top",
               "mr-2": labelPlacement === "left",
             })}
