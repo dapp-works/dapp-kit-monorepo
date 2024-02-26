@@ -4,9 +4,8 @@ import Link from "next/link";
 import { observer } from "mobx-react-lite";
 
 import { cn } from "../../lib/utils";
-import { NavStore } from "../../module/Layout/nav";
 import { rootStore } from "../../store";
-import RootStore from "../../store/root";
+import { RootStore } from "../../store/root";
 import { UserStore } from "../../store/user";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Avatar } from "@nextui-org/react";
 import { StoragePlugin } from "../../module/Core/Storage";

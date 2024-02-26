@@ -15,8 +15,8 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
-      "outputs": [".next/**"]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**"]
     },
     "lint": {},
     "lint:fix": {},

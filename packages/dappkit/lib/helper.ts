@@ -1,11 +1,8 @@
 import BN from "bignumber.js";
 import JSONFormat from "json-format";
-import jwt from "jsonwebtoken";
-import numeral from "numeral";
-import { v4 as uuid } from "uuid";
-
 import { _ } from "./lodash";
 import copy from "copy-to-clipboard";
+import numeral from 'numeral';
 
 const valMap = {
   undefined: "",
@@ -65,13 +62,6 @@ export const helper = {
       try {
         return JSON.parse(val);
       } catch (error) {
-        return val;
-      }
-    },
-    clearUUID(val: any) {
-      try {
-        return JSON.parse(JSON.stringify(val).replace(/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/g, uuid()));
-      } catch (e) {
         return val;
       }
     },
@@ -195,13 +185,6 @@ export const helper = {
       }
     },
   },
-  encode: async (jwtClaims: { sub: string; name: string; iat: number; exp: number }) => {
-    return jwt.sign(jwtClaims, process.env["JWT_SECRET"], { algorithm: "HS256" });
-  },
-  decode: async (token: string): Promise<{ sub: string; name: string; iat: number; exp: number }> => {
-    //@ts-ignore
-    return jwt.verify(token, process.env["JWT_SECRET"], { algorithms: ["HS256"] });
-  },
   number: {
     countNonZeroNumbers: (str: string) => {
       let index = 0;
@@ -212,46 +195,45 @@ export const helper = {
     numberWithCommas(num: number) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
+    getBN: (value: number | string | BN) => {
+      return value instanceof BN ? value : typeof value === "string" ? new BN(Number(value)) : new BN(value);
+    },
     toPrecisionFloor: (str: number | string, options?: { decimals?: number; format?: string; toLocalString?: boolean }) => {
-      const { decimals = 6, format = "", toLocalString = false } = options || {};
-      if (!str || isNaN(Number(str))) return "";
+      const { decimals = 6, format = '', toLocalString = false } = options || {};
+      if (!str || isNaN(Number(str))) return '';
 
       if (helper.number.countNonZeroNumbers(String(str)) <= decimals) return String(str);
       const numStr = new BN(str).toFixed();
-      let result = "";
+      let result = '';
       let index = 0;
       const numLength = numStr.length;
 
-      for (; numStr[index] === "0" && index < numLength; index += 1);
+      for (; numStr[index] === '0' && index < numLength; index += 1);
 
-      if (index === numLength) return "0";
+      if (index === numLength) return '0';
 
-      if (numStr[index] === ".") {
+      if (numStr[index] === '.') {
         // number < 0
-        result = "0";
-        for (; (numStr[index] === "0" || numStr[index] === ".") && index < numLength; index += 1) {
+        result = '0';
+        for (; (numStr[index] === '0' || numStr[index] === '.') && index < numLength; index += 1) {
           result = result + numStr[index];
         }
       }
       let resultNumLength = 0;
-      for (; index < numLength && (resultNumLength < decimals || !result.includes(".")); index += 1) {
+      for (; index < numLength && (resultNumLength < decimals || !result.includes('.')); index += 1) {
         result = result + numStr[index];
 
-        if (numStr[index] !== ".") resultNumLength += 1;
+        if (numStr[index] !== '.') resultNumLength += 1;
       }
       if (format) {
         return numeral(Number(result)).format(format);
       }
 
       if (toLocalString) {
-        console.log(helper.number.numberWithCommas(Number(new BN(result).toFixed())));
         return helper.number.numberWithCommas(Number(new BN(result).toFixed()));
       }
 
       return new BN(result).toFixed();
-    },
-    getBN: (value: number | string | BN) => {
-      return value instanceof BN ? value : typeof value === "string" ? new BN(Number(value)) : new BN(value);
     },
   },
 };
