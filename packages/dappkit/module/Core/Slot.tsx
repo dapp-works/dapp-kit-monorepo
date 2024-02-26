@@ -1,5 +1,5 @@
 import { Store } from "../../store/standard/base";
-import RootStore from "../../store/root";
+import { RootStore } from "../../store/root";
 import React, { ReactNode } from "react";
 
 export class SlotPlugin implements Store {

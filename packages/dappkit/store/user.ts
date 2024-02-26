@@ -1,34 +1,33 @@
-import { makeAutoObservable } from 'mobx';
-import { User } from 'next-auth';
-import EventEmitter from 'events';
-import { Store } from './standard/base';
-import { useSession } from 'next-auth/react';
-import { rootStore } from '.';
-import axios from 'axios';
-import { useEffect } from 'react';
+import { makeAutoObservable } from "mobx";
+import { type User } from "next-auth";
+import EventEmitter from "events";
+import { type Store } from "./standard/base";
+import { rootStore } from ".";
+import axios from "axios";
+import { useEffect } from "react";
 
 export class UserStore implements User, Store {
-  sid = 'user';
-  id: string = '';
-  name?: string = '';
-  email?: string = '';
-  image?: string = '';
-  token: string = '';
+  sid = "user";
+  id: string = "";
+  name?: string = "";
+  email?: string = "";
+  image?: string = "";
+  token: string = "";
 
   event = new EventEmitter();
 
   signin() {
-    this.event.emit('user:signin', this);
+    this.event.emit("user:signin", this);
   }
 
   logout() {
     this.set({
-      token: '',
-      name: '',
-      email: '',
-      image: '',
+      token: "",
+      name: "",
+      email: "",
+      image: "",
     });
-    this.event.emit('user:logout', this);
+    this.event.emit("user:logout", this);
   }
 
   wait() {
@@ -37,7 +36,7 @@ export class UserStore implements User, Store {
         res(this);
       }
 
-      this.event.once('user:ready', (user) => {
+      this.event.once("user:ready", (user) => {
         res(this);
       });
     });
@@ -46,10 +45,10 @@ export class UserStore implements User, Store {
   get isLogin() {
     return !!this.token;
   }
-  
+
   set(args: Partial<UserStore>) {
     Object.assign(this, args);
-    this.event.emit('user:ready', this);
+    this.event.emit("user:ready", this);
   }
 
   constructor() {
@@ -57,14 +56,14 @@ export class UserStore implements User, Store {
   }
 
   use() {
-    useEffect(()=>{
+    useEffect(() => {
       const userStore = rootStore.get(UserStore);
-      axios.get('/api/auth/session').then(res=>{
+      axios.get("/api/auth/session").then((res) => {
         // console.log(res.data.user,'res')
-        if(!userStore.isLogin && res?.data?.user){
-          this.set(res.data.user)
+        if (!userStore.isLogin && res?.data?.user) {
+          this.set(res.data.user);
         }
-    })
-    },[])
-  }  
+      });
+    }, []);
+  }
 }

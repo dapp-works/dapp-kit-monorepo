@@ -1,5 +1,4 @@
-import { makeAutoObservable } from 'mobx';
-import { StorageState } from './StorageState';
+import { makeAutoObservable } from "mobx";
 
 export class MappingState<T> {
   currentId: any;
@@ -24,23 +23,6 @@ export class MappingState<T> {
   }
   setCurrentId(val: any) {
     this.currentId = val;
-  }
-}
-
-export class MappingStorageState<T> {
-  currentId: StorageState<any>;
-  map: {
-    [key: string]: T;
-  };
-  constructor(args: Partial<MappingState<T>>) {
-    Object.assign(this, args);
-    makeAutoObservable(this);
-  }
-  get current(): T {
-    return this.map[this.currentId.value];
-  }
-  setCurrentId(val: any) {
-    this.currentId.save(val);
   }
 }
 
