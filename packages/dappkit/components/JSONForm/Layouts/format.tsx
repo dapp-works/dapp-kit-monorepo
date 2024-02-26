@@ -42,6 +42,10 @@ export const getFormState = <T,>(
         if (formConfigData[k]?.selectOptions) {
           formConfigData[k]["ui:widget"] = SelectWidget;
           p[k].selectOptions = formConfigData[k].selectOptions;
+          formConfigData[k]['ui:options'] = {
+            size: 'sm',
+            ...uiOptions,
+          };
         } else {
           if (!formConfigData[k]["ui:widget"]) {
             formConfigData[k]["ui:widget"] = InputWidget;
