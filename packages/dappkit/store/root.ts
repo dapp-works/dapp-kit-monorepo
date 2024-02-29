@@ -10,22 +10,22 @@ export type EventMap = {
 };
 
 export class MyEmitter extends EventEmitter {
-  metas: Record<string, { count: number }> = {};
+  // metas: Record<string, { count: number }> = {};
   _events: Record<string, any>;
   emit(type: any, ...args: any[]) {
     if (process.env.NODE_ENV == "development") {
       super.emit("*", { type, args });
     }
-    if (!this.metas[type]) {
-      this.metas[type] = { count: 0 };
-    }
-    this.metas[type].count++;
+    // if (!this.metas[type]) {
+    //   this.metas[type] = { count: 0 };
+    // }
+    // this.metas[type].count++;
     return super.emit(type, ...args) || super.emit("", ...args);
   }
   constructor() {
     super();
     makeObservable(this, {
-      metas: true,
+      // metas: true,
     });
   }
 }
