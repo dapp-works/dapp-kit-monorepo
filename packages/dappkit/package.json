@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.0",
+  "version": "0.4.7",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -42,6 +42,10 @@
     "./jsontable": {
       "import": "./dist/jsontable.js",
       "require": "./dist/jsontable.js"
+    },
+    "./experimental": {
+      "import": "./dist/experimental.js",
+      "require": "./dist/experimental.js"
     }
   },
   "typesVersions": {
@@ -68,7 +72,7 @@
         "./dist/inspector.d.ts"
       ],
       "jsontable": [
-        "./dist/jsontalbe.d.ts"
+        "./dist/jsontable.d.ts"
       ]
     }
   },
@@ -79,27 +83,36 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "@nextui-org/react": ">=2.1.10",
     "@monaco-editor/react": ">=4.5.1",
+    "@nextui-org/react": ">=2.1.10",
     "@rjsf/core": ">=5.9.0",
     "@rjsf/utils": ">=5.9.0",
     "@rjsf/validator-ajv6": ">=5.9.0",
     "@tremor/react": ">=3.0.1",
     "axios": ">=1.4.0",
     "bignumber.js": ">=9.1.1",
+    "class-variance-authority": "^0.7.0",
+    "dataloader": "^2.2.2",
+    "dexie": "^3.2.5",
+    "fast-json-patch": "*",
     "lodash": ">=4.17.21",
+    "lucide-react": "^0.343.0",
     "mobx": ">=6.9.0",
     "mobx-react-lite": ">=3.4.3",
     "next-auth": ">=4.24.4",
+    "numeral": "^2.0.6",
     "react": ">=18.2.0",
+    "react-dev-inspector": "^2.0.1",
     "react-dom": ">=18.2.0",
     "react-draggable": ">=4.4.6",
-    "react-hot-toast": ">=2.4.1",
-    "dataloader": "^2.2.2",
-    "dexie": "^3.2.5"
+    "react-hot-toast": ">=2.4.1"
   },
   "dependencies": {
-    "json-format": "^1.0.1"
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-icons": "^1.3.0",
+    "copy-to-clipboard": "^3.3.3",
+    "json-format": "^1.0.1",
+    "typed-emitter": "^2.1.0"
   },
   "author": "uuz",
   "license": "ISC",

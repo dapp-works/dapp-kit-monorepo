@@ -16,9 +16,7 @@ import { RootStore } from "../../store/root";
 // } from "../ui/dropdown-menu";
 // import { Button } from "@nextui-org/react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import { StoragePlugin } from "../../module/Core/Storage";
 import { SlotPlugin } from "../../module/Core/Slot";
-import ErrorBoundary from "../../components/Common/ErrorBoundary"
 
 export const MobileNav = observer(
   ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {

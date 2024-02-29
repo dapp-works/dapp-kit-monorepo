@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { rootStore, Store, HeaderStore, helper, StoragePlugin, PromiseState, } from "@dappworks/kit";
+import { rootStore, Store, helper, , PromiseState, } from "@dappworks/kit";
+import { StoragePlugin } from "@dappworks/kit/experimental"
 import { signIn } from "next-auth/react";
 
 
