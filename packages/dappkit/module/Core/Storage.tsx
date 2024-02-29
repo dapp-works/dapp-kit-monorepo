@@ -4,7 +4,7 @@ import { RootStore } from "../../store/root";
 import { Store } from "../../store/standard/base";
 import { makeAutoObservable, observable, toJS } from "mobx";
 import { _ } from "../../lib/lodash";
-import { AsyncStorage } from "./Async";
+// import { AsyncStorage } from "./Async";
 
 // import { JSONForm } from "../../components/JSONForm"
 
@@ -71,18 +71,18 @@ export class StoragePlugin implements Store {
         return globalThis.localStorage.removeItem(key);
       },
     },
-    asyncStorage: {
-      name: 'asyncStorage',
-      get(key) {
-        return RootStore.Get(AsyncStorage).get(key);
-      },
-      set(key, value) {
-        return RootStore.Get(AsyncStorage).set(key, value);
-      },
-      remove(key) {
-        return RootStore.Get(AsyncStorage).remove(key);
-      },
-    },
+    // asyncStorage: {
+    //   name: 'asyncStorage',
+    //   get(key) {
+    //     return RootStore.Get(AsyncStorage).get(key);
+    //   },
+    //   set(key, value) {
+    //     return RootStore.Get(AsyncStorage).set(key, value);
+    //   },
+    //   remove(key) {
+    //     return RootStore.Get(AsyncStorage).remove(key);
+    //   },
+    // },
   };
   engines = StoragePlugin.engines;
   // debounceFn: (val: any) => void;

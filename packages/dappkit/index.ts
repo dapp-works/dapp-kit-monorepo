@@ -8,4 +8,4 @@ export * from "./store/standard/base";
 export { RootStore } from "./store/root";
 export { AppProvider } from "./module/AppProvider";
 export { cache } from "./lib/dexie"
-export * from "./lib/helper";
+export { helper } from "./lib/helper";
