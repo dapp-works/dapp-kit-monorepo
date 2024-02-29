@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.3.61",
+  "version": "0.4.0",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,6 +34,14 @@
     "./ui": {
       "import": "./dist/ui.js",
       "require": "./dist/ui.js"
+    },
+    "./inspector": {
+      "import": "./dist/inspector.js",
+      "require": "./dist/inspector.js"
+    },
+    "./jsontable": {
+      "import": "./dist/jsontable.js",
+      "require": "./dist/jsontable.js"
     }
   },
   "typesVersions": {
@@ -55,6 +63,12 @@
       ],
       "ui": [
         "./dist/ui.d.ts"
+      ],
+      "inspector": [
+        "./dist/inspector.d.ts"
+      ],
+      "jsontable": [
+        "./dist/jsontalbe.d.ts"
       ]
     }
   },
@@ -65,8 +79,7 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "@blocknote/core": ">=0.8.2",
-    "@blocknote/react": ">=0.8.2",
+    "@nextui-org/react": ">=2.1.10",
     "@monaco-editor/react": ">=4.5.1",
     "@rjsf/core": ">=5.9.0",
     "@rjsf/utils": ">=5.9.0",
