@@ -1,10 +1,7 @@
 export * from "./module/Confirm";
-export * from "./module/Core/Async";
 // export * from "./module/Core/Page";
-export * from "./module/Core/Slot";
 // export * from "./module/Core/AppProvider";
 // export * from "./module/Devtool/devtool";
-export * from "./module/Core/Storage";
 // export * from "./module/DevInspector";
 export * from "./module/Toast/Toast";
 // export * from "./module/Layout/header";

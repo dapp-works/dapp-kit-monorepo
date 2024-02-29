@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 const JSONMetricsView = dynamic(() => import('@dappworks/kit/metrics').then(t => t.JSONMetricsView), { ssr: false })
 const JSONForm = dynamic(() => import('@dappworks/kit/form').then(t => t.JSONForm), { ssr: false })
 
-import { StoragePlugin } from "@dappworks/kit/plugins";
+import { StoragePlugin } from "@dappworks/kit/experimental";
 import { Input } from "@nextui-org/react";
 
 const inputValue = StoragePlugin.Get({
