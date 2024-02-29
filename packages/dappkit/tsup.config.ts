@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   // Outputs `dist/a.js` and `dist/b.js`.
   // Outputs `dist/foo.js` and `dist/bar.js`
-  splitting: true,
+  splitting: false,
   sourcemap: false,
   clean: true,
   entry: {
@@ -12,5 +12,8 @@ export default defineConfig({
     plugins: "plugins.ts",
     ui: "ui.ts",
     dev: "dev.ts",
+    inspector: "inspector.ts",
+    jsontable: "jsontable.ts",
+
   },
 });
