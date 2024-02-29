@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import Form from "@rjsf/core";
 import {
-  ErrorListProps,
-  FieldTemplateProps,
-  getSubmitButtonOptions,
-  ObjectFieldTemplateProps,
-  SubmitButtonProps,
+  type ErrorListProps,
+  type FieldTemplateProps,
+  type ObjectFieldTemplateProps,
+  type SubmitButtonProps,
 } from "@rjsf/utils";
+import * as Utils from "@rjsf/utils"
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { observer } from "mobx-react-lite";
 
@@ -125,7 +125,7 @@ const ErrorListTemplate = ({ errors }: ErrorListProps) => {
 };
 
 const SubmitButton = ({ uiSchema }: SubmitButtonProps) => {
-  const { submitText, norender, props: submitButtonProps = {} } = getSubmitButtonOptions(uiSchema);
+  const { submitText, norender, props: submitButtonProps = {} } = Utils.getSubmitButtonOptions(uiSchema);
   if (norender) {
     return null;
   }
