@@ -4,9 +4,10 @@ import "@acme/auth/env.mjs";
 
 /** @type {import("next").NextConfig} */
 const config = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
+  // swcMinify: true,
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: ["@acme/api", "@acme/auth", "@acme/db", "@dappworks/kit", "@dappworks/jsonview"],
+  transpilePackages: ["@acme/api", "@acme/auth", "@acme/db", "@dappworks/kit"],
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
