@@ -17,7 +17,7 @@ export const init = () => {
       // new WalletStore(),
       // new StoragePlugin(),
       // new AsyncStorage(),
-      // new DevInspectorPlugin(),
+      new DevInspectorPlugin(),
       // new ThemePlugin(),
       // new Project(),
     ]);
