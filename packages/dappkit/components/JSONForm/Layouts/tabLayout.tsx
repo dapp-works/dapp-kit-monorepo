@@ -1,13 +1,22 @@
-import React, { useEffect } from "react";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Tab, Tabs } from "@nextui-org/react";
 import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
+import { cn } from "../../../lib/utils";
 
 export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
   const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady } = props;
-  const { $type, $variant = 'line', ...formLayout } = layoutConfig as LayoutConfigType<T, 'TabLayout'>;
-  const formStates = getFormState(props, formLayout);
+  const {
+    $type,
+    $tabsProps = {
+      color: 'default',
+    },
+    ...formLayout
+  } = layoutConfig as LayoutConfigType<T, 'TabLayout'>;
+  const formStates = useMemo(() => getFormState(props, formLayout), [props.formData, props.formConfig, props.layoutConfig]);
+  const formKeys = Object.keys(formStates);
+  const [selectedTab, setSelectedTab] = useState(formKeys[0] || '');
 
   useEffect(() => {
     if (formStates && onReady) {
@@ -17,26 +26,32 @@ export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
 
   return (
     <>
-      <TabGroup>
-        <TabList variant={$variant}>
-          {Object.keys(formStates).map((key, index) => {
-            const layout = formLayout[key];
-            return <Tab id={`form-${key}-tab-menu`}>{layout?.title || key}</Tab>;
-          })}
-        </TabList>
-        <TabPanels>
-          {Object.keys(formStates).map((key) => {
-            const layout = formLayout[key];
-            return (
-              <TabPanel key={key} id={`form-${key}-tab-content`}>
-                <JSONSchemaForm formState={formStates[key]}>
-                  {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
-                </JSONSchemaForm>
-              </TabPanel>
-            );
-          })}
-        </TabPanels>
-      </TabGroup>
+      <Tabs
+        {...$tabsProps}
+        selectedKey={selectedTab}
+        onSelectionChange={(key: string) => {
+          setSelectedTab(key);
+        }}
+      >
+        {formKeys.map((key) => {
+          const layout = formLayout[key];
+          return <Tab id={`form-${key}-tab-menu`} key={key} title={layout?.title || key} />;
+        })}
+      </Tabs>
+      {formKeys.map((key) => {
+        const layout = formLayout[key];
+        return (
+          <div
+            key={key}
+            id={`form-${key}-tab-content`}
+            className={cn('mt-4', selectedTab === key ? '' : 'hidden')}
+          >
+            <JSONSchemaForm formState={formStates[key]}>
+              {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+            </JSONSchemaForm>
+          </div>
+        );
+      })}
       {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
         <div className="w-full flex">
           <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} buttonProps={batchSubmitButtonProps} />
