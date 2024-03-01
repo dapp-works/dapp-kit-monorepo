@@ -3,7 +3,7 @@ import { PromiseState } from '../../store/standard/PromiseState';
 import { DialogStore } from '../Dialog';
 import { DialogContent, GroupOptions } from './ui';
 
-class PromiseStateGroup {
+export class PromiseStateGroup {
   group: PromiseState<any, any>[] = [];
   groupOptions: GroupOptions = [];
 
@@ -66,4 +66,3 @@ class PromiseStateGroup {
   }
 }
 
-export default PromiseStateGroup;
