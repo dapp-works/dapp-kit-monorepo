@@ -35,7 +35,7 @@ export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
       >
         {formKeys.map((key) => {
           const layout = formLayout[key];
-          return <Tab id={`form-${key}-tab-menu`} key={key} title={layout?.title || key} />;
+          return <Tab id={`form-${key}-tab-menu`} key={key} title={<div className={layout?.titleBoxCss}>{layout?.title || key}</div>} />;
         })}
       </Tabs>
       {formKeys.map((key) => {
