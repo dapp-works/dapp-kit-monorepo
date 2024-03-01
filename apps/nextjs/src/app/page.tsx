@@ -9,7 +9,7 @@ import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
 import { JSONTable } from "@dappworks/kit/jsontable";
 import { JSONForm, getComplexFormData } from "@dappworks/kit/form";
-import { JSONMetricsView } from "@dappworks/kit/metrics";
+// import { JSONMetricsView } from "@dappworks/kit/metrics";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -403,25 +403,28 @@ const HomePage = observer(() => {
         Get Complex Form Data
       </Button>
 
-      <JSONMetricsView
-        data={[{
-          type: 'KPICard',
-          title: 'Data Messages',
-          description: 'Total number of messages received from all devices',
-          data: new Array(30).fill(0).map((_, i) => ({
-            date: new Date(2021, 0, i + 1).toISOString(),
-            SemiAnalysis: Math.floor(Math.random() * 100),
-            'The Pragmatic Engineer': Math.floor(Math.random() * 100),
-          })),
-          index: 'date',
-          categories: ["SemiAnalysis", "The Pragmatic Engineer"],
-          metricTitle: 'Total Events',
-          metric: 124,
-          chartType: 'area',
-        }]}
-      />
+
     </div>
   );
 })
+
+//   < JSONMetricsView
+// data = {
+//   [{
+//     type: 'KPICard',
+//     title: 'Data Messages',
+//     description: 'Total number of messages received from all devices',
+//     data: new Array(30).fill(0).map((_, i) => ({
+//       date: new Date(2021, 0, i + 1).toISOString(),
+//       SemiAnalysis: Math.floor(Math.random() * 100),
+//       'The Pragmatic Engineer': Math.floor(Math.random() * 100),
+//     })),
+//     index: 'date',
+//     categories: ["SemiAnalysis", "The Pragmatic Engineer"],
+//     metricTitle: 'Total Events',
+//     metric: 124,
+//     chartType: 'area',
+//   }]}
+//   />
 
 export default HomePage;

@@ -1,7 +1,7 @@
 import { createRef, LegacyRef, Ref } from "react";
 import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@rjsf/validator-ajv8";
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 
 import { helper } from "../../lib/helper";
