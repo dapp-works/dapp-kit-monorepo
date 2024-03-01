@@ -75,7 +75,7 @@ export class PromiseHook {
         context._call = func()
           .then((i) => {
             context.value = i;
-            console.log("call", context.value)
+            // console.log("call", context.value)
             context.loading = false;
             context._call = null
             return i
