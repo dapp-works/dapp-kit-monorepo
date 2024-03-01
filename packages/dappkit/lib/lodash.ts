@@ -15,7 +15,8 @@
 // import isEqual from "lodash/isEqual";
 // import uniqWith from "lodash/uniqWith";
 // import orderBy from "lodash/orderBy";
-
+// import map from "lodash/map";
+// import zip from "lodash/zip";
 // export const _ = {
 //   throttle,
 //   debounce,
@@ -34,6 +35,9 @@
 //   isEqual,
 //   uniqWith,
 //   orderBy,
+//   map,
+//   zip
 // };
 
 export * as _ from "lodash-es";
+
