@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { ButtonProps } from "@nextui-org/react";
+import { ButtonProps, TabsProps } from "@nextui-org/react";
 import { UiSchema } from "@rjsf/utils";
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
 import { GridLayout } from "./Layouts/gridLayout";
@@ -31,7 +31,7 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
   : never;
 
 export type LayoutConfigType<T, L> = L extends 'TabLayout'
-  ? { $type: 'TabLayout'; $variant?: 'line' | 'solid' } & FormLayoutType<T, L>
+  ? { $type: 'TabLayout'; $tabsProps?: TabsProps } & FormLayoutType<T, L>
   : L extends 'GridLayout'
   ? { $type: 'GridLayout'; $gridColumn?: number } & FormLayoutType<T, L>
   : L extends 'ListLayout'
