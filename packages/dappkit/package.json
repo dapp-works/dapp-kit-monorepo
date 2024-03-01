@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.54",
+  "version": "0.4.55",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -74,6 +74,9 @@
       ],
       "jsontable": [
         "./dist/jsontable.d.mts"
+      ],
+      "experimental": [
+        "./dist/experimental.d.mts"
       ]
     }
   },
