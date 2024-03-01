@@ -6,7 +6,7 @@ export default defineConfig({
   clean: true,
   // cjsInterop: true,
   treeshake: true,
-  external: ["react", "react-dom", "next", "@monaco-editor/react", "@nextui-org/react", "@tremor/react", "lodash", "lodash-es", "ajv", "deixe", "react-dev-inspector", "@rjsf/utils", "@rjsf/core", "lucide-react", "bignumber.js", "axios"],
+  external: [],
   entry: {
     index: "index.ts",
     metrics: "metrics.ts",
