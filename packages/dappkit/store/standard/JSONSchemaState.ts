@@ -1,7 +1,7 @@
 import { createRef, LegacyRef, Ref } from "react";
 import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-// import validator from "@rjsf/validator-ajv8";
+import validator from "@rjsf/validator-ajv8";
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 
 import { helper } from "../../lib/helper";
@@ -14,7 +14,7 @@ export class JSONSchemaFormState<T, U = UiSchema> {
   reactive: boolean = true;
   readonly = false;
   liveValidate = false;
-  validator: any
+  validator = validator
 
   get formData() {
     return this.value.get();
@@ -53,10 +53,6 @@ export class JSONSchemaFormState<T, U = UiSchema> {
 
   constructor(args: Partial<JSONSchemaFormState<T, U>> = {}) {
     const formRef = createRef();
-    // this.validator = validator
-    import("@rjsf/validator-ajv8").then(i => {
-      this.validator = i
-    })
     Object.assign(this, args, { formRef });
     if (this.reactive) {
       //@ts-ignore

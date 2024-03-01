@@ -6,7 +6,7 @@ export default defineConfig({
   clean: true,
   // cjsInterop: true,
   // treeshake: true,
-  external: ["framer-motion", "@nextui-org/react"],
+  external: ["framer-motion", "@nextui-org/react", "@monaco-editor/react", "@rjsf/core", "@rjsf/utils", "@rjsf/validator-ajv8", "@tremor/react", "axios", "bignumber.js", "dataloader", "dexie", "next", "next-auth", "react", "react-dev-inspector", "react-dom", "react-draggable", "react-hot-toast", "lodash", "bignumber.js", "lucide-react"],
   entry: {
     index: "index.ts",
     metrics: "metrics.ts",
