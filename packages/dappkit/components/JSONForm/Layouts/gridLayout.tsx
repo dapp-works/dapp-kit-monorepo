@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { Card } from "@nextui-org/react";
-import { Grid, Col, Text } from '@tremor/react';
 import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
-import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
+import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
+import { Grid, Col } from '../../../components/ui/grid';
+import { cn } from '../../../lib/utils';
 
 export const GridLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
   const { layoutConfig, onBatchSubmit, batchSubmitButtonProps, onReady } = props;
@@ -24,7 +25,7 @@ export const GridLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
           return (
             <Col numColSpan={layout?.colSpan ?? 1} key={key} id={`form-${key}`}>
               <Card className="h-full m-0 p-4" shadow="sm">
-                <Text className="mb-2">{layout?.title || key}</Text>
+                <div className={cn('mb-2 font-bold text-center', layout?.titleBoxCss)}>{layout?.title || key}</div>
                 <JSONSchemaForm formState={formStates[key]}>
                   {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
                 </JSONSchemaForm>

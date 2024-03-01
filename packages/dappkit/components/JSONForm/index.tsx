@@ -15,6 +15,7 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
   ? {
     [F in keyof T]?: {
       title?: string;
+      titleBoxCss?: string;
       fieldLayout?: FieldLayoutType<T, F>;
       submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
     };
@@ -23,6 +24,7 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
   ? {
     [F in keyof T]?: {
       title?: string;
+      titleBoxCss?: string;
       fieldLayout?: FieldLayoutType<T, F>;
       colSpan?: number;
       submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };

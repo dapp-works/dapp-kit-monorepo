@@ -206,6 +206,7 @@ const HomePage = observer(() => {
           personalInfo: {
             // Optional field
             title: 'Personal Information',
+            titleBoxCss: 'text-xl',
             // Optional field
             fieldLayout: [['name', 'age'], 'phone', 'city', ['date', 'dateTime', 'time'], 'boolean'],
             // submitButtonProps: {
@@ -290,9 +291,10 @@ const HomePage = observer(() => {
             title: 'Personal Information',
             fieldLayout: [['name', 'age'], 'phone', 'city'],
           },
-          // extraInfo: {
-          //   title: 'Extra Information',
-          // },
+          extraInfo: {
+            title: 'Extra Information',
+            titleBoxCss: 'font-bold'
+          },
         }}
         onBatchSubmit={async (data, setLoading) => {
           console.log('[TabLayout onBatchSubmit]:', data);
@@ -346,6 +348,7 @@ const HomePage = observer(() => {
           },
           extraInfo: {
             title: 'Extra Information',
+            titleBoxCss: 'font-bold text-red-500',
           },
         }}
         onBatchSubmit={(data) => {
