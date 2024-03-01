@@ -11,6 +11,7 @@
     "start": "pnpm with-env next start",
     "type-check": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --",
+    "analyze": "ANALYZE=true next build",
     "gen": "prisma generate --schema=../../packages/db/prisma/schema.prisma"
   },
   "dependencies": {
@@ -33,8 +34,8 @@
     "mobx-react-lite": "^3.4.3",
     "next": "14.1.0",
     "next-auth": "^4.22.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "latest",
+    "react-dom": "latest",
     "superjson": "1.13.1",
     "zod": "^3.21.4"
   },
