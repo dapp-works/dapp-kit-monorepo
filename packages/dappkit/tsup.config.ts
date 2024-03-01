@@ -2,11 +2,11 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   splitting: true,
   sourcemap: true,
-  minify: true,
+  // minify: true,
   clean: true,
   // cjsInterop: true,
-  treeshake: true,
-  external: [],
+  // treeshake: true,
+  external: ["framer-motion", "@nextui-org/react"],
   entry: {
     index: "index.ts",
     metrics: "metrics.ts",
