@@ -7,7 +7,7 @@ import { cn } from "../../../lib/utils";
 import { JSONSchemaFormState } from "../../../store/standard/JSONSchemaState";
 import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
 
-const CollapsibleBox = ({ formKey, title, formState, submitButtonProps }: { formKey: string; title: string; formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>; submitButtonProps: any }) => {
+const CollapsibleBox = ({ formKey, title, titleBoxCss, formState, submitButtonProps }: { formKey: string; title: string; titleBoxCss?: string; formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>; submitButtonProps: any }) => {
   const [opened, setOpened] = useState(true);
   return (
     <div id={`form-${formKey}`}>
@@ -15,7 +15,7 @@ const CollapsibleBox = ({ formKey, title, formState, submitButtonProps }: { form
         className="mt-5 mb-[10px] flex justify-between items-center cursor-pointer border-t-[1px solid #E5E5EA] py-[5px] hover:bg-[#F2F2F7] dark:hover:bg-gray-900"
         onClick={() => setOpened((o) => !o)}
       >
-        <div className="text-gray-900 dark:text-gray-100 font-bold text-base">{title}</div>
+        <div className={cn('text-gray-900 dark:text-gray-100 font-bold text-base', titleBoxCss)}>{title}</div>
         {opened ? <ChevronUp /> : <ChevronDown />}
       </div>
       <div className={cn('mt-2', opened ? 'block' : 'hidden')}>
@@ -41,7 +41,7 @@ export const ListLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
       {Object.keys(formStates).map((key) => {
         const layout = formLayout[key];
         const formState = formStates[key];
-        return <CollapsibleBox key={key} formKey={key} title={layout?.title || key} formState={formState} submitButtonProps={layout?.submitButtonProps} />;
+        return <CollapsibleBox key={key} formKey={key} title={layout?.title || key} titleBoxCss={layout?.titleBoxCss} formState={formState} submitButtonProps={layout?.submitButtonProps} />;
       })}
       {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
         <div className="w-full flex">
