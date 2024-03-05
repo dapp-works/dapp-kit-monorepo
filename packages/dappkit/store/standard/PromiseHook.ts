@@ -47,8 +47,6 @@ export class PromiseHook {
           }
         } else {
           instance = this.entities[id!]
-          // console.log("exists", instance)
-
         }
 
 
@@ -75,7 +73,6 @@ export class PromiseHook {
         context._call = func()
           .then((i) => {
             context.value = i;
-            // console.log("call", context.value)
             context.loading = false;
             context._call = null
             return i
