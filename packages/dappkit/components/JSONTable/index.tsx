@@ -498,7 +498,8 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
   );
 }
 
-function scrollIntoTop(tableBoxElementId?: string) {
+async function scrollIntoTop(tableBoxElementId?: string) {
+  await new Promise((resolve) => setTimeout(resolve, 500));
   if (tableBoxElementId) {
     const el = document.getElementById(tableBoxElementId);
     if (el) {
