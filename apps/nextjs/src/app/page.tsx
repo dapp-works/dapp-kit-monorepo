@@ -147,9 +147,14 @@ const HomePage = observer(() => {
             },
           },
         }}
+        onRowClick={(item) => {
+          console.log('Row Click:', item);
+        }}
         asCard={isMobile}
         cardOptions={{
           showDivider: true,
+          boxClassName: 'space-y-4',
+          cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
           itemClassName: 'flex justify-between',
         }}
         actionsOptions={{

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import JSONHighlight from "../Common/JSONHighlight";
@@ -10,6 +10,7 @@ import { _ } from "../../lib/lodash";
 import { DialogStore } from "../../module/Dialog";
 import { cn } from "../../lib/utils";
 import { PaginationState } from "../../store/standard/PaginationState";
+import { v4 as uuid } from 'uuid';
 
 export type ActionButtonType = {
   props?: ButtonProps;
@@ -77,6 +78,7 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   actionsOptions?: ActionsOptions;
   asCard?: boolean;
   cardOptions?: CardOptions;
+  autoScrollToTop?: boolean;
 }
 
 const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
@@ -103,6 +105,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
       showDivider: true,
       dividerClassName: '',
     },
+    autoScrollToTop = false,
   } = props;
 
   const actionsHeadLabel = actionsOptions?.headLabel || '';
@@ -198,6 +201,10 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
   const needExtendedTable = !!extendedTables.length;
   const data = isServerPaging ? store.sortedData : store.sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
+  const tableBoxElementId = useMemo(() => {
+    return autoScrollToTop ? `table-card-${uuid().slice(0, 8)}` : undefined;
+  }, []);
+
   if (asCard) {
     return (
       <CardOnMobile
@@ -209,13 +216,15 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
         actionsOptions={actionsOptions}
         cardOptions={cardOptions}
         pagination={pagination}
+        onRowClick={onRowClick}
+        tableBoxElementId={tableBoxElementId}
       />
     );
   }
 
   return (
     <>
-      <div className={cn('relative w-full overflow-auto h-[400px]', props.className)}>
+      <div className={cn('relative w-full overflow-auto h-[400px]', props.className)} id={tableBoxElementId}>
         <Table>
           <TableHeader className="sticky top-0">
             <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
@@ -317,6 +326,7 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
               pagination.setData({
                 page: currentPage,
               });
+              scrollIntoTop(tableBoxElementId);
             }}
           />
         </div>
@@ -401,7 +411,7 @@ function Body<T>({
 }) {
   return (
     <TableRow
-      className={cn('text-[13px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+      className={cn('text-[0.8125rem] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
       onClick={() => {
         onRowClick?.(item);
       }}
@@ -488,6 +498,19 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
   );
 }
 
+function scrollIntoTop(tableBoxElementId?: string) {
+  if (tableBoxElementId) {
+    const el = document.getElementById(tableBoxElementId);
+    if (el) {
+      const { top } = el.getBoundingClientRect();
+      window.scrollTo({
+        top: top + window.scrollY - 100,
+        behavior: 'smooth',
+      });
+    }
+  }
+}
+
 export default JSONTable;
 export { JSONTable }
 
@@ -501,6 +524,8 @@ function CardOnMobile<T>({
   actionsOptions,
   cardOptions,
   pagination,
+  onRowClick,
+  tableBoxElementId,
 }: {
   className?: string;
   data: T[];
@@ -511,20 +536,29 @@ function CardOnMobile<T>({
   actionsOptions?: ActionsOptions;
   cardOptions?: CardOptions;
   pagination: PaginationState;
+  onRowClick?: (item: T) => void;
+  tableBoxElementId?: string;
 }) {
   return (
-    <div className={className}>
+    <div className={className} id={tableBoxElementId}>
       <div className={cn('space-y-2', cardOptions?.boxClassName)}>
         {data.map((item, index) => {
           return (
-            <Card key={item[rowKey] || index} className={cn('shadow-none p-4', cardOptions?.cardClassName)}>
+            <Card
+              key={item[rowKey] || index}
+              className={cn('w-full shadow-none p-4', cardOptions?.cardClassName)}
+              isPressable={!!onRowClick}
+              onPress={() => {
+                onRowClick?.(item);
+              }}
+            >
               {columns.map((column, i) => {
                 const option = columnOptions?.[column.key];
                 return (
-                  <div key={column.key}>
+                  <div className="w-full" key={column.key}>
                     <div className={cn('w-full', cardOptions?.itemClassName)}>
-                      <div className={option?.labelClassName}>{column.label}</div>
-                      <div className={option?.valueClassName}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                      <div className={cn('font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300', option?.labelClassName)}>{column.label}</div>
+                      <div className={cn('text-[0.8125rem]', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
                     </div>
                     {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
                   </div>
@@ -548,6 +582,7 @@ function CardOnMobile<T>({
               pagination.setData({
                 page: currentPage,
               });
+              scrollIntoTop(tableBoxElementId);
             }}
           />
         </div>
