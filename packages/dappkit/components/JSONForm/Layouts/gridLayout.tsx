@@ -24,7 +24,7 @@ export const GridLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
           const layout = formLayout[key];
           return (
             <Col numColSpan={layout?.colSpan ?? 1} key={key} id={`form-${key}`}>
-              <Card className={cn("h-full m-0 p-4 shadow-sm border-1", layout?.cardProps)}>
+              <Card className={cn("h-full m-0 p-4 shadow-sm border-1", layout?.cardCss)}>
                 <div className={cn('mb-2 font-bold text-center', layout?.titleBoxCss)}>{layout?.title || key}</div>
                 <JSONSchemaForm formState={formStates[key]}>
                   {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
