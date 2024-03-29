@@ -1,11 +1,13 @@
 import React from "react";
 import { Checkbox } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
-import { PlusIcon } from "lucide-react";
+import { Check } from "lucide-react";
+import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
-  size: "sm" | "md" | "lg";
+  size: 'sm' | 'md' | 'lg';
+  color: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
 };
 
 export interface CheckboxWidgetProps extends WidgetProps {
@@ -23,28 +25,37 @@ function CheckboxWidget({
   id,
   label,
   value,
-  required,
   disabled,
   schema,
 }: CheckboxWidgetProps) {
-  const { className, size = "sm" } = options;
+  const { size = 'sm', color = 'primary' } = options;
+  const { description } = schema;
 
   return (
-    <Checkbox
-      id={id}
-      defaultSelected={value}
-      isRequired={required}
-      isDisabled={disabled}
-      icon={<PlusIcon color="white" />}
-      color="success"
-      size={size}
-      onChange={(e: any) => {
-        const checked = e.target.checked;
-        onChange(checked);
-      }}
-    >
-      {label}
-    </Checkbox>
+    <>
+      <Checkbox
+        id={id}
+        classNames={{
+          base: cn(
+            'm-0 flex items-center justify-start w-full',
+            'cursor-pointer rounded-lg gap-2 p-2.5 bg-content2 border-1 border-transparent',
+            `data-[selected=true]:border-${color}`,
+          ),
+        }}
+        defaultSelected={value}
+        isDisabled={disabled}
+        icon={<Check color="white" />}
+        color={color}
+        size={size}
+        onChange={(e: any) => {
+          const checked = e.target.checked;
+          onChange(checked);
+        }}
+      >
+        {label}
+      </Checkbox>
+      {description && <div className="mt-1 text-xs text-[#A1A1A9] dark:text-[#717179]">{description}</div>}
+    </>
   );
 }
 

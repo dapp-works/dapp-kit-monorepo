@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { ButtonProps, TabsProps } from "@nextui-org/react";
+import { ButtonProps, CardProps, TabsProps } from "@nextui-org/react";
 import { UiSchema } from "@rjsf/utils";
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
 import { GridLayout } from "./Layouts/gridLayout";
@@ -27,6 +27,7 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
       titleBoxCss?: string;
       fieldLayout?: FieldLayoutType<T, F>;
       colSpan?: number;
+      cardProps?: CardProps;
       submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
     };
   }
@@ -35,7 +36,7 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
 export type LayoutConfigType<T, L> = L extends 'TabLayout'
   ? { $type: 'TabLayout'; $tabsProps?: TabsProps } & FormLayoutType<T, L>
   : L extends 'GridLayout'
-  ? { $type: 'GridLayout'; $gridColumn?: number } & FormLayoutType<T, L>
+  ? { $type: 'GridLayout'; $gridColumn?: number; } & FormLayoutType<T, L>
   : L extends 'ListLayout'
   ? { $type: 'ListLayout' } & FormLayoutType<T, L>
   : L extends 'SimpleLayout'

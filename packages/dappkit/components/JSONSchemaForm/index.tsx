@@ -52,13 +52,13 @@ const renderLayout = (layout: any[], fields: { [k: string]: React.ReactElement }
     if (Array.isArray(item)) {
       const even = (n & 1) === 0;
       return (
-        <div key={index} className={cn('w-full flex justify-between items-center space-x-2', even ? 'flex-row' : 'flex-col')}>
+        <div key={index} className={cn('w-full flex justify-between items-center space-x-2', even ? 'flex-row items-end' : 'flex-col')}>
           {renderLayout(item, fields, n)}
         </div>
       );
     } else {
       return (
-        <div className="w-full mb-[10px]" key={index}>
+        <div className="w-full" key={index}>
           {fields[item]}
         </div>
       );
@@ -70,14 +70,14 @@ const ObjectFieldTemplate = ({ title, idSchema: { $id }, properties, uiSchema: {
   const [opened, setOpened] = useState(false);
   const fields = Object.fromEntries(properties.map((item) => [item.name, item.content]));
   return (
-    <div className="w-full">
+    <div className="w-full space-y-2.5">
       {$id === 'root' ? (
         layout ? (
           renderLayout(layout, fields)
         ) : (
           properties.map((element) => {
             return (
-              <div key={element.content.key} className="mb-[10px]">
+              <div key={element.content.key}>
                 {element.content}
               </div>
             );
@@ -92,12 +92,12 @@ const ObjectFieldTemplate = ({ title, idSchema: { $id }, properties, uiSchema: {
             <div className="text-gray-900 dark:text-gray-100 font-bold text-base">{title}</div>
             {opened ? <ChevronUp /> : <ChevronDown />}
           </div>
-          <div className={cn('mt-2', opened ? 'block' : 'hidden')}>
+          <div className={cn('mt-2 space-y-2.5', opened ? 'block' : 'hidden')}>
             {layout
               ? renderLayout(layout, fields)
               : properties.map((element) => {
                 return (
-                  <div key={element.content.key} className="mb-[10px]">
+                  <div key={element.content.key}>
                     {element.content}
                   </div>
                 );

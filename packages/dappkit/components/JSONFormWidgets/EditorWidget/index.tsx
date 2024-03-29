@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import { Button } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
-import MonacoEditor from "@monaco-editor/react";
-
-
+import MonacoEditor, { EditorProps } from "@monaco-editor/react";
 
 type Options = {
   editorHeight?: string;
@@ -13,6 +11,7 @@ type Options = {
   languageSelectorOptions?: { label: string; value: string }[];
   onChangeLanguage?: (v: string) => void;
   onRun?: (v: string) => void;
+  onMount?: EditorProps['onMount'];
 };
 
 export interface EditorWidgetProps extends WidgetProps {
@@ -24,8 +23,8 @@ export type EditorWidgetUIOptions = {
   "ui:options": Options;
 };
 
-const EditorWidget = ({ id, label, options = {}, value, required, schema, onChange }: EditorWidgetProps) => {
-  const { editorHeight = '200px', readOnly = false, language = 'json', languageSelectorOptions = [], onChangeLanguage, onRun } = options;
+const EditorWidget = ({ id, label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
+  const { editorHeight = '200px', readOnly = false, language = 'json', languageSelectorOptions = [], onChangeLanguage, onRun, onMount } = options;
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [runLoading, setRunLoading] = useState(false);
   const showLanguageSelector = languageSelectorOptions.length > 0;
@@ -60,12 +59,13 @@ const EditorWidget = ({ id, label, options = {}, value, required, schema, onChan
       {schema.description && <div className='mb-2 text-xs text-[#A1A1A9]'>{schema.description}</div>}
       <div className="rounded-lg overflow-hidden">
         <MonacoEditor
-          options={{ readOnly, minimap: { enabled: false } }}
+          options={{ readOnly: readOnly || disabled, minimap: { enabled: false } }}
           height={editorHeight}
           theme="vs-dark"
           language={selectedLanguage ? selectedLanguage : language}
           value={value}
           onChange={(v) => onChange(v)}
+          onMount={onMount}
         />
       </div>
       {onRun && (
