@@ -30,6 +30,7 @@ const HomePage = observer(() => {
       dateTime: '2021-01-01T00:00:00',
       time: '00:00:00',
       boolean: true,
+      boolean2: false,
     },
     extraInfo: {
       address: '',
@@ -64,7 +65,7 @@ const HomePage = observer(() => {
           { label: 'city 3', value: 'city3' },
         ],
         required: true,
-        description: 'This is a description',
+        // description: 'This is a description',
         'ui:options': {
           placeholder: 'Select a city',
           // disabled: true,
@@ -84,10 +85,16 @@ const HomePage = observer(() => {
       },
       boolean: {
         title: 'Boolean',
-        // 'ui:options': {
-        //   disabled: true,
-        // },
+        'ui:options': {
+          // disabled: true,
+        }
       },
+      boolean2: {
+        // description: 'This is a description',
+        'ui:options': {
+          color: 'secondary'
+        }
+      }
     },
     // Optional field
     // extraInfo: {
@@ -213,7 +220,7 @@ const HomePage = observer(() => {
             title: 'Personal Information',
             titleBoxCss: 'text-xl',
             // Optional field
-            fieldLayout: [['name', 'age'], 'phone', 'city', ['date', 'dateTime', 'time'], 'boolean'],
+            fieldLayout: [['name', 'age'], ['phone', 'boolean2', 'city'], ['date', 'dateTime', 'time'], 'boolean'],
             // submitButtonProps: {
             //   className: 'mx-auto',
             //   color: 'secondary',

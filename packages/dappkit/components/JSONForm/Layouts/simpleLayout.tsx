@@ -16,14 +16,16 @@ export const SimpleLayout = <T extends FormDataType>(props: JSONFormProps<T>) =>
 
   return (
     <>
-      {Object.keys(formStates).map((key) => {
-        const layout = formLayout[key];
-        return (
-          <div key={key} className="space-y-2" id={`form-${key}`}>
-            <JSONSchemaForm formState={formStates[key]}>{layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}</JSONSchemaForm>
-          </div>
-        );
-      })}
+      <div className="space-y-2">
+        {Object.keys(formStates).map((key) => {
+          const layout = formLayout[key];
+          return (
+            <div key={key} id={`form-${key}`}>
+              <JSONSchemaForm formState={formStates[key]}>{layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}</JSONSchemaForm>
+            </div>
+          );
+        })}
+      </div>
       {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
         <div className="w-full flex">
           <BatchSubmitButton formStates={formStates} onSubmit={onBatchSubmit} buttonProps={batchSubmitButtonProps} />

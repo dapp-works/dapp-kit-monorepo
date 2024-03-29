@@ -31,7 +31,7 @@ function InputWidget(props: InputWidgetProps) {
     disabled,
     schema,
   } = props;
-  const { className, labelPlacement = "inside", size = "md" } = options;
+  const { className, labelPlacement = "inside", size = "sm" } = options;
   const placeholder = props.placeholder || options.placeholder;
   return (
     <Input
