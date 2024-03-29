@@ -39,12 +39,12 @@ function CheckboxWidget({
           base: cn(
             'm-0 flex items-center justify-start w-full',
             'cursor-pointer rounded-lg gap-2 p-2.5 bg-content2 border-1 border-transparent',
-            `data-[selected=true]:border-${color}`,
+            value ? `border-${color}` : '',
           ),
         }}
         defaultSelected={value}
         isDisabled={disabled}
-        icon={<Check color="white" />}
+        icon={<Check className="bg-white dark:bg-black" />}
         color={color}
         size={size}
         onChange={(e: any) => {
