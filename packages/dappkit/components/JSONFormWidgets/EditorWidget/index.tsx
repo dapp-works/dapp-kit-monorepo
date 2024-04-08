@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import MonacoEditor, { EditorProps } from "@monaco-editor/react";
 import { WidgetProps } from "@rjsf/utils";
 import { Button } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
-import MonacoEditor, { EditorProps } from "@monaco-editor/react";
+import { helper } from "../../../lib/helper";
 
 type Options = {
   editorHeight?: string;
@@ -65,7 +66,13 @@ const EditorWidget = ({ id, label, options = {}, value, required, schema, disabl
           language={selectedLanguage ? selectedLanguage : language}
           value={value}
           onChange={(v) => onChange(v)}
-          onMount={onMount}
+          onMount={(editor, monaco) => {
+            onMount && onMount(editor, monaco);
+            if (language === 'json' && value) {
+              const json = helper.json.safeParse(value);
+              editor.setValue(JSON.stringify(json, null, 2));
+            }
+          }}
         />
       </div>
       {onRun && (
