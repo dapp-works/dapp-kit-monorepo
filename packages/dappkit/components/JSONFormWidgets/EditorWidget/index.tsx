@@ -13,6 +13,8 @@ type Options = {
   onChangeLanguage?: (v: string) => void;
   onRun?: (v: string) => void;
   onMount?: EditorProps['onMount'];
+  // Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
+  jsonStrSpace?: number;
 };
 
 export interface EditorWidgetProps extends WidgetProps {
@@ -25,7 +27,7 @@ export type EditorWidgetUIOptions = {
 };
 
 const EditorWidget = ({ id, label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
-  const { editorHeight = '200px', readOnly = false, language = 'json', languageSelectorOptions = [], onChangeLanguage, onRun, onMount } = options;
+  const { editorHeight = '200px', readOnly = false, language = 'json', jsonStrSpace, languageSelectorOptions = [], onChangeLanguage, onRun, onMount } = options;
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [runLoading, setRunLoading] = useState(false);
   const showLanguageSelector = languageSelectorOptions.length > 0;
@@ -68,9 +70,9 @@ const EditorWidget = ({ id, label, options = {}, value, required, schema, disabl
           onChange={(v) => onChange(v)}
           onMount={(editor, monaco) => {
             onMount && onMount(editor, monaco);
-            if (language === 'json' && value) {
+            if (language === 'json' && jsonStrSpace && value) {
               const json = helper.json.safeParse(value);
-              editor.setValue(JSON.stringify(json, null, 2));
+              editor.setValue(JSON.stringify(json, null, jsonStrSpace));
             }
           }}
         />
