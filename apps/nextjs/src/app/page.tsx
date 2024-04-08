@@ -35,6 +35,7 @@ const HomePage = observer(() => {
     extraInfo: {
       address: '',
       code: '',
+      jsonStr: '{"personalInfo":{"name":"","age":18,"phone":"","city":"city1","date":"2021-01-01","dateTime":"2021-01-01T00:00:00","time":"00:00:00","boolean":true},"extraInfo":{"address":"","code":""}}'
     },
   };
 
