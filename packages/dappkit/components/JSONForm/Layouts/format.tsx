@@ -59,6 +59,10 @@ export const getFormState = <T,>(
             }
             if (helper.json.isJsonString(v)) {
               formConfigData[k]['ui:widget'] = EditorWidget;
+              formConfigData[k]["ui:options"] = {
+                jsonStrSpace: 2,
+                ...uiOptions,
+              };
             }
           }
         }
