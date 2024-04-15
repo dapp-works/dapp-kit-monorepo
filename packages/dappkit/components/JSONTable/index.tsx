@@ -23,7 +23,9 @@ export type ActionsOptions = {
   className?: string;
 };
 
-export type ColumnOptions<T = { [x: string]: any }> = {
+export type HeaderKeys<T extends Record<string, any>> = Array<keyof T>;
+
+export type ColumnOptions<T extends Record<string, any>> = {
   [key in keyof T]?: {
     label?: React.ReactNode;
     hidden?: boolean;
@@ -38,7 +40,7 @@ export type ColumnOptions<T = { [x: string]: any }> = {
   };
 };
 
-export type Column<T = { [x: string]: any }> = {
+export type Column<T extends Record<string, any>> = {
   key: string;
   label: React.ReactNode;
   render?: (item: T) => any;
@@ -59,16 +61,15 @@ export type CardOptions = {
   dividerClassName?: string;
 };
 
-export interface JSONTableProps<T = { [x: string]: any }> {
+export interface JSONTableProps<T extends Record<string, any>> {
   className?: string;
   dataSource: T[];
   columnOptions?: ColumnOptions<T>;
-  headerKeys?: string[];
+  headerKeys?: HeaderKeys<T>;
   isServerPaging?: boolean;
   extendedTableOptions?: {
-    key: string;
-    columnOptions?: ColumnOptions<any>;
-    // actions?: (item: any) => ActionButtonType[];
+    key: keyof T;
+    columnOptions: ColumnOptions<any>;
   }[];
   rowKey?: string;
   pagination?: PaginationState;
@@ -81,7 +82,7 @@ export interface JSONTableProps<T = { [x: string]: any }> {
   autoScrollToTop?: boolean;
 }
 
-const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
+const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps<T>) => {
   const {
     dataSource,
     columnOptions,
@@ -128,11 +129,18 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
   }));
 
   useEffect(() => {
-    const _keys = dataSource.length > 0 ? Object.keys(dataSource[0]) : [];
-    const keys = headerKeys ? headerKeys : columnOptions ? _keys.filter((key) => !columnOptions[key]?.hidden) : _keys;
+    const firstData = dataSource[0];
+    if (!firstData) {
+      return;
+    }
+
+    const allKeys = Object.keys(firstData);
+    const keys = headerKeys ? headerKeys : columnOptions ? allKeys.filter((key) => !columnOptions[key]?.hidden) : allKeys;
+
     const sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' } = {};
+
     const columns: Column<T>[] = keys
-      .map((key) => {
+      .map((key: string) => {
         const sortable = columnOptions?.[key]?.sortable;
         if (sortable) {
           sortableColumns[key] = 'none';
@@ -141,19 +149,48 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
           key,
           label: columnOptions?.[key]?.label || key,
           render: columnOptions?.[key]?.render,
-          className: columnOptions?.[key]?.className,
         };
       })
-      .sort((a, b) => {
-        const aOrder = columnOptions?.[a.key]?.order || 0;
-        const bOrder = columnOptions?.[b.key]?.order || 0;
+
+    if (!headerKeys && columnOptions) {
+      columns.sort((a, b) => {
+        const aOrder = columnOptions[a.key]?.order || 0;
+        const bOrder = columnOptions[b.key]?.order || 0;
         return bOrder - aOrder;
       });
+    }
+
+    const extendedTables = extendedTableOptions
+      .filter((item) => {
+        return Array.isArray(firstData[item.key])
+      })
+      .map((item) => {
+        const index = columns.findIndex((c) => c.key === item.key);
+        if (index > -1) {
+          columns.splice(index, 1);
+        }
+
+        const keys = Object.keys(item.columnOptions);
+        return {
+          key: item.key as string,
+          columns: keys.map((k) => {
+            const option = item.columnOptions[k];
+            return {
+              key: k,
+              label: option?.label || k,
+              render: option?.render,
+            };
+          }),
+        };
+      });
+
     store.setData({
       sortableColumns,
       columns,
+      extendedTables,
       sortedData: dataSource,
     });
+
     if (!isServerPaging) {
       pagination.setData({
         total: dataSource.length,
@@ -197,9 +234,9 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
     });
   };
 
-  const { columns, extendedTables } = store;
+  const { columns, extendedTables, sortedData } = store;
   const needExtendedTable = !!extendedTables.length;
-  const data = isServerPaging ? store.sortedData : store.sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
+  const data = isServerPaging ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
   const tableBoxElementId = useMemo(() => {
     return autoScrollToTop ? `table-card-${uuid().slice(0, 8)}` : undefined;
@@ -296,17 +333,17 @@ const JSONTable = observer(<T extends {},>(props: JSONTableProps<T>) => {
           <TableBody>
             {data.map((item, index) =>
               needExtendedTable ? (
-                <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} />
+                <CollapseBody key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} rowCss={rowCss} actions={actions} actionsPlacement={actionsPlacement} />
               ) : (
                 <Body
                   key={item[rowKey] || index}
                   item={item}
                   columns={columns}
+                  columnOptions={columnOptions}
                   onRowClick={onRowClick}
                   rowCss={rowCss}
                   actions={actions}
                   actionsPlacement={actionsPlacement}
-                  columnOptions={columnOptions}
                 />
               ),
             )}
@@ -431,12 +468,24 @@ function Body<T>({
   );
 }
 
-function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: Column<T>[]; extendedTables: ExtendedTable<any>[] }) {
+function CollapseBody<T>({ item,
+  columns,
+  extendedTables,
+  rowCss,
+  actions,
+  actionsPlacement }: {
+    item: T;
+    columns: Column<T>[];
+    extendedTables: ExtendedTable<any>[];
+    rowCss?: string | ((item: T) => string | undefined);
+    actions?: ActionsType<T>;
+    actionsPlacement?: 'left' | 'right';
+  }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <TableRow
-        className="text-[13px] cursor-pointer"
+        className={cn('text-[0.8125rem] cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
         onClick={(e: any) => {
           const { nodeName } = e.target;
           if (nodeName === 'TD' || nodeName === 'svg') {
@@ -444,7 +493,8 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
           }
         }}
       >
-        <TableCell className="w-10">{isOpen ? <ChevronDown size={30} /> : <ChevronRight size={30} />}</TableCell>
+        <TableCell className="w-10">{isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}</TableCell>
+        {actionsPlacement === 'left' && <Actions item={item} actions={actions} />}
         {columns.map((column) => {
           return (
             <TableCell key={column.key} className="max-w-[200px] overflow-auto">
@@ -454,6 +504,7 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
             </TableCell>
           );
         })}
+        {actionsPlacement === 'right' && <Actions item={item} actions={actions} />}
       </TableRow>
       <TableRow className={cn(isOpen ? 'table-row' : 'hidden')}>
         <TableCell></TableCell>
@@ -467,7 +518,7 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
                   <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45]">
                     {exColumns.map((exC) => {
                       return (
-                        <TableHead key={exC.key} className="font-bold text-sm dark:text-gray-300">
+                        <TableHead key={exC.key} className="text-[0.8125rem] text-[#64748B] dark:text-gray-300">
                           {exC.label}
                         </TableHead>
                       );
@@ -476,12 +527,15 @@ function CollapseBody<T>({ item, columns, extendedTables }: { item: T; columns: 
                 </TableHeader>
                 <TableBody>
                   {exRow.map((exItem) => (
-                    <TableRow className="text-sm" key={exItem.key}>
+                    <TableRow className="text-[0.8125rem] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
                       {exColumns.map((exC) => {
                         return (
                           <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
                             {exC.render
-                              ? exC.render(exItem)
+                              ? exC.render({
+                                ...exItem,
+                                $parent: item,
+                              })
                               : renderFieldValue(exItem[exC.key])}
                           </TableCell>
                         );

@@ -122,6 +122,12 @@ const HomePage = observer(() => {
             d: {
               e: 3,
             },
+            e: [
+              {
+                aa: 1,
+                bb: 2,
+              },
+            ],
           },
           {
             a: {
@@ -131,8 +137,19 @@ const HomePage = observer(() => {
             d: {
               e: 6,
             },
+            e: [
+              {
+                aa: 3,
+                bb: 4,
+              },
+              {
+                aa: 5,
+                bb: 6,
+              },
+            ],
           },
         ]}
+        // headerKeys={['a', 'c', 'd', 'e']}
         columnOptions={{
           a: {
             label: 'A',
@@ -153,6 +170,9 @@ const HomePage = observer(() => {
             render: (item) => {
               return item.d.e;
             },
+          },
+          e: {
+            label: 'E',
           },
         }}
         onRowClick={(item) => {
@@ -181,26 +201,55 @@ const HomePage = observer(() => {
             </Button>
           );
         }}
-      // actions={(item) => {
-      //   return [
-      //     {
-      //       children: 'Edit',
-      //       props: {
-      //         onClick: () => {
-      //           console.log('Edit:', item);
-      //         },
-      //       },
-      //     },
-      //     {
-      //       children: 'Delete',
-      //       props: {
-      //         onClick: () => {
-      //           console.log('Delete:', item);
-      //         },
-      //       },
-      //     },
-      //   ];
-      // }}
+        // actions={(item) => {
+        //   return [
+        //     {
+        //       children: 'Edit',
+        //       props: {
+        //         onClick: () => {
+        //           console.log('Edit:', item);
+        //         },
+        //       },
+        //     },
+        //     {
+        //       children: 'Delete',
+        //       props: {
+        //         onClick: () => {
+        //           console.log('Delete:', item);
+        //         },
+        //       },
+        //     },
+        //   ];
+        // }}
+        extendedTableOptions={[
+          {
+            key: 'e',
+            columnOptions: {
+              btns: {
+                label: ' ',
+                render: (item) => {
+                  return (
+                    <Button
+                      size="sm"
+                      color="primary"
+                      onClick={() => {
+                        console.log('Edit:', item);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  );
+                },
+              },
+              aa: {
+                label: 'AA',
+              },
+              bb: {
+                label: 'BB',
+              },
+            },
+          },
+        ]}
       />
 
       <JSONForm
