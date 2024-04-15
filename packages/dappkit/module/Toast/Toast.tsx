@@ -1,7 +1,7 @@
 import React from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-import { Store } from "../../store/standard/base";
+import { type Store } from "../../store/standard/base";
 
 export class ToastPlugin implements Store {
   sid = "ToastPlugin";

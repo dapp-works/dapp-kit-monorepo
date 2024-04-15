@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-import { RootStore } from "../root";
+import { type RootStore } from "../root";
 
 export abstract class Store {
   sid?: string;
