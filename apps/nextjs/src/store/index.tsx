@@ -42,9 +42,5 @@ export const init = () => {
     if (process.env.NODE_ENV == "development") {
       rootStore.events.on("*", console.log);
     }
-
-    rootStore.events.on("next.signIn.github", () => {
-      signIn("github");
-    });
   }
 }

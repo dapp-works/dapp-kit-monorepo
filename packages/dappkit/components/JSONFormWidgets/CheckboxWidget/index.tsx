@@ -22,7 +22,6 @@ export interface CheckboxWidgetUIOptions {
 function CheckboxWidget({
   onChange,
   options,
-  id,
   label,
   value,
   disabled,
@@ -34,7 +33,6 @@ function CheckboxWidget({
   return (
     <>
       <Checkbox
-        id={id}
         classNames={{
           base: cn(
             'm-0 flex items-center justify-start w-full',

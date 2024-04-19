@@ -19,7 +19,7 @@ export interface SelectWidgetUIOptions {
 }
 
 function SelectWidget(props: SelectWidgetProps) {
-  const { onChange, options, id, label, value, required, disabled, schema } = props;
+  const { onChange, options, label, value, required, disabled, schema } = props;
   const { className, labelPlacement = 'top', placeholder = 'Select an option' } = options;
   const { selectOptions = [], description } = schema;
   const labelText = label?.trim();
@@ -31,7 +31,6 @@ function SelectWidget(props: SelectWidgetProps) {
         className={cn("flex flex-col", {
           "flex-row items-center": labelPlacement === "left",
         })}
-        id={id}
       >
         {labelText && (
           <label
@@ -44,6 +43,7 @@ function SelectWidget(props: SelectWidgetProps) {
             {required && <span className="ml-[2px] font-bold text-red-600">*</span>}
           </label>
         )}
+        {description && <div className="my-1 text-xs text-[#A1A1A9] dark:text-[#717179]">{description}</div>}
         <select className="w-full p-3 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]" defaultValue={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}>
           <option value="" disabled selected>
             {placeholderText}
@@ -57,7 +57,6 @@ function SelectWidget(props: SelectWidgetProps) {
           })}
         </select>
       </div>
-      {description && <div className="mt-1 text-xs text-[#A1A1A9] dark:text-[#717179]">{description}</div>}
     </div>
   );
 }

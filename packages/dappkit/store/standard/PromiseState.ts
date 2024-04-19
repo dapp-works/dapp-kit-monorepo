@@ -1,9 +1,9 @@
 import { EventEmitter } from "events";
 import { makeAutoObservable } from "mobx";
-
 import { ToastPlugin } from "../../module/Toast/Toast";
 import { RootStore } from "../root";
 import { BaseState, BooleanState, NumberState } from "./base";
+import { useEffect } from "react";
 
 export interface Events {
   data: (data: any) => void;
@@ -40,6 +40,22 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     return this;
   }
 
+  once<E extends keyof Events>(event: E, listener: Events[E]) {
+    this.event.once(event, listener);
+    return this;
+  }
+
+  use<E extends keyof Events>(event: E, listener: Events[E]) {
+    useEffect(() => {
+      this.event.on(event, listener);
+      return () => {
+        this.event.off(event, listener);
+      };
+    }, []);
+
+    return () => this.event.off(event, listener);
+  }
+
   emit<E extends keyof Events>(event: E, ...args: Parameters<Events[E]>) {
     this.event.emit(event, ...args);
   }
@@ -56,6 +72,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     //@ts-ignore
     return this.value[this.currentIndex.value];
   }
+
   _onSelect(index: number) {
     this.currentIndex.setValue(index);
     this.event.emit("select", index);
@@ -71,6 +88,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       value: this.value,
     };
   }
+
   //@ts-ignore
   async waitItem(): Promise<Awaited<U>[0]> {
     await this.wait();
@@ -122,11 +140,10 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     this.event.emit("data", val);
     this.event.emit("update");
   }
-  //@ts-ignore
+
   async call(...args: Parameters<T>): Promise<Awaited<U>> {
     const toast = RootStore.Get(ToastPlugin);
     try {
-      //@ts-ignore
       if (this.loadingLock && this.loading.value == true) return;
       this.loading.setValue(true);
       const res = await this.function.apply(this.context, args);
@@ -138,19 +155,15 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     } catch (error) {
       if (this.autoAlert) {
         const message = error.message;
-        const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
-        if (message?.includes('User rejected the request') || String(error).toLowerCase().includes('user rejected')) {
-          toast.error('User rejected the request');
-        } else if (message.includes("UNAUTHORIZED")) {
+        if (message.includes("UNAUTHORIZED")) {
+          toast.dismiss();
+          toast.error(message, {
+            id: "UNAUTHORIZED",
+          });
+          this.signOut?.();
         } else {
-          if (msg) {
-            console.log(4567)
-            this.errMsg = msg as unknown as string;
-            toast.error(msg as unknown as string);
-          } else {
-            this.errMsg = message;
-            toast.error(message);
-          }
+          this.errMsg = message;
+          toast.error(message);
         }
       } else {
         this.event.emit("error", error);
@@ -161,4 +174,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       this.loading.setValue(false);
     }
   }
+
+  // 401 403
+  signOut: () => void;
 }
