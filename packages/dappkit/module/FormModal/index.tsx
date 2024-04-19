@@ -2,8 +2,6 @@ import EventEmitter from "events";
 import React from "react";
 import { UiSchema } from "@rjsf/utils";
 import { makeAutoObservable } from "mobx";
-
-
 import { Store } from "../../store/standard/base";
 import {
   JSONSchemaFormState,

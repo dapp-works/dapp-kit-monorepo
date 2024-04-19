@@ -9,9 +9,9 @@ export interface PanelCard {
 
 export const PanelCard = ({ title, content, className }: PanelCard & { className?: string }) => {
   return (
-    <Card className={cn('border-none shadow-none bg-[#F8FAFC] dark:bg-[#18181c] p-4', className)} shadow="sm">
-      <p className="text-[#6B7280] text-sm">{title}</p>
-      <div className={cn('break-all text-[#374151] text-base font-semibold mt-2', className)}>{content}</div>
+    <Card className={cn('flex flex-col justify-between border-none p-4 shadow-sm', className)}>
+      <p className="text-[#6B7280] dark:text-[#cecdcd] text-sm">{title}</p>
+      <div className={cn('mt-2 break-all text-[#374151] dark:text-[#cecdcd] text-base font-semibold')}>{content}</div>
     </Card>
   );
 };

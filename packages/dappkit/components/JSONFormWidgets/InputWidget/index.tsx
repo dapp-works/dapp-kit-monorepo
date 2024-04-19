@@ -1,7 +1,6 @@
 import React from "react";
 import { Input } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
-
 import { cn } from "../../../lib/utils";
 
 type Options = {
@@ -24,7 +23,6 @@ function InputWidget(props: InputWidgetProps) {
   const {
     onChange,
     options,
-    id,
     label,
     value,
     required,
@@ -35,7 +33,6 @@ function InputWidget(props: InputWidgetProps) {
   const placeholder = props.placeholder || options.placeholder;
   return (
     <Input
-      id={id}
       className={cn("w-full", className)}
       label={label}
       placeholder={placeholder}

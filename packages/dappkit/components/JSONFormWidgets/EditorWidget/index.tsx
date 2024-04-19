@@ -13,8 +13,7 @@ type Options = {
   onChangeLanguage?: (v: string) => void;
   onRun?: (v: string) => void;
   onMount?: EditorProps['onMount'];
-  // Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
-  jsonStrSpace?: number;
+  jsonStrSpace?: number;   // Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
 };
 
 export interface EditorWidgetProps extends WidgetProps {
@@ -26,7 +25,7 @@ export type EditorWidgetUIOptions = {
   "ui:options": Options;
 };
 
-const EditorWidget = ({ id, label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
+const EditorWidget = ({ label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
   const { editorHeight = '200px', readOnly = false, language = 'json', jsonStrSpace, languageSelectorOptions = [], onChangeLanguage, onRun, onMount } = options;
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [runLoading, setRunLoading] = useState(false);
@@ -60,7 +59,7 @@ const EditorWidget = ({ id, label, options = {}, value, required, schema, disabl
         )}
       </div>
       {schema.description && <div className='mb-2 text-xs text-[#A1A1A9]'>{schema.description}</div>}
-      <div className="rounded-lg overflow-hidden">
+      <div className="rounded-lg overflow-hidden relative">
         <MonacoEditor
           options={{ readOnly: readOnly || disabled, minimap: { enabled: false } }}
           height={editorHeight}

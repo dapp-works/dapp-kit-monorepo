@@ -94,6 +94,7 @@ export class ValueState<T> {
   get value() {
     return this.getValue ? this.getValue(this._value) : this._value;
   }
+
   set value(value) {
     this._value = value;
   }
