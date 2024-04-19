@@ -1,5 +1,4 @@
 import React from "react";
-
 import { _ } from "../../lib/lodash";
 import { RootStore } from "../../store";
 import { Store } from "../../store/standard/base";

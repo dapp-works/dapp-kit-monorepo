@@ -7,8 +7,6 @@ import * as jsonpatch from "fast-json-patch";
 import { cn } from "../../lib/utils";
 import { Button } from '@nextui-org/react';
 
-
-
 export const JSONEditor = ({ className, height = "100%", initialJson, onChange, onSubmit }: { className?: string; height?: string | number; initialJson: string; onChange?: (value: Record<string, any>) => void; onSubmit?: (value: Record<string, any>) => void }) => {
   const valueRef = useRef<string>(initialJson);
   const changeValueRef = useRef(
