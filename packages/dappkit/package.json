@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.69",
+  "version": "0.4.71",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -115,7 +115,8 @@
     "react-dom": ">=18.2.0",
     "react-draggable": ">=4.0.0",
     "react-hot-toast": ">=2.0.0",
-    "typed-emitter": "^2.0.0"
+    "typed-emitter": "^2.0.0",
+    "@iotexproject/iotex-address-ts": "^1.0.4"
   },
   "author": "uuz",
   "license": "ISC",
