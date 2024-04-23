@@ -25,7 +25,7 @@ export type EditorWidgetUIOptions = {
   "ui:options": Options;
 };
 
-const EditorWidget = ({ label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
+export const EditorWidget = ({ label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
   const { editorHeight = '200px', readOnly = false, language = 'json', jsonStrSpace, languageSelectorOptions = [], onChangeLanguage, onRun, onMount } = options;
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [runLoading, setRunLoading] = useState(false);
@@ -94,4 +94,3 @@ const EditorWidget = ({ label, options = {}, value, required, schema, disabled, 
   );
 };
 
-export default EditorWidget;

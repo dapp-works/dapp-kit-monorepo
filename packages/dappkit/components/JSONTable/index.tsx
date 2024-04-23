@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import JSONHighlight from "../Common/JSONHighlight";
@@ -80,10 +80,12 @@ export interface JSONTableProps<T extends Record<string, any>> {
   asCard?: boolean;
   cardOptions?: CardOptions;
   autoScrollToTop?: boolean;
+  NoData?: ({ className, columns }: { className?: string; columns: Column<T>[] }) => React.ReactNode;
 }
 
-const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps<T>) => {
+export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps<T>) => {
   const {
+    className,
     dataSource,
     columnOptions,
     headerKeys,
@@ -107,6 +109,7 @@ const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps
       dividerClassName: '',
     },
     autoScrollToTop = false,
+    NoData = DefaultNoData,
   } = props;
 
   const actionsHeadLabel = actionsOptions?.headLabel || '';
@@ -128,13 +131,12 @@ const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps
     },
   }));
 
+  const tableBoxElementId = useRef(autoScrollToTop ? `table-box-${uuid().slice(0, 8)}` : undefined).current;
+
   useEffect(() => {
     const firstData = dataSource[0];
-    if (!firstData) {
-      return;
-    }
 
-    const allKeys = Object.keys(firstData);
+    const allKeys = firstData ? Object.keys(firstData) : [];
     const keys = headerKeys ? headerKeys : columnOptions ? allKeys.filter((key) => !columnOptions[key]?.hidden) : allKeys;
 
     const sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' } = {};
@@ -160,7 +162,7 @@ const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps
       });
     }
 
-    const extendedTables = extendedTableOptions
+    const extendedTables = firstData ? extendedTableOptions
       .filter((item) => {
         return Array.isArray(firstData[item.key])
       })
@@ -182,7 +184,7 @@ const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps
             };
           }),
         };
-      });
+      }) : [];
 
     store.setData({
       sortableColumns,
@@ -238,14 +240,14 @@ const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps
   const needExtendedTable = !!extendedTables.length;
   const data = isServerPaging ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
-  const tableBoxElementId = useMemo(() => {
-    return autoScrollToTop ? `table-card-${uuid().slice(0, 8)}` : undefined;
-  }, []);
+  if (data.length === 0) {
+    return <NoData className={className} columns={columns} />;
+  }
 
   if (asCard) {
     return (
       <CardOnMobile
-        className={props.className}
+        className={className}
         data={data}
         columns={columns}
         columnOptions={columnOptions}
@@ -261,7 +263,7 @@ const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps
 
   return (
     <>
-      <div className={cn('relative w-full overflow-auto h-[400px]', props.className)} id={tableBoxElementId}>
+      <div className={cn('relative w-full overflow-auto h-[400px]', className)} id={tableBoxElementId}>
         <Table>
           <TableHeader className="sticky top-0">
             <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
@@ -552,23 +554,6 @@ function CollapseBody<T>({ item,
   );
 }
 
-async function scrollIntoTop(tableBoxElementId?: string) {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  if (tableBoxElementId) {
-    const el = document.getElementById(tableBoxElementId);
-    if (el) {
-      const { top } = el.getBoundingClientRect();
-      window.scrollTo({
-        top: top + window.scrollY - 100,
-        behavior: 'smooth',
-      });
-    }
-  }
-}
-
-export default JSONTable;
-export { JSONTable }
-
 function CardOnMobile<T>({
   className,
   data,
@@ -643,5 +628,42 @@ function CardOnMobile<T>({
         </div>
       )}
     </div>
+  );
+}
+
+async function scrollIntoTop(tableBoxElementId?: string) {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  if (tableBoxElementId) {
+    const el = document.getElementById(tableBoxElementId);
+    if (el) {
+      const { top } = el.getBoundingClientRect();
+      window.scrollTo({
+        top: top + window.scrollY - 100,
+        behavior: 'smooth',
+      });
+    }
+  }
+}
+
+export function TableHeaderOfNoData<T>({ className, columns }: { className?: string; columns: Column<T>[] }) {
+  return (
+    <div className={cn('w-full flex items-center justify-around bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm overflow-auto', className)}>
+      {columns.map((item) => (
+        <div key={item.key} className="p-2 text-left font-medium text-[0.8125rem] text-[#64748B] dark:text-gray-300">
+          {item.label}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DefaultNoData<T>({ className, columns }: { className?: string; columns: Column<T>[] }) {
+  return (
+    <Card className={cn('w-full shadow-sm border dark:border-[#3e3e3e] rounded-lg', className)}>
+      <TableHeaderOfNoData columns={columns} />
+      <div className="w-full h-[100px] flex flex-col justify-center items-center">
+        <div className="text-[#64748B] text-sm">No Data</div>
+      </div>
+    </Card>
   );
 }

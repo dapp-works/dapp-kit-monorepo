@@ -12,7 +12,6 @@ import {
 import * as Utils from "@rjsf/utils"
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { observer } from "mobx-react-lite";
-
 import { cn } from "../../lib/utils";
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
 

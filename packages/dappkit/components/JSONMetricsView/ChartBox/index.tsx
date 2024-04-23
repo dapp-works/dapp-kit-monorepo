@@ -20,7 +20,7 @@ export interface ChartBox {
 
 export const ChartBox = ({ title, description, error, children, className, headerClassName, contentClassName }: ChartBox) => {
   return (
-    <Card className={cn('dark:border-gray-800 shadow-sm border', className)}>
+    <Card className={cn('shadow-sm border dark:border-[#3e3e3e]', className)}>
       {(title || description) && (
         <div className={cn('p-4 h-[60px]', headerClassName)}>
           {title && <div>{title}</div>}
