@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChartBox } from '../ChartBox';
-import JSONTable from '../../JSONTable';
+import { JSONTable } from '../../JSONTable';
 import { cn } from '../../../lib/utils';
 
 export type TableCard = ChartBox & {

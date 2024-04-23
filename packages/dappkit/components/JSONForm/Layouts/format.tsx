@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { UiSchema } from "@rjsf/utils";
 import { FormDataOfKey, JSONFormProps } from "..";
-import CheckboxWidget from "../../../components/JSONFormWidgets/CheckboxWidget";
-import InputWidget from "../../../components/JSONFormWidgets/InputWidget";
-import SelectWidget from "../../../components/JSONFormWidgets/SelectWidget";
-import EditorWidget from '../../../components/JSONFormWidgets/EditorWidget';
+import { CheckboxWidget } from "../../../components/JSONFormWidgets/CheckboxWidget";
+import { InputWidget } from "../../../components/JSONFormWidgets/InputWidget";
+import { SelectWidget } from "../../../components/JSONFormWidgets/SelectWidget";
+import { EditorWidget } from '../../../components/JSONFormWidgets/EditorWidget';
 import {
   JSONSchemaFormState,
   JSONValue,

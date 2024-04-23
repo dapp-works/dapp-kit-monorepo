@@ -18,7 +18,7 @@ export interface SelectWidgetUIOptions {
   "ui:options": Options;
 }
 
-function SelectWidget(props: SelectWidgetProps) {
+export function SelectWidget(props: SelectWidgetProps) {
   const { onChange, options, label, value, required, disabled, schema } = props;
   const { className, labelPlacement = 'top', placeholder = 'Select an option' } = options;
   const { selectOptions = [], description } = schema;
@@ -61,4 +61,3 @@ function SelectWidget(props: SelectWidgetProps) {
   );
 }
 
-export default SelectWidget;

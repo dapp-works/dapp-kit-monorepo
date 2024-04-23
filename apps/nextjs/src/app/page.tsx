@@ -4,11 +4,11 @@ import "~/store/index";
 
 import { observer } from "mobx-react-lite";
 import { StoragePlugin } from "@dappworks/kit/experimental";
-import { Button } from "@nextui-org/react";
+import { Button, Card, cn } from "@nextui-org/react";
 import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
-import { JSONTable } from "@dappworks/kit/jsontable";
-import { JSONForm, getComplexFormData } from "@dappworks/kit/form";
+import { JSONTable, TableHeaderOfNoData } from "@dappworks/kit/jsontable";
+import { ComplexFormModalStore, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 
 const inputValue = StoragePlugin.Get({
@@ -149,7 +149,7 @@ const HomePage = observer(() => {
             ],
           },
         ]}
-        // headerKeys={['a', 'c', 'd', 'e']}
+        headerKeys={['a', 'c', 'd', 'e']}
         columnOptions={{
           a: {
             label: 'A',
@@ -250,6 +250,16 @@ const HomePage = observer(() => {
             },
           },
         ]}
+        NoData={({ className, columns }) => {
+          return (
+            <Card className={cn('shadow-sm border dark:border-[#3e3e3e] rounded-lg', className)}>
+              <TableHeaderOfNoData className="rounded-l-lg rounded-r-lg" columns={columns} />
+              <div className="w-full h-[100px] flex flex-col justify-center items-center">
+                <div className="text-[#64748B] text-sm">No Data</div>
+              </div>
+            </Card>
+          );
+        }}
       />
 
       <JSONForm
@@ -457,6 +467,7 @@ const HomePage = observer(() => {
               setLoading?.(true);
               await new Promise((resolve) => setTimeout(resolve, 2000));
               setLoading?.(false);
+              RootStore.Get(ComplexFormModalStore).close();
             },
             // onChange: (data) => {
             //   console.log('[getComplexFormData onChange]:', data);
