@@ -8,9 +8,9 @@ import {
   JSONValue,
 } from "../../store/standard/JSONSchemaState";
 import Provider from "./Provider";
-import SelectWidget from "../../components/JSONFormWidgets/SelectWidget";
-import InputWidget from "../../components/JSONFormWidgets/InputWidget";
-import CheckboxWidget from "../../components/JSONFormWidgets/CheckboxWidget";
+import { SelectWidget } from "../../components/JSONFormWidgets/SelectWidget";
+import { InputWidget } from "../../components/JSONFormWidgets/InputWidget";
+import { CheckboxWidget } from "../../components/JSONFormWidgets/CheckboxWidget";
 import { RootStore } from "../../store";
 import { SlotsToClasses, ModalSlots } from "@nextui-org/react";
 
@@ -20,7 +20,6 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
 
   isOpen = false;
   title = '';
-  //@ts-ignore
   form: JSONSchemaFormState<T> = null;
   className: string = '';
   classNames?: SlotsToClasses<ModalSlots>;

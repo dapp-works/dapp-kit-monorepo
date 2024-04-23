@@ -19,7 +19,7 @@ export interface CheckboxWidgetUIOptions {
   "ui:options": Options;
 }
 
-function CheckboxWidget({
+export function CheckboxWidget({
   onChange,
   options,
   label,
@@ -57,4 +57,3 @@ function CheckboxWidget({
   );
 }
 
-export default CheckboxWidget;

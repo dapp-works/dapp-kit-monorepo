@@ -9,8 +9,8 @@ import { RootStore } from "../../store";
 import React, { Dispatch, SetStateAction } from "react";
 import { ButtonProps, SlotsToClasses, ModalSlots } from "@nextui-org/react";
 
-export class FormPlugin<T extends FormDataType> implements Store {
-  sid = 'FormPlugin';
+export class ComplexFormModalStore<T extends FormDataType> implements Store {
+  sid = 'ComplexFormModalStore';
   provider = () => <Provider />;
 
   isOpen = false;
@@ -30,12 +30,12 @@ export class FormPlugin<T extends FormDataType> implements Store {
   onReady?: (formStates: { [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema> }) => void;
   batchSubmitButtonProps?: ButtonProps & { onBatchSubmit?: (formData: T, setLoading: Dispatch<SetStateAction<boolean>>) => void };
 
-  constructor(args?: Partial<FormPlugin<T>>) {
+  constructor(args?: Partial<ComplexFormModalStore<T>>) {
     Object.assign(this, args);
     makeAutoObservable(this);
   }
 
-  setData(v: Partial<FormPlugin<T>>) {
+  setData(v: Partial<ComplexFormModalStore<T>>) {
     Object.assign(this, v);
   }
 
@@ -58,9 +58,9 @@ export class FormPlugin<T extends FormDataType> implements Store {
   }
 }
 
-export async function getComplexFormData<T extends FormDataType>(v: Partial<FormPlugin<T>>) {
+export async function getComplexFormData<T extends FormDataType>(v: Partial<ComplexFormModalStore<T>>) {
   return new Promise<T>((resolve, reject) => {
-    const complexFormModal = RootStore.Get(FormPlugin);
+    const complexFormModal = RootStore.Get(ComplexFormModalStore);
     // @ts-ignore
     complexFormModal.setData({
       ...v,

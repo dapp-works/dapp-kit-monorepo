@@ -21,7 +21,7 @@ export interface TextareaWidgetUIOptions {
   'ui:options': Options;
 }
 
-function TextareaWidget(props: TextareaWidgetProps) {
+export function TextareaWidget(props: TextareaWidgetProps) {
   const { onChange, options, label, value, required, disabled, schema } = props;
   const { className, labelPlacement = 'inside', size = 'md', minRows = 2, maxRows = 8 } = options;
   const placeholder = props.placeholder || options.placeholder;
@@ -42,5 +42,3 @@ function TextareaWidget(props: TextareaWidgetProps) {
     />
   );
 }
-
-export default TextareaWidget;

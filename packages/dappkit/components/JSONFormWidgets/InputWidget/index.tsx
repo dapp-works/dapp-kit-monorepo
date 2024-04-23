@@ -19,7 +19,7 @@ export interface InputWidgetUIOptions {
   "ui:options": Options;
 }
 
-function InputWidget(props: InputWidgetProps) {
+export function InputWidget(props: InputWidgetProps) {
   const {
     onChange,
     options,
@@ -49,4 +49,3 @@ function InputWidget(props: InputWidgetProps) {
   );
 }
 
-export default InputWidget;

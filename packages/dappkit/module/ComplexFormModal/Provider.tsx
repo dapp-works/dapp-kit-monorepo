@@ -5,12 +5,12 @@ import Draggable from "react-draggable";
 import { JSONForm } from "../../components/JSONForm";
 import { useEffect, useMemo } from "react";
 import { cn } from "../../lib/utils";
-import { FormPlugin } from ".";
+import { ComplexFormModalStore } from ".";
 import React from "react";
 
 const JSONViewModal = observer(() => {
   const rootStore = useStore();
-  const complexFormModal = rootStore.get(FormPlugin);
+  const complexFormModal = rootStore.get(ComplexFormModalStore);
   const { formData, isOpen } = complexFormModal;
   const store = useLocalObservable(() => ({
     isMobile: false,
@@ -68,12 +68,11 @@ const JSONViewModal = observer(() => {
                   formData={formData}
                   formConfig={complexFormModal.formConfig}
                   layoutConfig={layoutConfig}
-                  onBatchSubmit={
-                    complexFormModal.onBatchSubmit
-                      ? complexFormModal.onBatchSubmit
-                      : (data) => {
-                        complexFormModal.event.emit('batchSubmit', data);
-                      }
+                  onBatchSubmit={complexFormModal.onBatchSubmit
+                    ? complexFormModal.onBatchSubmit
+                    : (data) => {
+                      complexFormModal.event.emit('batchSubmit', data);
+                    }
                   }
                   onSet={complexFormModal.onSet}
                   onChange={complexFormModal.onChange}
