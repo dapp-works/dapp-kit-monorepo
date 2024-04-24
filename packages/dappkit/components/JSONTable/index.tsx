@@ -299,11 +299,11 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           <TableHeader className="sticky top-0">
             <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
               {needExtendedTable && <TableHead></TableHead>}
-              {actionsPlacement === 'left' && <TableHead className="font-meidum text-[12px] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
+              {actionsPlacement === 'left' && <TableHead className="font-meidum text-xs text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
               {columns.map((item, index) => (
-                <TableHead className={cn('font-meidum text-[12px] text-[#64748B] dark:text-gray-300', columnOptions?.[item.key]?.thClassName)} key={item.key}>
+                <TableHead className={cn('font-meidum text-xs text-[#64748B] dark:text-gray-300', columnOptions?.[item.key]?.thClassName)} key={item.key}>
                   <div className="flex items-center">
-                    <div className="text-xs">{item.label}</div>
+                    <span>{item.label}</span>
                     {!!store.sortableColumns[item.key] && (
                       <Dropdown
                         showArrow
@@ -311,13 +311,13 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                         placement="bottom"
                       >
                         <DropdownTrigger>
-                          <div className="cursor-pointer">
+                          <button className="outline-none p-0">
                             {store.sortableColumns[item.key] === 'desc' && <ChevronDown size={14} />}
                             {store.sortableColumns[item.key] === 'asc' && <ChevronUp size={14} />}
                             {store.sortableColumns[item.key] === 'none' && <ChevronsUpDown size={14} />}
-                          </div>
+                          </button>
                         </DropdownTrigger>
-                        <DropdownMenu selectionMode="single" selectedKeys={[store.sortableColumns[item.key]]}>
+                        <DropdownMenu variant="flat" selectionMode="single" selectedKeys={[store.sortableColumns[item.key]]}>
                           <DropdownItem
                             key="asc"
                             onClick={() => {
@@ -360,7 +360,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                   </div>
                 </TableHead>
               ))}
-              {actionsPlacement === 'right' && <TableHead className="font-meidum text-[12px] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
+              {actionsPlacement === 'right' && <TableHead className="font-meidum text-xs text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -482,7 +482,7 @@ function Body<T>({
 }) {
   return (
     <TableRow
-      className={cn('text-[12px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+      className={cn('text-xs hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
       onClick={() => {
         onRowClick?.(item);
       }}
@@ -519,7 +519,7 @@ function CollapseBody<T>({ item,
   return (
     <>
       <TableRow
-        className={cn('text-[12px] cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+        className={cn('text-xs cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
         onClick={(e: any) => {
           const { nodeName } = e.target;
           if (nodeName === 'TD' || nodeName === 'svg') {
@@ -552,7 +552,7 @@ function CollapseBody<T>({ item,
                   <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45]">
                     {exColumns.map((exC) => {
                       return (
-                        <TableHead key={exC.key} className="text-[12px] text-[#64748B] dark:text-gray-300">
+                        <TableHead key={exC.key} className="text-xs text-[#64748B] dark:text-gray-300">
                           {exC.label}
                         </TableHead>
                       );
@@ -561,7 +561,7 @@ function CollapseBody<T>({ item,
                 </TableHeader>
                 <TableBody>
                   {exRow.map((exItem) => (
-                    <TableRow className="text-[12px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
+                    <TableRow className="text-xs hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
                       {exColumns.map((exC) => {
                         return (
                           <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
@@ -631,8 +631,8 @@ function CardUI<T>({
                 return (
                   <div className="w-full" key={column.key}>
                     <div className={cn('w-full', cardOptions?.itemClassName)}>
-                      <div className={cn('font-meidum text-[12px] text-[#64748B] dark:text-gray-300', option?.labelClassName)}>{column.label}</div>
-                      <div className={cn('text-[12px]', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                      <div className={cn('font-meidum text-xs text-[#64748B] dark:text-gray-300', option?.labelClassName)}>{column.label}</div>
+                      <div className={cn('text-xs', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
                     </div>
                     {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
                   </div>
@@ -684,7 +684,7 @@ export function TableHeaderOfNoData<T>({ className, columns }: { className?: str
   return (
     <div className={cn('flex items-center justify-between bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm overflow-auto rounded-l-lg rounded-r-lg', className)}>
       {columns.map((item) => (
-        <div key={item.key} className="p-2 text-left font-medium text-[12px] text-[#64748B] dark:text-gray-300 whitespace-nowrap">
+        <div key={item.key} className="p-2 text-left font-medium text-xs text-[#64748B] dark:text-gray-300 whitespace-nowrap">
           {item.label}
         </div>
       ))}
