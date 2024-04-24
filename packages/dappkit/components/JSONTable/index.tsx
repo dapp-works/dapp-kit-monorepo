@@ -3,14 +3,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import JSONHighlight from "../Common/JSONHighlight";
-import { Button, ButtonProps, Card, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Pagination as NextuiPagination } from '@nextui-org/react';
+import { Button, ButtonProps, Card, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Pagination as NextuiPagination, PaginationProps, Spinner, SpinnerProps } from '@nextui-org/react';
 import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
+import JSONHighlight from "../Common/JSONHighlight";
+import { SkeletonBox } from "../Common/SkeletonBox";
 import { _ } from "../../lib/lodash";
-import { DialogStore } from "../../module/Dialog";
 import { cn } from "../../lib/utils";
+import { DialogStore } from "../../module/Dialog";
 import { PaginationState } from "../../store/standard/PaginationState";
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
 export type ActionButtonType = {
   props?: ButtonProps;
@@ -61,6 +62,22 @@ export type CardOptions = {
   dividerClassName?: string;
 };
 
+type LoadingOptions = {
+  className?: string;
+  type?: 'skeleton' | 'spinner';
+  skeleton?: {
+    boxClassName?: string;
+    skeletonClassName?: string;
+    line?: number;
+  };
+  spinner?: {
+    boxClassName?: string;
+    spinnerProps?: SpinnerProps;
+    text?: string;
+    textClassName?: string;
+  };
+};
+
 export interface JSONTableProps<T extends Record<string, any>> {
   className?: string;
   dataSource: T[];
@@ -73,6 +90,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   }[];
   rowKey?: string;
   pagination?: PaginationState;
+  nextuiPaginationProps?: PaginationProps | {};
   onRowClick?: (item: T) => void;
   rowCss?: string | ((item: T) => string | undefined);
   actions?: ActionsType<T>;
@@ -81,6 +99,9 @@ export interface JSONTableProps<T extends Record<string, any>> {
   cardOptions?: CardOptions;
   autoScrollToTop?: boolean;
   NoData?: ({ className, columns }: { className?: string; columns: Column<T>[] }) => React.ReactNode;
+  isLoading?: boolean;
+  loadingOptions?: LoadingOptions;
+  Loading?: ({ className, columns }: { className?: string; columns: Column<T>[] }) => React.ReactNode;
 }
 
 export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps<T>) => {
@@ -94,6 +115,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       page: 1,
       limit: 8,
     }),
+    nextuiPaginationProps = {},
     extendedTableOptions = [],
     rowKey = 'id',
     onRowClick,
@@ -110,6 +132,9 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
     },
     autoScrollToTop = false,
     NoData = DefaultNoData,
+    isLoading = false,
+    loadingOptions,
+    Loading = DefaultLoading,
   } = props;
 
   const actionsHeadLabel = actionsOptions?.headLabel || '';
@@ -240,14 +265,19 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
   const needExtendedTable = !!extendedTables.length;
   const data = isServerPaging ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
+  if (isLoading) {
+    return <Loading className={className} columns={columns} loadingOptions={loadingOptions} />;
+  }
+
   if (data.length === 0) {
     return <NoData className={className} columns={columns} />;
   }
 
   if (asCard) {
     return (
-      <CardOnMobile
+      <CardUI
         className={className}
+        rowKey={rowKey}
         data={data}
         columns={columns}
         columnOptions={columnOptions}
@@ -255,6 +285,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         actionsOptions={actionsOptions}
         cardOptions={cardOptions}
         pagination={pagination}
+        nextuiPaginationProps={nextuiPaginationProps}
         onRowClick={onRowClick}
         tableBoxElementId={tableBoxElementId}
       />
@@ -268,9 +299,9 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           <TableHeader className="sticky top-0">
             <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
               {needExtendedTable && <TableHead></TableHead>}
-              {actionsPlacement === 'left' && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
+              {actionsPlacement === 'left' && <TableHead className="font-meidum text-[12px] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
               {columns.map((item, index) => (
-                <TableHead className={cn('font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300', columnOptions?.[item.key]?.thClassName)} key={item.key}>
+                <TableHead className={cn('font-meidum text-[12px] text-[#64748B] dark:text-gray-300', columnOptions?.[item.key]?.thClassName)} key={item.key}>
                   <div className="flex items-center">
                     <div className="text-xs">{item.label}</div>
                     {!!store.sortableColumns[item.key] && (
@@ -329,7 +360,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                   </div>
                 </TableHead>
               ))}
-              {actionsPlacement === 'right' && <TableHead className="font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
+              {actionsPlacement === 'right' && <TableHead className="font-meidum text-[12px] text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -358,15 +389,16 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
             showControls
             size="sm"
             radius="sm"
+            initialPage={1}
             total={Math.ceil(pagination.total / pagination.limit)}
             page={pagination.page}
-            initialPage={1}
             onChange={(currentPage) => {
               pagination.setData({
                 page: currentPage,
               });
               scrollIntoTop(tableBoxElementId);
             }}
+            {...nextuiPaginationProps}
           />
         </div>
       )}
@@ -450,7 +482,7 @@ function Body<T>({
 }) {
   return (
     <TableRow
-      className={cn('text-[0.8125rem] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+      className={cn('text-[12px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
       onClick={() => {
         onRowClick?.(item);
       }}
@@ -487,7 +519,7 @@ function CollapseBody<T>({ item,
   return (
     <>
       <TableRow
-        className={cn('text-[0.8125rem] cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+        className={cn('text-[12px] cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
         onClick={(e: any) => {
           const { nodeName } = e.target;
           if (nodeName === 'TD' || nodeName === 'svg') {
@@ -520,7 +552,7 @@ function CollapseBody<T>({ item,
                   <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45]">
                     {exColumns.map((exC) => {
                       return (
-                        <TableHead key={exC.key} className="text-[0.8125rem] text-[#64748B] dark:text-gray-300">
+                        <TableHead key={exC.key} className="text-[12px] text-[#64748B] dark:text-gray-300">
                           {exC.label}
                         </TableHead>
                       );
@@ -529,7 +561,7 @@ function CollapseBody<T>({ item,
                 </TableHeader>
                 <TableBody>
                   {exRow.map((exItem) => (
-                    <TableRow className="text-[0.8125rem] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
+                    <TableRow className="text-[12px] hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
                       {exColumns.map((exC) => {
                         return (
                           <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
@@ -554,7 +586,7 @@ function CollapseBody<T>({ item,
   );
 }
 
-function CardOnMobile<T>({
+function CardUI<T>({
   className,
   data,
   columns,
@@ -564,6 +596,7 @@ function CardOnMobile<T>({
   actionsOptions,
   cardOptions,
   pagination,
+  nextuiPaginationProps,
   onRowClick,
   tableBoxElementId,
 }: {
@@ -571,11 +604,12 @@ function CardOnMobile<T>({
   data: T[];
   columns: Column<T>[];
   columnOptions?: ColumnOptions<T>;
-  rowKey?: string;
+  rowKey: string;
   actions?: ActionsType<T>;
   actionsOptions?: ActionsOptions;
   cardOptions?: CardOptions;
   pagination: PaginationState;
+  nextuiPaginationProps: PaginationProps | {};
   onRowClick?: (item: T) => void;
   tableBoxElementId?: string;
 }) {
@@ -597,8 +631,8 @@ function CardOnMobile<T>({
                 return (
                   <div className="w-full" key={column.key}>
                     <div className={cn('w-full', cardOptions?.itemClassName)}>
-                      <div className={cn('font-meidum text-[0.8125rem] text-[#64748B] dark:text-gray-300', option?.labelClassName)}>{column.label}</div>
-                      <div className={cn('text-[0.8125rem]', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                      <div className={cn('font-meidum text-[12px] text-[#64748B] dark:text-gray-300', option?.labelClassName)}>{column.label}</div>
+                      <div className={cn('text-[12px]', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
                     </div>
                     {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
                   </div>
@@ -615,15 +649,16 @@ function CardOnMobile<T>({
             showControls
             size="sm"
             radius="sm"
+            initialPage={1}
             total={Math.ceil(pagination.total / pagination.limit)}
             page={pagination.page}
-            initialPage={1}
             onChange={(currentPage) => {
               pagination.setData({
                 page: currentPage,
               });
               scrollIntoTop(tableBoxElementId);
             }}
+            {...nextuiPaginationProps}
           />
         </div>
       )}
@@ -647,9 +682,9 @@ async function scrollIntoTop(tableBoxElementId?: string) {
 
 export function TableHeaderOfNoData<T>({ className, columns }: { className?: string; columns: Column<T>[] }) {
   return (
-    <div className={cn('w-full flex items-center justify-around bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm overflow-auto', className)}>
+    <div className={cn('flex items-center justify-between bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm overflow-auto rounded-l-lg rounded-r-lg', className)}>
       {columns.map((item) => (
-        <div key={item.key} className="p-2 text-left font-medium text-[0.8125rem] text-[#64748B] dark:text-gray-300">
+        <div key={item.key} className="p-2 text-left font-medium text-[12px] text-[#64748B] dark:text-gray-300 whitespace-nowrap">
           {item.label}
         </div>
       ))}
@@ -665,5 +700,29 @@ function DefaultNoData<T>({ className, columns }: { className?: string; columns:
         <div className="text-[#64748B] text-sm">No Data</div>
       </div>
     </Card>
+  );
+}
+
+export function TableHeaderOfLoading<T>({ className, columns }: { className?: string; columns: Column<T>[] }) {
+  return <TableHeaderOfNoData columns={columns} className={className} />;
+}
+
+function DefaultLoading<T>({ className, columns, loadingOptions }: { className?: string; columns: Column<T>[]; loadingOptions?: LoadingOptions }) {
+  const type = loadingOptions?.type || 'skeleton';
+  const skeletonOptions = loadingOptions?.skeleton;
+  const spinnerOptions = loadingOptions?.spinner;
+  const spinnerProps = spinnerOptions?.spinnerProps || {};
+  return (
+    <div className={cn('w-full shadow-sm', className)}>
+      <TableHeaderOfLoading columns={columns} />
+      {type === 'skeleton' ? (
+        <SkeletonBox className={cn('mt-2 flex-col', skeletonOptions?.boxClassName)} skClassName={cn('h-[30px] rounded', skeletonOptions?.skeletonClassName)} line={skeletonOptions?.line || 5} />
+      ) : (
+        <div className={cn('w-full h-[100px] flex justify-center items-center', spinnerOptions?.boxClassName)}>
+          <Spinner size="sm" color="primary" {...spinnerProps} />
+          <div className={cn('ml-2 text-[#64748B] text-sm', spinnerOptions?.textClassName)}>{spinnerOptions?.text || 'Loading...'}</div>
+        </div>
+      )}
+    </div>
   );
 }
