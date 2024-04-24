@@ -9,4 +9,5 @@ export {
   type CardOptions,
   JSONTable,
   TableHeaderOfNoData,
+  TableHeaderOfLoading,
 } from "./components/JSONTable";

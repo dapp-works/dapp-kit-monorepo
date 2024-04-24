@@ -7,9 +7,10 @@ import { StoragePlugin } from "@dappworks/kit/experimental";
 import { Button, Card, cn } from "@nextui-org/react";
 import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
-import { JSONTable, TableHeaderOfNoData } from "@dappworks/kit/jsontable";
+import { JSONTable, TableHeaderOfLoading, TableHeaderOfNoData } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
+import { PaginationState } from "@dappkit/dist/index.mjs";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -113,6 +114,24 @@ const HomePage = observer(() => {
     <div className="p-4 w-full lg:w-[900px] mx-auto">
       <JSONTable
         className="my-4 h-auto"
+        // isLoading={true}
+        loadingOptions={{
+          // type: 'spinner',
+          skeleton: {
+            // line: 10,
+            skeletonClassName: 'bg-red-500'
+          }
+        }}
+        // Loading={({ className, columns }) => {
+        //   return (
+        //     <Card className={cn('shadow-sm border dark:border-[#3e3e3e] rounded-lg', className)}>
+        //       <TableHeaderOfLoading columns={columns} />
+        //       <div className="w-full h-[100px] flex flex-col justify-center items-center">
+        //         <div className="text-[#64748B] text-sm">Loading...</div>
+        //       </div>
+        //     </Card>
+        //   );
+        // }}
         dataSource={[
           {
             a: {
@@ -174,6 +193,18 @@ const HomePage = observer(() => {
           e: {
             label: 'E',
           },
+        }}
+        pagination={new PaginationState({
+          limit: 1,
+          onPageChange: (page) => {
+            console.log('Page Change:', page);
+          }
+        })}
+        nextuiPaginationProps={{
+          color: 'secondary',
+          size: 'sm',
+          // radius: 'none',
+          isCompact: true
         }}
         onRowClick={(item) => {
           console.log('Row Click:', item);
@@ -253,7 +284,7 @@ const HomePage = observer(() => {
         NoData={({ className, columns }) => {
           return (
             <Card className={cn('shadow-sm border dark:border-[#3e3e3e] rounded-lg', className)}>
-              <TableHeaderOfNoData className="rounded-l-lg rounded-r-lg" columns={columns} />
+              <TableHeaderOfNoData columns={columns} />
               <div className="w-full h-[100px] flex flex-col justify-center items-center">
                 <div className="text-[#64748B] text-sm">No Data</div>
               </div>
@@ -494,7 +525,7 @@ const HomePage = observer(() => {
           metricTitle: 'Total Events',
           metric: 124,
           chartType: 'area',
-          chartClassName: 'h-[200px]'
+          chartClassName: 'h-[200px]',
         }}
       />
     </div>
