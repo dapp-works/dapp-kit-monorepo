@@ -129,7 +129,7 @@ const SubmitButton = ({ uiSchema }: SubmitButtonProps) => {
     return null;
   }
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-end mt-4">
       <Button type="submit" color='primary' size='sm'>{submitText}</Button>
     </div>
   );
