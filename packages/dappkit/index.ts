@@ -5,6 +5,7 @@ export { PromiseState } from "./store/standard/PromiseState";
 export { PromiseHook } from "./store/standard/PromiseHook";
 export { BigNumberState } from "./store/standard/BigNumberState";
 export { BigNumberInputState } from "./store/standard/BigNumberInputState";
+export { StorageState } from "./store/standard/StorageState";
 export { PaginationState } from "./store/standard/PaginationState";
 
 export * from "./store/standard/base";

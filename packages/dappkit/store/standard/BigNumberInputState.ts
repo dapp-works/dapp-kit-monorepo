@@ -16,12 +16,14 @@ export class BigNumberInputState {
   }
   setValue(value: any) {
     this.value = new BigNumber(value);
-    this.format = helper.number.toPrecisionFloor(new BigNumber(this.value).dividedBy(10 ** this.decimals).toFixed());
+    // this.format = helper.number.toPrecisionFloor(new BigNumber(this.value).dividedBy(10 ** this.decimals).toFixed());
+    this.format = helper.number.warpBigNumber(this.value.toFixed(), this.decimals, { format: '0.000', fallback: '' }).format;
     this.setLoading(false);
   }
   setFormat(val: any) {
     this.format = val;
-    this.format = helper.number.toPrecisionFloor(this.format);
+    // this.format = helper.number.toPrecisionFloor(this.format);
+    // this.format = helper.number.warpBigNumber(this.value.toFixed(), this.decimals, { format: '0.000', fallback: '' }).format;
     this.value = new BigNumber(val).multipliedBy(10 ** this.decimals);
   }
   setLoading(val: boolean) {
