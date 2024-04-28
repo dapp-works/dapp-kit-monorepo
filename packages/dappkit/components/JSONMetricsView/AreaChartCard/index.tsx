@@ -1,5 +1,5 @@
 import React from 'react';
-import { AreaChart, ValueFormatter } from '@tremor/react';
+import { AreaChart, CustomTooltipProps, ValueFormatter } from '@tremor/react';
 import { ChartBox } from '../ChartBox';
 import { cn } from '../../../lib/utils';
 
@@ -42,7 +42,7 @@ export type AreaChartCard = ChartBox & {
   showAnimation?: boolean;
   autoMinValue?: boolean;
   valueFormatter?: ValueFormatter;
-  customTooltip?: ({ payload, active, label }) => React.ReactNode;
+  customTooltip?: (props: CustomTooltipProps) => React.ReactNode;
 };
 
 
