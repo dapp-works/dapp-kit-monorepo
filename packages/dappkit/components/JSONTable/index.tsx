@@ -300,7 +300,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
             <TableRow className="bg-[#F4F4F5] dark:bg-[#3F3F45] shadow-sm">
               {needExtendedTable && <TableHead></TableHead>}
               {actionsPlacement === 'left' && <TableHead className="font-meidum text-xs text-[#64748B] dark:text-gray-300">{actionsHeadLabel}</TableHead>}
-              {columns.map((item, index) => (
+              {columns.map((item) => (
                 <TableHead className={cn('font-meidum text-xs text-[#64748B] dark:text-gray-300', columnOptions?.[item.key]?.thClassName)} key={item.key}>
                   <div className="flex items-center">
                     <span>{item.label}</span>
