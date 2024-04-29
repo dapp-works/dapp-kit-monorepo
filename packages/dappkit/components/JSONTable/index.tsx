@@ -256,12 +256,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         removeWrapper
         isHeaderSticky={isHeaderSticky}
         className={cn('relative w-full overflow-auto h-[400px]', className)}
-        classNames={{
-          th: 'font-meidum text-xs text-[#64748B] dark:text-gray-300',
-          td: 'max-w-[200px] overflow-auto text-xs',
-          tr: 'hover:bg-[#f6f6f9] dark:hover:bg-[#19191c] border-t-1 border-[#E2E8F0] dark:border-[#121212] first:border-t-0',
-          ...classNames,
-        }}
+        classNames={classNames}
         id={tableBoxElementId}
       >
         <TableHeader columns={columns}>
