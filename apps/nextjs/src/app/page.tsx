@@ -4,10 +4,10 @@ import "~/store/index";
 
 import { observer } from "mobx-react-lite";
 import { StoragePlugin } from "@dappworks/kit/experimental";
-import { Button, Card, cn } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
-import { JSONTable, TableHeaderOfLoading, TableHeaderOfNoData } from "@dappworks/kit/jsontable";
+import { JSONTable } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { PaginationState } from "@dappkit/dist/index.mjs";
@@ -122,16 +122,6 @@ const HomePage = observer(() => {
             skeletonClassName: 'bg-red-500'
           }
         }}
-        // Loading={({ className, columns }) => {
-        //   return (
-        //     <Card className={cn('shadow-sm border dark:border-[#3e3e3e] rounded-lg', className)}>
-        //       <TableHeaderOfLoading columns={columns} />
-        //       <div className="w-full h-[100px] flex flex-col justify-center items-center">
-        //         <div className="text-[#64748B] text-sm">Loading...</div>
-        //       </div>
-        //     </Card>
-        //   );
-        // }}
         dataSource={[
           {
             a: {
@@ -193,6 +183,22 @@ const HomePage = observer(() => {
           e: {
             label: 'E',
           },
+          $actions: {
+            render: (item) => {
+              return (
+                <Button
+                  className="w-full md:w-auto"
+                  size="sm"
+                  color="primary"
+                  onClick={() => {
+                    console.log('Edit:', item);
+                  }}
+                >
+                  Edit
+                </Button>
+              );
+            },
+          },
         }}
         pagination={new PaginationState({
           limit: 1,
@@ -216,81 +222,7 @@ const HomePage = observer(() => {
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
           itemClassName: 'flex justify-between',
         }}
-        actionsOptions={{
-          className: 'mt-4',
-        }}
-        actions={(item) => {
-          return (
-            <Button
-              className="w-full"
-              color="primary"
-              onClick={() => {
-                console.log('Edit:', item);
-              }}
-            >
-              Edit
-            </Button>
-          );
-        }}
-        // actions={(item) => {
-        //   return [
-        //     {
-        //       children: 'Edit',
-        //       props: {
-        //         onClick: () => {
-        //           console.log('Edit:', item);
-        //         },
-        //       },
-        //     },
-        //     {
-        //       children: 'Delete',
-        //       props: {
-        //         onClick: () => {
-        //           console.log('Delete:', item);
-        //         },
-        //       },
-        //     },
-        //   ];
-        // }}
-        extendedTableOptions={[
-          {
-            key: 'e',
-            columnOptions: {
-              btns: {
-                label: ' ',
-                render: (item) => {
-                  return (
-                    <Button
-                      size="sm"
-                      color="primary"
-                      onClick={() => {
-                        console.log('Edit:', item);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  );
-                },
-              },
-              aa: {
-                label: 'AA',
-              },
-              bb: {
-                label: 'BB',
-              },
-            },
-          },
-        ]}
-        NoData={({ className, columns }) => {
-          return (
-            <Card className={cn('shadow-sm border dark:border-[#3e3e3e] rounded-lg', className)}>
-              <TableHeaderOfNoData columns={columns} />
-              <div className="w-full h-[100px] flex flex-col justify-center items-center">
-                <div className="text-[#64748B] text-sm">No Data</div>
-              </div>
-            </Card>
-          );
-        }}
+        emptyContent="No Data"
       />
 
       <JSONForm

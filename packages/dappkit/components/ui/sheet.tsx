@@ -11,6 +11,7 @@ const Sheet = SheetPrimitive.Root;
 
 const SheetTrigger = SheetPrimitive.Trigger;
 
+// @ts-ignore
 const SheetPortal = ({ className, ...props }: SheetPrimitive.DialogPortalProps) => <SheetPrimitive.Portal className={cn(className)} {...props} />;
 SheetPortal.displayName = SheetPrimitive.Portal.displayName;
 
@@ -41,7 +42,7 @@ const SheetClose = ({ className, ...props }: SheetPrimitive.DialogCloseProps) =>
 );
 SheetClose.displayName = "Close";
 
-interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>, VariantProps<typeof sheetVariants> {}
+interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>, VariantProps<typeof sheetVariants> { }
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps & { showOverlay?: boolean; open?: boolean }>(({ side = "right", className, children, showOverlay = false, open, ...props }, ref) => {
   return (
