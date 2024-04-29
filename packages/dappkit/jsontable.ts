@@ -1,13 +1,1 @@
-export {
-  type ActionButtonType,
-  type ActionsOptions,
-  type HeaderKeys,
-  type ColumnOptions,
-  type Column,
-  type ExtendedTable,
-  type ActionsType,
-  type CardOptions,
-  JSONTable,
-  TableHeaderOfNoData,
-  TableHeaderOfLoading,
-} from "./components/JSONTable";
+export { type HeaderKeys, type ColumnOptions, type Column, type ExtendedTable, type CardOptions, JSONTable } from "./components/JSONTable";
