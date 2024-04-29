@@ -337,9 +337,9 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           ))}
         </TableHeader>
         {isLoading ? (
-          <TableBody className="h-full" emptyContent={loadingContent || DefaultLoading({ loadingOptions })}>{[]}</TableBody>
+          <TableBody emptyContent={loadingContent || DefaultLoading({ loadingOptions })}>{[]}</TableBody>
         ) : data.length > 0 ? (
-          <TableBody className="h-full">
+          <TableBody>
             {data.map((item, index) => {
               return (
                 <TableRow
