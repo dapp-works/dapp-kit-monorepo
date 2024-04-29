@@ -342,9 +342,9 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           ))}
         </TableHeader>
         {isLoading ? (
-          <TableBody emptyContent={loadingContent || DefaultLoading({ loadingOptions })}>{[]}</TableBody>
+          <TableBody className="h-full" emptyContent={loadingContent || DefaultLoading({ loadingOptions })}>{[]}</TableBody>
         ) : data.length > 0 ? (
-          <TableBody>
+          <TableBody className="h-full">
             {data.map((item, index) => {
               return (
                 <TableRow
@@ -372,7 +372,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
             showShadow
             size="sm"
             radius="sm"
-            color="secondary"
+            color="primary"
             initialPage={1}
             total={Math.ceil(pagination.total / pagination.limit)}
             page={pagination.page}
@@ -521,7 +521,7 @@ function CardUI<T>({
             showShadow
             size="sm"
             radius="sm"
-            color="secondary"
+            color="primary"
             initialPage={1}
             total={Math.ceil(pagination.total / pagination.limit)}
             page={pagination.page}
