@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "../../../lib/utils";
 
-export default function JSONHighlight({ jsonStr, className }: { jsonStr: string, className?: string }) {
+export function JSONHighlight({ jsonStr, className }: { jsonStr: string, className?: string }) {
   if (!jsonStr) return null;
   jsonStr = jsonStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const str = jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {

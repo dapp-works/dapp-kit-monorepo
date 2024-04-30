@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Card,
   Divider,
@@ -24,12 +24,9 @@ import {
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { PaginationState } from "../../store/standard/PaginationState";
-import { DialogStore } from "../../module/Dialog";
-import JSONHighlight from "../Common/JSONHighlight";
 import { SkeletonBox } from "../Common/SkeletonBox";
 import { _ } from "../../lib/lodash";
 import { cn } from "../../lib/utils";
-import { v4 as uuid } from 'uuid';
 
 export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | '$actions'>;
 
@@ -150,6 +147,8 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
     isHeaderSticky = false,
   } = props;
 
+  const tableBoxRef = useRef<HTMLElement>(null);
+
   const { columns, sortableColumnsDefaultValue } = useMemo(() => {
     const firstData = dataSource[0];
 
@@ -231,8 +230,6 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
 
   const data = isServerPaging ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
-  const tableBoxElementId = useRef(autoScrollToTop ? `table-box-${uuid().slice(0, 8)}` : undefined).current;
-
   if (asCard) {
     return (
       <CardUI
@@ -245,7 +242,11 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         pagination={pagination}
         nextuiPaginationProps={nextuiPaginationProps}
         onRowClick={onRowClick}
-        tableBoxElementId={tableBoxElementId}
+        autoScrollToTop={autoScrollToTop}
+        emptyContent={emptyContent}
+        isLoading={isLoading}
+        loadingOptions={loadingOptions}
+        loadingContent={loadingContent}
       />
     );
   }
@@ -257,7 +258,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         isHeaderSticky={isHeaderSticky}
         className={cn('relative w-full overflow-auto h-[400px]', className)}
         classNames={classNames}
-        id={tableBoxElementId}
+        ref={tableBoxRef}
       >
         <TableHeader columns={columns}>
           {columns.map((item) => (
@@ -361,8 +362,9 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         )}
       </Table>
       {pagination.total > pagination.limit && (
-        <div className="mt-4 flex justify-center">
+        <div className="flex justify-center">
           <NextuiPagination
+            className="mt-2"
             showControls
             showShadow
             size="sm"
@@ -375,7 +377,9 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
               pagination.setData({
                 page: currentPage,
               });
-              scrollIntoTop(tableBoxElementId);
+              if (autoScrollToTop && tableBoxRef.current) {
+                scrollIntoTop(tableBoxRef.current);
+              }
             }}
             {...nextuiPaginationProps}
           />
@@ -392,19 +396,7 @@ function renderFieldValue(v: any) {
   if (v == null) {
     return null;
   }
-  return (
-    <p
-      className="cursor-pointer"
-      onClick={(e) => {
-        e.stopPropagation();
-        DialogStore.show({
-          content: <JSONHighlight className="w-full lg:w-[900px]" jsonStr={JSON.stringify(v, null, 2)} />,
-        });
-      }}
-    >
-      {JSON.stringify(v).slice(0, 50) + '...'}
-    </p>
-  );
+  return JSON.stringify(v);
 }
 
 function sortData<T>({
@@ -455,8 +447,6 @@ function sortData<T>({
   };
 }
 
-export default JSONTable;
-
 function CardUI<T>({
   className,
   data,
@@ -467,7 +457,11 @@ function CardUI<T>({
   pagination,
   nextuiPaginationProps,
   onRowClick,
-  tableBoxElementId,
+  autoScrollToTop,
+  emptyContent,
+  isLoading,
+  loadingOptions,
+  loadingContent,
 }: {
   className?: string;
   data: T[];
@@ -478,40 +472,56 @@ function CardUI<T>({
   pagination: PaginationState;
   nextuiPaginationProps: PaginationProps | {};
   onRowClick?: (item: T) => void;
-  tableBoxElementId?: string;
+  autoScrollToTop?: boolean;
+  emptyContent?: React.ReactNode;
+  isLoading?: boolean;
+  loadingOptions?: LoadingOptions;
+  loadingContent?: React.ReactNode;
 }) {
+  const cardBoxRef = useRef<HTMLDivElement>(null);
   return (
-    <div className={className} id={tableBoxElementId}>
+    <div className={className} ref={cardBoxRef}>
       <div className={cn('space-y-2', cardOptions?.boxClassName)}>
-        {data.map((item, index) => {
-          return (
-            <Card
-              key={item[rowKey] || index}
-              className={cn('w-full shadow-none p-4', cardOptions?.cardClassName)}
-              isPressable={!!onRowClick}
-              onPress={() => {
-                onRowClick?.(item);
-              }}
-            >
-              {columns.map((column, i) => {
-                const option = columnOptions?.[column.key];
-                return (
-                  <div className="w-full" key={column.key}>
-                    <div className={cn('w-full', cardOptions?.itemClassName)}>
-                      <div className={cn('font-meidum text-xs text-[#64748B] dark:text-gray-300', option?.labelClassName)}>{column.label}</div>
-                      <div className={cn('text-xs', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+        {isLoading ? (
+          loadingContent ? (
+            <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400', cardOptions?.cardClassName)}>{loadingContent}</Card>
+          ) : (
+            <DefaultLoading loadingOptions={loadingOptions} />
+          )
+        ) : data.length > 0 ? (
+          data.map((item, index) => {
+            return (
+              <Card
+                key={item[rowKey] || index}
+                className={cn('w-full shadow-sm p-4', cardOptions?.cardClassName)}
+                isPressable={!!onRowClick}
+                onPress={() => {
+                  onRowClick?.(item);
+                }}
+              >
+                {columns.map((column, i) => {
+                  const option = columnOptions?.[column.key];
+                  return (
+                    <div className="w-full" key={column.key}>
+                      <div className={cn('w-full', cardOptions?.itemClassName)}>
+                        <div className={cn('font-meidum text-xs text-foreground-400', option?.labelClassName)}>{column.label}</div>
+                        <div className={cn('text-xs', option?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                      </div>
+                      {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
                     </div>
-                    {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
-                  </div>
-                );
-              })}
-            </Card>
-          );
-        })}
+                  );
+                })}
+              </Card>
+            );
+          })
+        ) : (
+          <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400', cardOptions?.cardClassName)}>{emptyContent}</Card>
+        )}
       </div>
       {pagination.total > pagination.limit && (
-        <div className="flex justify-center h-[30px] mt-4">
+        <div className="flex justify-center">
           <NextuiPagination
+            className='mt-2'
             showControls
             showShadow
             size="sm"
@@ -524,7 +534,9 @@ function CardUI<T>({
               pagination.setData({
                 page: currentPage,
               });
-              scrollIntoTop(tableBoxElementId);
+              if (autoScrollToTop && cardBoxRef.current) {
+                scrollIntoTop(cardBoxRef.current);
+              }
             }}
             {...nextuiPaginationProps}
           />
@@ -552,17 +564,13 @@ function DefaultLoading({ loadingOptions }: { loadingOptions?: LoadingOptions })
   );
 }
 
-async function scrollIntoTop(tableBoxElementId?: string) {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  if (tableBoxElementId) {
-    const el = document.getElementById(tableBoxElementId);
-    if (el) {
-      const { top } = el.getBoundingClientRect();
-      window.scrollTo({
-        top: top + window.scrollY - 100,
-        behavior: 'smooth',
-      });
-    }
+function scrollIntoTop(target: HTMLElement) {
+  if (target) {
+    const { top } = target.getBoundingClientRect();
+    window.scrollTo({
+      top: top + window.scrollY - 100,
+      behavior: 'smooth',
+    });
   }
 }
 

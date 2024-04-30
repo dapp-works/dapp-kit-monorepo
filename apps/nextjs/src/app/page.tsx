@@ -11,6 +11,7 @@ import { JSONTable } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { PaginationState } from "@dappkit/dist/index.mjs";
+import { Copy } from '@dappworks/kit/ui';
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -115,13 +116,13 @@ const HomePage = observer(() => {
       <JSONTable
         className="my-4 h-auto"
         // isLoading={true}
-        loadingOptions={{
-          // type: 'spinner',
-          skeleton: {
-            // line: 10,
-            skeletonClassName: 'bg-red-500'
-          }
-        }}
+        // loadingOptions={{
+        //   type: 'spinner',
+        //   skeleton: {
+        //     // line: 10,
+        //     skeletonClassName: 'bg-red-500'
+        //   }
+        // }}
         dataSource={[
           {
             a: {
@@ -460,6 +461,7 @@ const HomePage = observer(() => {
           chartClassName: 'h-[200px]',
         }}
       />
+      <Copy value="Copy test" iconSize={18} iconClassName="text-red-500" />
     </div>
   );
 })
