@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.76",
+  "version": "0.4.77",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -90,7 +90,6 @@
     "@monaco-editor/react": ">=4.0.0",
     "@nextui-org/react": ">=2.1.0",
     "@radix-ui/react-dialog": ">=1.0.0",
-    "@radix-ui/react-icons": ">=1.0.0",
     "@rjsf/core": ">=5.0.0",
     "@rjsf/utils": ">=5.0.0",
     "@rjsf/validator-ajv8": ">=5.0.0",

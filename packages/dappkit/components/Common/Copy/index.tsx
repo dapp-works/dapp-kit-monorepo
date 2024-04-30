@@ -1,36 +1,28 @@
 "use client";
-import React from "react";
-import { CheckIcon, CopyIcon } from "@radix-ui/react-icons";
-import copy from "copy-to-clipboard";
-import { observer, useLocalStore } from "mobx-react-lite";
 
-interface IProps {
-  value: string;
-}
-export const Copy = observer(({ value }: IProps) => {
-  const store = useLocalStore(() => ({
-    copied: false,
-    toggleIOTipOpen(val: boolean) {
-      this.isTipOpen = val;
-    },
-  }));
+import React, { useEffect, useState } from "react";
+import copyToClipboard from "copy-to-clipboard";
+import { Copy as CopyIcon, CopyCheck } from "lucide-react";
+import { cn } from "../../../lib/utils";
 
+export const Copy = ({ className = '', value, iconSize = 20, iconClassName = '' }: { className?: string; value: string; iconSize?: number, iconClassName?: string }) => {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
   return (
-    <div>
-      {store.copied ? (
-        <CheckIcon className="text-green-400" />
-      ) : (
-        <CopyIcon
-          className="text-primary-foreground cursor-pointer"
-          onClick={async () => {
-            copy(value);
-            store.copied = true;
-            setTimeout(() => {
-              store.copied = false;
-            }, 900);
-          }}
-        />
-      )}
-    </div>
+    <button
+      className={cn("rounded-sm p-1 hover:bg-gray-300 dark:hover:bg-gray-600", className)}
+      onClick={() => {
+        copyToClipboard(value);
+        setCopied(true);
+      }}>
+      {copied ? <CopyCheck size={iconSize} className={iconClassName} /> : <CopyIcon size={iconSize} className={iconClassName} />}
+    </button>
   );
-});
+}
