@@ -115,6 +115,11 @@ const HomePage = observer(() => {
     <div className="p-4 w-full lg:w-[900px] mx-auto">
       <JSONTable
         className="my-4 h-auto"
+        classNames={{
+          th: 'font-meidum text-xs text-[#64748B] dark:text-gray-300',
+          td: 'text-xs',
+          tr: 'hover:bg-[#f6f6f9] dark:hover:bg-[#19191c] border-t-1 border-[#E2E8F0] dark:border-[#121212] first:border-t-0',
+        }}
         // isLoading={true}
         // loadingOptions={{
         //   type: 'spinner',
