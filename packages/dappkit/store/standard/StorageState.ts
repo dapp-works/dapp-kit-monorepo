@@ -27,6 +27,7 @@ export class StorageState<T> {
       }
       return this.value;
     } catch (error) {
+      console.error(error)
       return null
     }
   }
@@ -38,6 +39,7 @@ export class StorageState<T> {
       }
       global?.localStorage.setItem(this.key, JSON.stringify(value));
     } catch (error) {
+      console.error(error)
       return null
     }
   }
