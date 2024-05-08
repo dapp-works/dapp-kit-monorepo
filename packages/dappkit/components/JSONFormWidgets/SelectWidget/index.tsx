@@ -44,7 +44,7 @@ export function SelectWidget(props: SelectWidgetProps) {
           </label>
         )}
         {description && <div className="my-1 text-xs text-[#A1A1A9] dark:text-[#717179]">{description}</div>}
-        <select className="w-full p-3 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]" defaultValue={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}>
+        <select className="w-full py-3.5 px-2 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]" defaultValue={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}>
           <option value="" disabled selected>
             {placeholderText}
           </option>
