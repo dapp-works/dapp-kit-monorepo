@@ -36,7 +36,7 @@ export function CheckboxWidget({
         classNames={{
           base: cn(
             'm-0 flex items-center justify-start w-full',
-            'cursor-pointer rounded-lg gap-2 p-2.5 bg-content2 border-1 border-transparent',
+            'cursor-pointer rounded-lg gap-2 p-3 bg-content2 border-1 border-transparent',
             value ? `border-${color}` : '',
           ),
         }}
