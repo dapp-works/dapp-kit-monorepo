@@ -19,19 +19,27 @@ export class StorageState<T> {
   }
 
   load() {
-    const value = global?.localStorage?.getItem(this.key);
-    this.value = StorageState.safeParse(value);
-    if (this.value == null) {
-      this.value = this.default;
+    try {
+      const value = global?.localStorage?.getItem(this.key);
+      this.value = StorageState.safeParse(value);
+      if (this.value == null) {
+        this.value = this.default;
+      }
+      return this.value;
+    } catch (error) {
+      return null
     }
-    return this.value;
   }
 
   save(value?: T) {
-    if (value !== null || value !== undefined) {
-      this.value = value;
+    try {
+      if (value !== null || value !== undefined) {
+        this.value = value;
+      }
+      global?.localStorage.setItem(this.key, JSON.stringify(value));
+    } catch (error) {
+      return null
     }
-    global?.localStorage.setItem(this.key, JSON.stringify(value));
   }
 
   setValue(value?: T) {
@@ -39,6 +47,10 @@ export class StorageState<T> {
   }
 
   clear() {
-    localStorage.removeItem(this.key);
+    try {
+      localStorage.removeItem(this.key);
+    } catch (error) {
+      return null
+    }
   }
 }
