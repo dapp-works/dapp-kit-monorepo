@@ -10,6 +10,7 @@ import {
   DropdownTrigger,
   Pagination as NextuiPagination,
   PaginationProps,
+  PopoverSlots,
   SlotsToClasses,
   Spinner,
   SpinnerProps,
@@ -30,7 +31,7 @@ import { cn } from "../../lib/utils";
 
 export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | '$actions'>;
 
-export type ColumnOptions<T extends Record<string, any>> = {
+export type ColumnOptions<T> = {
   [key in keyof T]?: {
     label?: React.ReactNode;
     hidden?: boolean;
@@ -54,7 +55,7 @@ export type ColumnOptions<T extends Record<string, any>> = {
   };
 };
 
-export type Column<T extends Record<string, any>> = {
+export type Column<T> = {
   key: string;
   label: React.ReactNode;
   render?: (item: T) => any;
@@ -108,6 +109,15 @@ export interface JSONTableProps<T extends Record<string, any>> {
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
   isHeaderSticky?: boolean;
+  sortingUIOptions?: {
+    dropdownClassNames?: SlotsToClasses<PopoverSlots>;
+    titleClassName?: string;
+    titles?: {
+      asc?: string;
+      desc?: string;
+      none?: string;
+    };
+  };
   extendedTableOptions?: {
     key: keyof T;
     columnOptions: ColumnOptions<any>;
@@ -127,7 +137,6 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       limit: 8,
     }),
     nextuiPaginationProps = {},
-    extendedTableOptions = [],
     rowKey = 'id',
     onRowClick,
     rowCss,
@@ -145,6 +154,8 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
     loadingOptions,
     loadingContent,
     isHeaderSticky = false,
+    sortingUIOptions,
+    extendedTableOptions = [],
   } = props;
 
   const tableBoxRef = useRef<HTMLElement>(null);
@@ -154,12 +165,13 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
 
     const allKeys = firstData ? Object.keys(firstData) : [];
     const keys = headerKeys ? headerKeys : columnOptions ? allKeys.filter((key) => !columnOptions[key]?.hidden) : allKeys;
-    if (!keys.includes('$actions') && columnOptions['$actions']) {
+    if (!keys.includes('$actions') && columnOptions && columnOptions['$actions']) {
       keys.push('$actions');
     }
 
     const sortableColumnsDefaultValue: { [k: string]: 'asc' | 'desc' | 'none' } = {};
 
+    // @ts-ignore
     const columns: Column<T>[] = keys.map((key: string) => {
       const sortable = columnOptions?.[key]?.sortable;
       if (sortable) {
@@ -271,7 +283,8 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                     backdrop="opaque"
                     placement="bottom"
                     classNames={{
-                      content: 'min-w-[100px] rounded-lg shadow-md border dark:border-[#3e3e3e]',
+                      content: 'min-w-[80px] rounded-lg shadow-md border dark:border-[#3e3e3e]',
+                      ...sortingUIOptions?.dropdownClassNames
                     }}
                   >
                     <DropdownTrigger>
@@ -296,7 +309,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                           setSortedData(sortedData);
                         }}
                       >
-                        <span className="text-xs font-bold">Sort ascending</span>
+                        <span className={cn('text-xs font-bold', sortingUIOptions?.titleClassName)}>{sortingUIOptions?.titles?.asc || 'ASC'}</span>
                       </DropdownItem>
                       <DropdownItem
                         key="desc"
@@ -312,7 +325,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                           setSortedData(sortedData);
                         }}
                       >
-                        <span className="text-xs font-bold">Sort descending</span>
+                        <span className={cn('text-xs font-bold', sortingUIOptions?.titleClassName)}>{sortingUIOptions?.titles?.desc || 'DESC'}</span>
                       </DropdownItem>
                       <DropdownItem
                         key="none"
@@ -328,7 +341,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                           setSortedData(sortedData);
                         }}
                       >
-                        <span className="text-xs font-bold">Sort none</span>
+                        <span className={cn('text-xs font-bold', sortingUIOptions?.titleClassName)}>{sortingUIOptions?.titles?.none || 'NONE'}</span>
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
@@ -406,7 +419,7 @@ function sortData<T>({
   sortableColumnsMap,
   dataSource,
 }: {
-  sortKey: string;
+  sortKey: string | undefined;
   key: string;
   type: 'asc' | 'desc' | 'none';
   sortableColumnsMap: {
@@ -598,63 +611,64 @@ function CollapseBody<T>({
 
 function CollapseBodyRow<T>({ item, columns, extendedTables, rowCss }: { item: T; columns: Column<T>[]; extendedTables: ExtendedTable<any>[]; rowCss?: string | ((item: T) => string | undefined) }) {
   const [isOpen, setIsOpen] = useState(false);
-  const rows = [
-    <TableRow
-      className={cn('text-xs cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
-      onClick={(e: any) => {
-        const { nodeName } = e.target;
-        if (nodeName === 'TD' || nodeName === 'svg') {
-          setIsOpen((v) => !v);
-        }
-      }}
-    >
-      {columns.map((column) => {
-        return (
-          <TableCell key={column.key} className="max-w-[200px] overflow-auto">
-            {column.render ? column.render(item) : renderFieldValue(item[column.key])}
-          </TableCell>
-        );
-      })}
-    </TableRow>,
-    <TableRow className={cn(isOpen ? 'table-row' : 'hidden')}>
-      <TableCell colSpan={columns.length}>
-        {extendedTables.map((ex) => {
-          const exColumns = ex.columns;
-          const exRow = item[ex.key];
+  return (
+    <>
+      <TableRow
+        className={cn('text-xs cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+        onClick={(e: any) => {
+          const { nodeName } = e.target;
+          if (nodeName === 'TD' || nodeName === 'svg') {
+            setIsOpen((v) => !v);
+          }
+        }}
+      >
+        {columns.map((column) => {
           return (
-            <Table className="mt-[10px]" key={ex.key}>
-              <TableHeader>
-                {exColumns.map((exC) => {
-                  return (
-                    <TableColumn key={exC.key} className="text-xs text-[#64748B] dark:text-gray-300">
-                      {exC.label}
-                    </TableColumn>
-                  );
-                })}
-              </TableHeader>
-              <TableBody>
-                {exRow.map((exItem) => (
-                  <TableRow className="text-xs hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
-                    {exColumns.map((exC) => {
-                      return (
-                        <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
-                          {exC.render
-                            ? exC.render({
-                              ...exItem,
-                              $parent: item,
-                            })
-                            : renderFieldValue(exItem[exC.key])}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <TableCell key={column.key} className="max-w-[200px] overflow-auto">
+              {column.render ? column.render(item) : renderFieldValue(item[column.key])}
+            </TableCell>
           );
         })}
-      </TableCell>
-    </TableRow>,
-  ];
-  return rows.map((row) => row);
+      </TableRow>
+      <TableRow className={cn(isOpen ? 'table-row' : 'hidden')}>
+        <TableCell colSpan={columns.length}>
+          {extendedTables.map((ex) => {
+            const exColumns = ex.columns;
+            const exRow = item[ex.key];
+            return (
+              <Table className="mt-[10px]" key={ex.key}>
+                <TableHeader>
+                  {exColumns.map((exC) => {
+                    return (
+                      <TableColumn key={exC.key} className="text-xs text-[#64748B] dark:text-gray-300">
+                        {exC.label}
+                      </TableColumn>
+                    );
+                  })}
+                </TableHeader>
+                <TableBody>
+                  {exRow.map((exItem) => (
+                    <TableRow className="text-xs hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
+                      {exColumns.map((exC) => {
+                        return (
+                          <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
+                            {exC.render
+                              ? exC.render({
+                                ...exItem,
+                                $parent: item,
+                              })
+                              : renderFieldValue(exItem[exC.key])}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            );
+          })}
+        </TableCell>
+      </TableRow>
+    </>
+  )
 }
