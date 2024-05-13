@@ -58,7 +58,7 @@ export const EditorWidget = ({ label, options = {}, value, required, schema, dis
           </select>
         )}
       </div>
-      {schema.description && <div className='mb-2 text-xs text-[#A1A1A9]'>{schema.description}</div>}
+      {schema.description && <div className="mb-2 text-xs text-[#A1A1A9] dark:text-[#717179]">{schema.description}</div>}
       <div className="rounded-lg overflow-hidden relative">
         <MonacoEditor
           options={{ readOnly: readOnly || disabled, minimap: { enabled: false } }}
@@ -66,7 +66,7 @@ export const EditorWidget = ({ label, options = {}, value, required, schema, dis
           theme="vs-dark"
           language={selectedLanguage ? selectedLanguage : language}
           value={value}
-          onChange={(v) => onChange(v)}
+          onChange={onChange}
           onMount={(editor, monaco) => {
             onMount && onMount(editor, monaco);
             if (language === 'json' && jsonStrSpace && value) {
