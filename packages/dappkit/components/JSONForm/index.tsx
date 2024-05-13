@@ -45,7 +45,7 @@ export type LayoutConfigType<T, L> = L extends 'TabLayout'
 
 export type FormDataType = {
   [key: string]: {
-    [key: string]: string | number | boolean;
+    [key: string]: string | number | boolean | Record<string, string | number | boolean>;
   };
 };
 

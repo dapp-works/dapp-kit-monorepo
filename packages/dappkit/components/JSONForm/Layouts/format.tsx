@@ -30,50 +30,52 @@ export const getFormState = <T,>(
     const required = [];
     const properties = Object.entries(metadata).reduce((p, c: any) => {
       const [k, v] = c;
+
       const type = typeof v;
       p[k] = {
         type,
       };
+
+      value[k] = v;
+
       if (!formConfigData[k]) {
         formConfigData[k] = {};
       }
-      const uiOptions = formConfigData[k]['ui:options'] || {};
+
       if (type === "string" || type === "number") {
         if (formConfigData[k]?.selectOptions) {
           formConfigData[k]["ui:widget"] = SelectWidget;
           p[k].selectOptions = formConfigData[k].selectOptions;
-          formConfigData[k]['ui:options'] = {
-            size: 'sm',
-            ...uiOptions,
-          };
         } else {
           if (!formConfigData[k]["ui:widget"]) {
             formConfigData[k]["ui:widget"] = InputWidget;
-            formConfigData[k]["ui:options"] = {
-              labelPlacement: "inside",
-              size: "sm",
-              ...uiOptions,
-            };
+
             if (type === "number") {
               p[k].inputType = "number";
             }
+
             if (helper.json.isJsonString(v)) {
               formConfigData[k]['ui:widget'] = EditorWidget;
               formConfigData[k]["ui:options"] = {
+                ...formConfigData[k]["ui:options"],
                 jsonStrSpace: 2,
-                ...uiOptions,
               };
             }
           }
         }
       }
+
       if (type === "boolean") {
         formConfigData[k]["ui:widget"] = CheckboxWidget;
-        formConfigData[k]["ui:options"] = {
-          size: "sm",
-          ...uiOptions,
-        };
       }
+
+      if (type === 'object') {
+        // Instead of setting up "definitions", the easy way to do this is to edit the json directly using the EditorWidget
+        p[k].type = 'string';
+        value[k] = JSON.stringify(v, null, 2);
+        formConfigData[k]['ui:widget'] = EditorWidget;
+      }
+
       if (formConfigData[k]?.inputType) {
         p[k].inputType = formConfigData[k].inputType;
       }
@@ -83,15 +85,11 @@ export const getFormState = <T,>(
       if (formConfigData[k]?.description) {
         p[k].description = formConfigData[k].description;
       }
-      // if (formConfigData[k]?.selectOptions) {
-      //   p[k].enum = formConfigData[k].selectOptions.map((i) => i.value);
-      //   p[k].enumNames = formConfigData[k].selectOptions.map((i) => i.label);
-      // }
+
       if (formConfigData[k]?.required) {
-        //@ts-ignore
         required.push(k);
       }
-      value[k] = v;
+
       return p;
     }, {});
     const schema = {
