@@ -11,6 +11,7 @@ import Provider from "./Provider";
 import { SelectWidget } from "../../components/JSONFormWidgets/SelectWidget";
 import { InputWidget } from "../../components/JSONFormWidgets/InputWidget";
 import { CheckboxWidget } from "../../components/JSONFormWidgets/CheckboxWidget";
+import { EditorWidget } from "../../components/JSONFormWidgets/EditorWidget";
 import { RootStore } from "../../store";
 import { SlotsToClasses, ModalSlots } from "@nextui-org/react";
 
@@ -91,13 +92,18 @@ export function getFormState<T>(
   const required = [];
   const props = Object.entries(data).reduce((p, c) => {
     const [k, v] = c;
+
     const type = typeof v;
     p[k] = {
       type
     };
+
+    value[k] = v;
+
     if (!metadata[k]) {
       metadata[k] = {};
     }
+
     if (type === 'string' || type === 'number') {
       if (metadata[k]?.selectOptions) {
         metadata[k]['ui:widget'] = SelectWidget;
@@ -105,22 +111,28 @@ export function getFormState<T>(
       } else {
         if (!metadata[k]['ui:widget']) {
           metadata[k]['ui:widget'] = InputWidget;
-          metadata[k]['ui:options'] = {
-            // labelPlacement: 'outside-left',
-            size: 'sm',
-          };
+
           if (type === 'number') {
             p[k].inputType = 'number';
           }
         }
       }
     }
+
     if (type === 'boolean') {
       metadata[k]['ui:widget'] = CheckboxWidget;
       metadata[k]['ui:options'] = {
         size: 'sm',
       }
     }
+
+    if (type === 'object') {
+      // Instead of setting up "definitions", the easy way to do this is to edit the json directly using the EditorWidget
+      p[k].type = 'string';
+      value[k] = JSON.stringify(v, null, 2);
+      metadata[k]['ui:widget'] = EditorWidget;
+    }
+
     if (metadata[k]?.inputType) {
       p[k].inputType = metadata[k].inputType;
       delete metadata[k].inputType;
@@ -133,19 +145,12 @@ export function getFormState<T>(
       p[k].description = metadata[k].description;
       delete metadata[k].description;
     }
-    // if (metadata[k]?.enum) {
-    //   p[k].enum = metadata[k].enum;
-    //   delete metadata[k].enum;
-    // }
-    // if (metadata[k]?.enumNames) {
-    //   p[k].enumNames = metadata[k].enumNames;
-    //   delete metadata[k].enumNames;
-    // }
+
     if (metadata[k]?.required) {
       required.push(k);
       delete metadata[k].required;
     }
-    value[k] = v;
+
     return p;
   }, {});
   const schema = {

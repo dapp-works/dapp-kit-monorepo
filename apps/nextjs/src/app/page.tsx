@@ -8,7 +8,7 @@ import { Button } from "@nextui-org/react";
 import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
 import { JSONTable } from "@dappworks/kit/jsontable";
-import { ComplexFormModalStore, JSONForm, getComplexFormData } from "@dappworks/kit/form";
+import { ComplexFormModalStore, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { PaginationState } from "@dappkit/dist/index.mjs";
 import { Copy } from '@dappworks/kit/ui';
@@ -33,6 +33,10 @@ const HomePage = observer(() => {
       time: '00:00:00',
       boolean: true,
       boolean2: false,
+      object: {
+        a: 1,
+        b: 2,
+      },
     },
     extraInfo: {
       address: '',
@@ -100,16 +104,15 @@ const HomePage = observer(() => {
       }
     },
     // Optional field
-    // extraInfo: {
-    //   code: {
-    //     'ui:widget': EditorWidget,
-    //     'ui:options': {
-    //       emptyValue: ``,
-    //       lang: 'javascript',
-    //       editorHeight: '400px',
-    //     },
-    //   },
-    // },
+    extraInfo: {
+      code: {
+        'ui:widget': EditorWidget,
+        'ui:options': {
+          language: 'javascript',
+          editorHeight: '240px',
+        },
+      },
+    },
   };
   return (
     <div className="p-4 w-full lg:w-[900px] mx-auto">
@@ -206,12 +209,12 @@ const HomePage = observer(() => {
             },
           },
         }}
-        pagination={new PaginationState({
-          limit: 1,
-          onPageChange: (page) => {
-            console.log('Page Change:', page);
-          }
-        })}
+        // pagination={new PaginationState({
+        //   limit: 1,
+        //   onPageChange: (page) => {
+        //     console.log('Page Change:', page);
+        //   }
+        // })}
         nextuiPaginationProps={{
           color: 'secondary',
           size: 'sm',
@@ -249,7 +252,7 @@ const HomePage = observer(() => {
             title: 'Personal Information',
             titleBoxCss: 'text-xl',
             // Optional field
-            fieldLayout: [['name', 'age'], ['phone', 'boolean2', 'city'], ['date', 'dateTime', 'time'], 'boolean'],
+            fieldLayout: [['name', 'age'], ['phone', 'boolean2', 'city'], ['date', 'dateTime', 'time'], 'boolean', 'object'],
             // submitButtonProps: {
             //   className: 'mx-auto',
             //   color: 'secondary',
@@ -369,17 +372,16 @@ const HomePage = observer(() => {
               required: true,
             },
           },
-          // extraInfo: {
-          //   address: {},
-          //   code: {
-          //     'ui:widget': EditorWidget,
-          //     'ui:options': {
-          //       emptyValue: ``,
-          //       lang: 'javascript',
-          //       editorHeight: '400px',
-          //     },
-          //   },
-          // },
+          extraInfo: {
+            address: {},
+            code: {
+              'ui:widget': EditorWidget,
+              'ui:options': {
+                language: 'javascript',
+                editorHeight: '240px',
+              },
+            },
+          },
         }}
         layoutConfig={{
           $type: 'ListLayout',
