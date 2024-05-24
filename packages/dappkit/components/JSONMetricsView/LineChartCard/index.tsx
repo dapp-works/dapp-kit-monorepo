@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, ValueFormatter } from '@tremor/react';
+import { Color, CurveType, CustomTooltipProps, LineChart, ValueFormatter } from '@tremor/react';
 import { ChartBox } from '../ChartBox';
 import { cn } from '../../../lib/utils';
 
@@ -7,31 +7,8 @@ export type LineChartCard = ChartBox & {
   type?: 'LineChartCard';
   categories?: string[];
   index?: string;
-  curveType?: 'linear' | 'step' | 'monotone';
-  colors?: (
-    | 'slate'
-    | 'gray'
-    | 'zinc'
-    | 'neutral'
-    | 'stone'
-    | 'red'
-    | 'orange'
-    | 'amber'
-    | 'yellow'
-    | 'lime'
-    | 'green'
-    | 'emerald'
-    | 'teal'
-    | 'cyan'
-    | 'sky'
-    | 'blue'
-    | 'indigo'
-    | 'violet'
-    | 'purple'
-    | 'fuchsia'
-    | 'pink'
-    | 'rose'
-  )[];
+  curveType?: CurveType;
+  colors?: (Color | string)[];
   showLegend?: boolean;
   showGridLines?: boolean;
   showXAxis?: boolean;
@@ -41,6 +18,7 @@ export type LineChartCard = ChartBox & {
   showAnimation?: boolean;
   autoMinValue?: boolean;
   valueFormatter?: ValueFormatter;
+  customTooltip?: React.ComponentType<CustomTooltipProps>;
 };
 
 export const LineChartCard = (props: LineChartCard) => {
@@ -60,6 +38,7 @@ export const LineChartCard = (props: LineChartCard) => {
     showAnimation = true,
     autoMinValue = true,
     valueFormatter = (number) => `${number}`,
+    customTooltip
   } = props;
 
   return (
@@ -80,6 +59,7 @@ export const LineChartCard = (props: LineChartCard) => {
         showTooltip={showTooltip}
         showAnimation={showAnimation}
         autoMinValue={autoMinValue}
+        customTooltip={customTooltip}
       />
     </ChartBox>
   );
