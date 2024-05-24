@@ -1,5 +1,5 @@
 import React from 'react';
-import { AreaChart, CustomTooltipProps, ValueFormatter } from '@tremor/react';
+import { AreaChart, Color, CurveType, CustomTooltipProps, ValueFormatter } from '@tremor/react';
 import { ChartBox } from '../ChartBox';
 import { cn } from '../../../lib/utils';
 
@@ -7,31 +7,8 @@ export type AreaChartCard = ChartBox & {
   type?: 'AreaChartCard';
   categories?: string[];
   index?: string;
-  curveType?: 'linear' | 'step' | 'monotone';
-  colors?: (
-    | 'slate'
-    | 'gray'
-    | 'zinc'
-    | 'neutral'
-    | 'stone'
-    | 'red'
-    | 'orange'
-    | 'amber'
-    | 'yellow'
-    | 'lime'
-    | 'green'
-    | 'emerald'
-    | 'teal'
-    | 'cyan'
-    | 'sky'
-    | 'blue'
-    | 'indigo'
-    | 'violet'
-    | 'purple'
-    | 'fuchsia'
-    | 'pink'
-    | 'rose'
-  )[];
+  curveType?: CurveType;
+  colors?: (Color | string)[];
   showLegend?: boolean;
   showGridLines?: boolean;
   stack?: boolean;
