@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import MonacoEditor, { EditorProps } from "@monaco-editor/react";
 import { WidgetProps } from "@rjsf/utils";
 import { Button } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
 import { helper } from "../../../lib/helper";
+import { _ } from '../../../lib/lodash';
 
 type Options = {
   editorHeight?: string;
@@ -13,7 +14,10 @@ type Options = {
   onChangeLanguage?: (v: string) => void;
   onRun?: (v: string) => void;
   onMount?: EditorProps['onMount'];
-  jsonStrSpace?: number;   // Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
+  jsonStrSpace?: number; // Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
+  description?: string;
+  descriptionClassName?: string;
+  errMsgClassName?: string;
 };
 
 export interface EditorWidgetProps extends WidgetProps {
@@ -25,11 +29,28 @@ export type EditorWidgetUIOptions = {
   "ui:options": Options;
 };
 
-export const EditorWidget = ({ label, options = {}, value, required, schema, disabled, onChange }: EditorWidgetProps) => {
-  const { editorHeight = '200px', readOnly = false, language = 'json', jsonStrSpace, languageSelectorOptions = [], onChangeLanguage, onRun, onMount } = options;
+export const EditorWidget = ({ label, options = {}, value, required, uiSchema, disabled, onChange }: EditorWidgetProps) => {
+  const { editorHeight = '200px', readOnly = false, language = 'json', jsonStrSpace, languageSelectorOptions = [], description, descriptionClassName, errMsgClassName, onChangeLanguage, onRun, onMount } = options;
+  const { requiredErrMsg, validate } = uiSchema;
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [runLoading, setRunLoading] = useState(false);
   const showLanguageSelector = languageSelectorOptions.length > 0;
+  const [errMsg, setErrMsg] = useState<string>('');
+  const isInvalid = !!errMsg;
+  const debouncedCheckValue = useRef(
+    _.debounce(async (value) => {
+      if (!value && required) {
+        setErrMsg(requiredErrMsg || 'This field is required');
+        return;
+      }
+      if (validate) {
+        const errMsg = validate(value);
+        setErrMsg(errMsg);
+        return;
+      }
+      setErrMsg('');
+    }, 1000),
+  ).current;
 
   return (
     <div className='flex flex-col relative'>
@@ -58,7 +79,7 @@ export const EditorWidget = ({ label, options = {}, value, required, schema, dis
           </select>
         )}
       </div>
-      {schema.description && <div className="mb-2 text-xs text-[#A1A1A9] dark:text-[#717179]">{schema.description}</div>}
+      {description && <div className={cn('mb-2 text-xs text-[#A1A1A9] dark:text-[#717179]', descriptionClassName)}>{description}</div>}
       <div className="rounded-lg overflow-hidden relative">
         <MonacoEditor
           options={{ readOnly: readOnly || disabled, minimap: { enabled: false } }}
@@ -66,7 +87,10 @@ export const EditorWidget = ({ label, options = {}, value, required, schema, dis
           theme="vs-dark"
           language={selectedLanguage ? selectedLanguage : language}
           value={value}
-          onChange={onChange}
+          onChange={(v) => {
+            onChange(v);
+            debouncedCheckValue(v);
+          }}
           onMount={(editor, monaco) => {
             onMount && onMount(editor, monaco);
             if (language === 'json' && jsonStrSpace && value) {
@@ -76,6 +100,7 @@ export const EditorWidget = ({ label, options = {}, value, required, schema, dis
           }}
         />
       </div>
+      {isInvalid && <div className={cn("mt-2 text-xs text-[#DF3562]", errMsgClassName)}>{errMsg}</div>}
       {onRun && (
         <Button
           className="absolute bottom-2 right-4"
