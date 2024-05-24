@@ -8,7 +8,7 @@ import { Button } from "@nextui-org/react";
 import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
 import { JSONTable } from "@dappworks/kit/jsontable";
-import { ComplexFormModalStore, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
+import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { PaginationState } from "@dappkit/dist/index.mjs";
 import { Copy } from '@dappworks/kit/ui';
@@ -30,9 +30,8 @@ const HomePage = observer(() => {
       city: 'city1',
       date: '2021-01-01',
       dateTime: '2021-01-01T00:00:00',
-      time: '00:00:00',
       boolean: true,
-      boolean2: false,
+      // boolean2: false,
       object: {
         a: 1,
         b: 2,
@@ -55,9 +54,17 @@ const HomePage = observer(() => {
         // Optional field
         required: true,
       },
-      // age: {
-      //   required: true,
-      // },
+      age: {
+        required: true,
+        validate: (v) => {
+          if (v < 18) {
+            return 'Age must be greater than 18';
+          }
+        },
+        'ui:options': {
+          placeholder: 'Please input age',
+        },
+      },
       phone: {
         required: true,
         // 'ui:options': {
@@ -72,23 +79,30 @@ const HomePage = observer(() => {
           { label: 'city 3', value: 'city3' },
         ],
         required: true,
-        // description: 'This is a description',
+        validate: (v) => {
+          if (v === 'city1') {
+            return 'City cannot be city1';
+          }
+        },
         'ui:options': {
           placeholder: 'Select a city',
+          description: 'This is a description',
           // disabled: true,
         },
       },
       date: {
         title: 'Date',
-        'ui:widget': 'date',
+        'ui:widget': DatePickerWidget,
+        'ui:options': {
+          granularity: 'day'
+        }
       },
       dateTime: {
         title: 'Date Time',
-        'ui:widget': 'date-time',
-      },
-      time: {
-        title: 'Time',
-        'ui:widget': 'time',
+        'ui:widget': DatePickerWidget,
+        'ui:options': {
+          granularity: 'minute'
+        }
       },
       boolean: {
         title: 'Boolean',
@@ -96,16 +110,17 @@ const HomePage = observer(() => {
           // disabled: true,
         }
       },
-      boolean2: {
-        // description: 'This is a description',
-        'ui:options': {
-          color: 'secondary'
-        }
-      }
+      // boolean2: {
+      //   // description: 'This is a description',
+      //   'ui:options': {
+      //     color: 'secondary'
+      //   }
+      // }
     },
     // Optional field
     extraInfo: {
       code: {
+        required: true,
         'ui:widget': EditorWidget,
         'ui:options': {
           language: 'javascript',
@@ -252,7 +267,7 @@ const HomePage = observer(() => {
             title: 'Personal Information',
             titleBoxCss: 'text-xl',
             // Optional field
-            fieldLayout: [['name', 'age'], ['phone', 'boolean2', 'city'], ['date', 'dateTime', 'time'], 'boolean', 'object'],
+            fieldLayout: [['name', 'age'], 'phone', 'city', 'date', 'dateTime', 'boolean', 'object'],
             // submitButtonProps: {
             //   className: 'mx-auto',
             //   color: 'secondary',

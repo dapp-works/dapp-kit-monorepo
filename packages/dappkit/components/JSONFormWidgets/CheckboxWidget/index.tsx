@@ -1,13 +1,15 @@
-import React from "react";
-import { Checkbox } from "@nextui-org/react";
+import React, { useState } from "react";
+import { Checkbox, CheckboxProps } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
 import { Check } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
-  size: 'sm' | 'md' | 'lg';
-  color: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  size: CheckboxProps["size"];
+  color: CheckboxProps["color"];
+  description?: string;
+  descriptionClassName?: string;
 };
 
 export interface CheckboxWidgetProps extends WidgetProps {
@@ -20,25 +22,19 @@ export interface CheckboxWidgetUIOptions {
 }
 
 export function CheckboxWidget({
-  onChange,
-  options,
-  label,
-  value,
-  disabled,
-  schema,
+  onChange, options, label, value, disabled, uiSchema
 }: CheckboxWidgetProps) {
-  const { size = 'sm', color = 'primary' } = options;
-  const { description } = schema;
+  const { className, size = 'sm', color = 'primary', description, descriptionClassName } = options;
+  const { validate } = uiSchema;
+  const [errMsg, setErrMsg] = useState<string>('');
+  const isInvalid = !!errMsg;
 
   return (
     <>
       <Checkbox
+        className={cn('w-full', className)}
         classNames={{
-          base: cn(
-            'm-0 flex items-center justify-start w-full',
-            'cursor-pointer rounded-lg gap-2 p-3 bg-content2 border-1 border-transparent',
-            value ? `border-${color}` : '',
-          ),
+          base: cn('m-0 flex items-center justify-start w-full', 'cursor-pointer rounded-lg gap-2 p-[13px] bg-content2 border-1 border-transparent', value ? `border-${color}` : ''),
         }}
         defaultSelected={value}
         isDisabled={disabled}
@@ -49,10 +45,19 @@ export function CheckboxWidget({
           const checked = e.target.checked;
           onChange(checked);
         }}
+        onBlur={() => {
+          if (validate) {
+            const errMsg = validate(value);
+            setErrMsg(errMsg);
+            return;
+          }
+          setErrMsg('');
+        }}
       >
         {label}
       </Checkbox>
-      {description && <div className="mt-1 text-xs text-[#A1A1A9] dark:text-[#717179]">{description}</div>}
+      {description && <div className={cn('mt-1 text-xs text-[#A1A1A9] dark:text-[#717179]', descriptionClassName)}>{description}</div>}
+      {isInvalid && <div className="mt-2 text-xs text-[#DF3562]">{errMsg}</div>}
     </>
   );
 }

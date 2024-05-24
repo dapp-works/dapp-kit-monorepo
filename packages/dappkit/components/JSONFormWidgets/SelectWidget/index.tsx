@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { WidgetProps } from "@rjsf/utils";
+import { ListboxProps, Select, SelectItem, SelectProps, SelectSlots, SlotsToClasses } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
-  labelPlacement?: "top" | "left";
+  nextuiClassNames?: SlotsToClasses<SelectSlots>;
+  listboxProps?: Partial<ListboxProps>;
+  labelPlacement?: SelectProps["labelPlacement"];
   placeholder?: string;
+  size: SelectProps["size"];
+  color?: SelectProps["color"];
+  variant?: SelectProps["variant"];
+  radius?: SelectProps["radius"];
+  description?: string;
 };
 
 export interface SelectWidgetProps extends WidgetProps {
@@ -18,45 +26,83 @@ export interface SelectWidgetUIOptions {
 }
 
 export function SelectWidget(props: SelectWidgetProps) {
-  const { onChange, options, label, value, required, disabled, schema } = props;
-  const { className, labelPlacement = 'top', placeholder = 'Select an option' } = options;
-  const { selectOptions = [], description } = schema;
-  const labelText = label?.trim();
-  const placeholderText = props.placeholder || placeholder;
+  const { onChange, options, label, value, required, disabled, uiSchema } = props;
+  const {
+    className,
+    nextuiClassNames = {
+      popoverContent: 'rounded-lg shadow-md border dark:border-[#3e3e3e]',
+    },
+    listboxProps = {
+      itemClasses: {
+        base: [
+          'rounded-lg',
+          'text-default-500',
+          'transition-opacity',
+          'data-[hover=true]:text-foreground',
+          'data-[hover=true]:bg-default-100',
+          'dark:data-[hover=true]:bg-default-50',
+          'data-[selectable=true]:focus:bg-default-50',
+          'data-[pressed=true]:opacity-70',
+          'data-[focus-visible=true]:ring-default-500',
+        ],
+      },
+    },
+    labelPlacement = 'inside',
+    size = 'sm',
+    placeholder = 'Select an option',
+    color,
+    variant,
+    radius,
+    description,
+  } = options;
+  const { selectOptions = [], requiredErrMsg, validate } = uiSchema;
+  const [errMsg, setErrMsg] = useState<string>('');
+  const isInvalid = !!errMsg;
+  const checkValue = useCallback((value) => {
+    if (!value && required) {
+      setErrMsg(requiredErrMsg || 'This field is required');
+      return;
+    }
+    if (validate) {
+      const errMsg = validate(value);
+      setErrMsg(errMsg);
+      return;
+    }
+    setErrMsg('');
+  }, []);
 
   return (
-    <div className={cn("", className)}>
-      <div
-        className={cn("flex flex-col", {
-          "flex-row items-center": labelPlacement === "left",
-        })}
-      >
-        {labelText && (
-          <label
-            className={cn("flex items-center text-sm whitespace-nowrap", {
-              "mb-2": labelPlacement === "top",
-              "mr-2": labelPlacement === "left",
-            })}
-          >
-            {labelText}
-            {required && <span className="ml-[2px] font-bold text-red-600">*</span>}
-          </label>
-        )}
-        {description && labelPlacement === "top" && <div className="mb-2 text-xs text-[#A1A1A9] dark:text-[#717179]">{description}</div>}
-        <select className="w-full py-3.5 px-2 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]" defaultValue={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}>
-          <option value="" disabled selected>
-            {placeholderText}
-          </option>
-          {selectOptions.map((item) => {
-            return (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-    </div>
+    <Select
+      label={label?.trim()}
+      className={cn('w-full', className)}
+      classNames={nextuiClassNames}
+      labelPlacement={labelPlacement}
+      placeholder={placeholder}
+      size={size}
+      isRequired={required}
+      isDisabled={disabled}
+      isInvalid={isInvalid}
+      description={description}
+      listboxProps={listboxProps}
+      variant={variant}
+      radius={radius}
+      color={isInvalid ? 'danger' : color}
+      errorMessage={isInvalid && errMsg}
+      selectedKeys={[value]}
+      onSelectionChange={(v) => {
+        const keys = Array.from(v) as string[];
+        const _v = keys[0];
+        onChange(_v);
+        checkValue(_v);
+      }}
+    >
+      {selectOptions.map((item) => (
+        <SelectItem key={item.value} value={item.value}>
+          {item.label}
+        </SelectItem>
+      ))}
+    </Select>
   );
 }
+
 

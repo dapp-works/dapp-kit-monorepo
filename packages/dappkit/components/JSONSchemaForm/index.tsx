@@ -51,7 +51,7 @@ const renderLayout = (layout: any[], fields: { [k: string]: React.ReactElement }
     if (Array.isArray(item)) {
       const even = (n & 1) === 0;
       return (
-        <div key={index} className={cn('w-full flex justify-between items-center space-x-2', even ? 'flex-row items-end' : 'flex-col')}>
+        <div key={index} className={cn('w-full flex justify-between items-center space-x-2', even ? 'flex-row items-start' : 'flex-col')}>
           {renderLayout(item, fields, n)}
         </div>
       );

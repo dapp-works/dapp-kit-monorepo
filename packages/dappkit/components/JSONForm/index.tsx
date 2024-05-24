@@ -53,8 +53,9 @@ export type FormConfigType<T> = {
   [F in keyof T]?: {
     [X in keyof T[F]]?: {
       title?: string;
-      description?: string;
       required?: boolean;
+      requiredErrMsg?: string;
+      validate?: (v: any) => string | void;
       selectOptions?: { label: string; value: string }[];
     } & UiSchema;
   };

@@ -42,16 +42,26 @@ export const getFormState = <T,>(
         formConfigData[k] = {};
       }
 
+      if (formConfigData[k]?.title) {
+        p[k].title = formConfigData[k].title || k;
+      }
+
+      if (formConfigData[k]?.required) {
+        required.push(k);
+      }
+
       if (type === "string" || type === "number") {
         if (formConfigData[k]?.selectOptions) {
           formConfigData[k]["ui:widget"] = SelectWidget;
-          p[k].selectOptions = formConfigData[k].selectOptions;
         } else {
           if (!formConfigData[k]["ui:widget"]) {
             formConfigData[k]["ui:widget"] = InputWidget;
 
             if (type === "number") {
-              p[k].inputType = "number";
+              formConfigData[k]['ui:options'] = {
+                ...formConfigData[k]['ui:options'],
+                inputType: 'number',
+              };
             }
 
             if (helper.json.isJsonString(v)) {
@@ -74,20 +84,6 @@ export const getFormState = <T,>(
         p[k].type = 'string';
         value[k] = JSON.stringify(v, null, 2);
         formConfigData[k]['ui:widget'] = EditorWidget;
-      }
-
-      if (formConfigData[k]?.inputType) {
-        p[k].inputType = formConfigData[k].inputType;
-      }
-      if (formConfigData[k]?.title) {
-        p[k].title = formConfigData[k].title || k;
-      }
-      if (formConfigData[k]?.description) {
-        p[k].description = formConfigData[k].description;
-      }
-
-      if (formConfigData[k]?.required) {
-        required.push(k);
       }
 
       return p;
@@ -153,23 +149,38 @@ export const BatchSubmitButton = ({ formStates, onSubmit, buttonProps }) => {
       onClick={(e) => {
         const formData = {};
         const formKeys = Object.keys(formStates);
-        for (const key of formKeys) {
-          const form = formStates[key];
+        for (const formKey of formKeys) {
+          const form = formStates[formKey];
           const current = form.formRef.current;
           if (current) {
             current.submit();
+            // const errors = current.state.errors;
+            // if (errors.length > 0) {
+            //   return;
+            // }
+
             const data = current.state.formData;
-            const required = current.state.schema.required;
-            for (const i of required) {
-              if (!data[i]) {
-                return;
+            const uiSchema = current.state.uiSchema;
+            const keys = Object.keys(uiSchema);
+            for (const key of keys) {
+              const uiConfig = uiSchema[key];
+              if (uiConfig) {
+                const { required, validate } = uiConfig;
+                if (required) {
+                  if (data[key] === undefined || data[key] === null || data[key] === '') {
+                    return;
+                  }
+                }
+                if (validate) {
+                  const errMsg = validate(data[key]);
+                  if (errMsg) {
+                    return;
+                  }
+                }
               }
             }
-            const errors = current.state.errors;
-            if (errors.length > 0) {
-              return;
-            }
-            formData[key] = data;
+
+            formData[formKey] = data;
           } else {
             console.error('formRef.current is null');
             return;
@@ -201,16 +212,30 @@ export const SubmitButton = ({ formKey, formState, buttonProps }) => {
           const current = formState.formRef.current;
           if (current) {
             current.submit();
+            // const errors = current.state.errors;
+            // if (errors.length > 0) {
+            //   return;
+            // }
+
             formData = current.state.formData;
-            const required = current.state.schema.required;
-            for (const i of required) {
-              if (!formData[i]) {
-                return;
+            const uiSchema = current.state.uiSchema;
+            const keys = Object.keys(uiSchema);
+            for (const key of keys) {
+              const uiConfig = uiSchema[key];
+              if (uiConfig) {
+                const { required, validate } = uiConfig;
+                if (required) {
+                  if (formData[key] === undefined || formData[key] === null || formData[key] === '') {
+                    return;
+                  }
+                }
+                if (validate) {
+                  const errMsg = validate(formData[key]);
+                  if (errMsg) {
+                    return;
+                  }
+                }
               }
-            }
-            const errors = current.state.errors;
-            if (errors.length > 0) {
-              return;
             }
           }
           onAfterSubmit?.(formKey, formData, setLoading);
