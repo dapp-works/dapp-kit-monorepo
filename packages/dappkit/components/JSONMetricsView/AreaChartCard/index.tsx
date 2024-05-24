@@ -42,7 +42,7 @@ export type AreaChartCard = ChartBox & {
   showAnimation?: boolean;
   autoMinValue?: boolean;
   valueFormatter?: ValueFormatter;
-  customTooltip?: (props: CustomTooltipProps) => React.ReactNode;
+  customTooltip?: React.ComponentType<CustomTooltipProps>
 };
 
 

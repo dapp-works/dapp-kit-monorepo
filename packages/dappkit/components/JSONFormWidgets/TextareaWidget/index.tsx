@@ -1,15 +1,22 @@
-import React from 'react';
-import { Textarea } from '@nextui-org/react';
+import React, { ReactNode } from 'react';
+import { InputProps, InputSlots, SlotsToClasses, Textarea } from '@nextui-org/react';
 import { WidgetProps } from '@rjsf/utils';
 import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
-  labelPlacement?: 'inside' | 'outside' | 'outside-left';
-  size: 'sm' | 'md' | 'lg',
+  nextuiClassNames?: SlotsToClasses<InputSlots>;
+  labelPlacement?: InputProps['labelPlacement'];
+  size: InputProps['size'];
   minRows?: number;
   maxRows?: number;
   placeholder?: string;
+  color?: InputProps["color"];
+  variant?: InputProps["variant"];
+  radius?: InputProps["radius"];
+  startContent?: ReactNode;
+  endContent?: ReactNode;
+  description?: string;
 };
 
 export interface TextareaWidgetProps extends WidgetProps {
@@ -22,12 +29,14 @@ export interface TextareaWidgetUIOptions {
 }
 
 export function TextareaWidget(props: TextareaWidgetProps) {
-  const { onChange, options, label, value, required, disabled, schema } = props;
-  const { className, labelPlacement = 'inside', size = 'md', minRows = 2, maxRows = 8 } = options;
-  const placeholder = props.placeholder || options.placeholder;
+  const { onChange, options, label, value, required, disabled, uiSchema } = props;
+  const { className, nextuiClassNames, labelPlacement = 'inside', size = 'md', minRows = 3, maxRows = 8, placeholder, color, variant, radius, startContent, endContent, description } = options;
+  const { requiredErrMsg, validate } = uiSchema;
+
   return (
     <Textarea
       className={cn('w-full', className)}
+      classNames={nextuiClassNames}
       label={label}
       placeholder={placeholder}
       value={value}
@@ -37,8 +46,23 @@ export function TextareaWidget(props: TextareaWidgetProps) {
       maxRows={maxRows}
       size={size}
       labelPlacement={labelPlacement}
-      description={schema.description || ''}
-      onChange={e => onChange(e.target.value)}
+      description={description}
+      color={color}
+      variant={variant}
+      radius={radius}
+      startContent={startContent}
+      endContent={endContent}
+      onChange={(e) => onChange(e.target.value)}
+      validate={() => {
+        if (value === '' && required) {
+          return requiredErrMsg || 'This field is required';
+        }
+        if (validate) {
+          const errMsg = validate(value);
+          return errMsg;
+        }
+        return true;
+      }}
     />
   );
 }
