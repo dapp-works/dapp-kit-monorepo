@@ -18,7 +18,8 @@ export const Copy = ({ className = '', value, iconSize = 20, iconClassName = '' 
   return (
     <button
       className={cn("rounded-sm p-1 hover:bg-gray-300 dark:hover:bg-gray-600", className)}
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault();
         copyToClipboard(value);
         setCopied(true);
       }}>
