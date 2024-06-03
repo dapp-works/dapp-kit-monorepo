@@ -110,6 +110,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   loadingContent?: React.ReactNode;
   isHeaderSticky?: boolean;
   sortingUIOptions?: {
+    dropdownTriggerBtnClassName?: string;
     dropdownClassNames?: SlotsToClasses<PopoverSlots>;
     titleClassName?: string;
     titles?: {
@@ -288,7 +289,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                     }}
                   >
                     <DropdownTrigger>
-                      <button className="outline-none p-0">
+                      <button className={cn('outline-none p-0', sortingUIOptions?.dropdownTriggerBtnClassName)}>
                         {sortableColumnsMap[item.key] === 'desc' && <ChevronDown size={14} />}
                         {sortableColumnsMap[item.key] === 'asc' && <ChevronUp size={14} />}
                         {sortableColumnsMap[item.key] === 'none' && <ChevronsUpDown size={14} />}
