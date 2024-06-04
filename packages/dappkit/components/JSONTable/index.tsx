@@ -4,13 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Card,
   Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Pagination as NextuiPagination,
   PaginationProps,
-  PopoverSlots,
   SlotsToClasses,
   Spinner,
   SpinnerProps,
@@ -28,6 +23,7 @@ import { PaginationState } from "../../store/standard/PaginationState";
 import { SkeletonBox } from "../Common/SkeletonBox";
 import { _ } from "../../lib/lodash";
 import { cn } from "../../lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | '$actions'>;
 
@@ -111,8 +107,8 @@ export interface JSONTableProps<T extends Record<string, any>> {
   isHeaderSticky?: boolean;
   sortingUIOptions?: {
     dropdownTriggerBtnClassName?: string;
-    dropdownClassNames?: SlotsToClasses<PopoverSlots>;
-    titleClassName?: string;
+    dropdownContentClassName?: string;
+    dropdownItemClassName?: string;
     titles?: {
       asc?: string;
       desc?: string;
@@ -279,25 +275,17 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
               <div className="flex items-center">
                 <span>{item.label}</span>
                 {!!sortableColumnsMap[item.key] && (
-                  <Dropdown
-                    showArrow
-                    backdrop="opaque"
-                    placement="bottom"
-                    classNames={{
-                      content: 'min-w-[80px] rounded-lg shadow-md border dark:border-[#3e3e3e]',
-                      ...sortingUIOptions?.dropdownClassNames
-                    }}
-                  >
-                    <DropdownTrigger>
-                      <button className={cn('outline-none p-0', sortingUIOptions?.dropdownTriggerBtnClassName)}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <button className={cn('outline-none p-1', sortingUIOptions?.dropdownTriggerBtnClassName)}>
                         {sortableColumnsMap[item.key] === 'desc' && <ChevronDown size={14} />}
                         {sortableColumnsMap[item.key] === 'asc' && <ChevronUp size={14} />}
                         {sortableColumnsMap[item.key] === 'none' && <ChevronsUpDown size={14} />}
                       </button>
-                    </DropdownTrigger>
-                    <DropdownMenu variant="flat" selectionMode="single" selectedKeys={[sortableColumnsMap[item.key]]}>
-                      <DropdownItem
-                        key="asc"
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className={cn('p-2 space-y-1 min-w-[4rem]', sortingUIOptions?.dropdownContentClassName)} collisionPadding={10} sideOffset={5}>
+                      <DropdownMenuItem
+                        className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
                         onClick={() => {
                           const { sortableColumns, sortedData } = sortData({
                             type: 'asc',
@@ -310,10 +298,10 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                           setSortedData(sortedData);
                         }}
                       >
-                        <span className={cn('text-xs font-bold', sortingUIOptions?.titleClassName)}>{sortingUIOptions?.titles?.asc || 'ASC'}</span>
-                      </DropdownItem>
-                      <DropdownItem
-                        key="desc"
+                        {sortingUIOptions?.titles?.asc || 'ASC'}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
                         onClick={() => {
                           const { sortableColumns, sortedData } = sortData({
                             type: 'desc',
@@ -326,10 +314,10 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                           setSortedData(sortedData);
                         }}
                       >
-                        <span className={cn('text-xs font-bold', sortingUIOptions?.titleClassName)}>{sortingUIOptions?.titles?.desc || 'DESC'}</span>
-                      </DropdownItem>
-                      <DropdownItem
-                        key="none"
+                        {sortingUIOptions?.titles?.desc || 'DESC'}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
                         onClick={() => {
                           const { sortableColumns, sortedData } = sortData({
                             type: 'none',
@@ -342,10 +330,10 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
                           setSortedData(sortedData);
                         }}
                       >
-                        <span className={cn('text-xs font-bold', sortingUIOptions?.titleClassName)}>{sortingUIOptions?.titles?.none || 'NONE'}</span>
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
+                        {sortingUIOptions?.titles?.none || 'NONE'}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
             </TableColumn>
