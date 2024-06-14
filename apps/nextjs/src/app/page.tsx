@@ -5,13 +5,13 @@ import "~/store/index";
 import { observer } from "mobx-react-lite";
 import { StoragePlugin } from "@dappworks/kit/experimental";
 import { Button } from "@nextui-org/react";
-import { RootStore } from "@dappkit/store";
 import { DeviceDetectStore } from "../store/deviceDetect";
 import { JSONTable } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { PaginationState } from "@dappkit/dist/index.mjs";
 import { Copy } from '@dappworks/kit/ui';
+import { RootStore } from "@dappworks/kit";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -399,21 +399,43 @@ const HomePage = observer(() => {
           },
         }}
         layoutConfig={{
-          $type: 'ListLayout',
+          $type: 'GridLayout',
+          $gridColumn: 1,
           personalInfo: {
-            title: 'Personal Information',
-            // fieldLayout: [['name', 'age'], ['phone', 'city']],
+            title: 'Personal Information2',
+            customButtonProps: [
+              {
+                title: 'test',
+                onClick: async (key, data, setLoading) => {
+                  console.log('[GridLayout onBatchSubmit]:', key, data);
+                  setLoading(true);
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                  setLoading(false);
+                }
+              },
+              {
+                title: 'test2', onClick: () => { console.log('click') }
+              }],
+            submitButtonProps: {
+              className: 'mx-auto',
+              color: 'secondary',
+              size: 'md',
+              children: (
+                <div className="flex items-center">
+                  <span className="ml-2">Customized submit button</span>
+                </div>
+              ),
+            }
           },
-          extraInfo: {
-            title: 'Extra Information',
-            titleBoxCss: 'font-bold text-red-500',
-          },
+          // extraInfo: {
+          //   title: 'Extra Information2',
+          //   titleBoxCss: 'font-bold text-red-500',
+          // },
         }}
-        onBatchSubmit={(data) => {
-          console.log('[ListLayout onBatchSubmit]:', data);
-        }}
-      />
 
+
+      />
+      <div>123123</div>
       <JSONForm
         className="mt-10"
         formData={formData}
