@@ -247,3 +247,34 @@ export const SubmitButton = ({ formKey, formState, buttonProps }) => {
     </div>
   );
 };
+
+
+export const CustomButton = ({ formKey, formState, buttonProps }: { formKey, formState, buttonProps: any[] }) => {
+
+  return (
+    <div className="w-full flex gap-2">
+      {
+        buttonProps.map((i, index) => {
+          const [loading, setLoading] = useState(false);
+          const { className, onClick, title, ...rest } = i
+          return <Button
+            className={cn('mt-4', className)}
+            type="submit"
+            color="primary"
+            size="sm"
+            isLoading={loading}
+            onClick={(e) => {
+              let formData = {};
+              const current = formState.formRef.current;
+              formData = current.state.formData;
+              onClick?.(formKey, formData, setLoading);
+            }}
+            {...rest}
+          >
+            {title}
+          </Button>
+        })
+      }
+    </div>
+  );
+};

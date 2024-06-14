@@ -6,9 +6,6 @@
       "~/*": [
         "./src/*"
       ],
-      "@dappkit/*": [
-        "../../packages/dappkit/*"
-      ]
     },
     "plugins": [
       {

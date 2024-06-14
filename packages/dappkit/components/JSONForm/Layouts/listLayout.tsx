@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { UiSchema } from "@rjsf/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
+import { FormDataType, FormLayoutType, JSONFormProps, LayoutConfigType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { cn } from "../../../lib/utils";
 import { JSONSchemaFormState } from "../../../store/standard/JSONSchemaState";
-import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
+import { BatchSubmitButton, CustomButton, SubmitButton, getFormState } from "./format";
 
-const CollapsibleBox = ({ formKey, title, titleBoxCss, formState, submitButtonProps }: { formKey: string; title: string; titleBoxCss?: string; formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>; submitButtonProps: any }) => {
+const CollapsibleBox = (
+  { formKey, title, titleBoxCss, formState, submitButtonProps, customButtonProps }:
+    {
+      formKey: string; title: string; titleBoxCss?: string; formState: JSONSchemaFormState<{ [key: string]: any }, UiSchema>; submitButtonProps: any; customButtonProps: any;
+    }
+) => {
   const [opened, setOpened] = useState(true);
   return (
     <div id={`form-${formKey}`}>
@@ -19,7 +24,14 @@ const CollapsibleBox = ({ formKey, title, titleBoxCss, formState, submitButtonPr
         {opened ? <ChevronUp /> : <ChevronDown />}
       </div>
       <div className={cn('mt-2', opened ? 'block' : 'hidden')}>
-        <JSONSchemaForm formState={formState}>{submitButtonProps && <SubmitButton formKey={formKey} formState={formState} buttonProps={submitButtonProps} />}</JSONSchemaForm>
+        <JSONSchemaForm formState={formState}>
+          {submitButtonProps
+            &&
+            <SubmitButton formKey={formKey} formState={formState} buttonProps={submitButtonProps} />}
+          {customButtonProps
+            &&
+            <CustomButton formKey={formKey} formState={formState} buttonProps={customButtonProps} />}
+        </JSONSchemaForm>
       </div>
     </div>
   );
@@ -41,7 +53,11 @@ export const ListLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
       {Object.keys(formStates).map((key) => {
         const layout = formLayout[key];
         const formState = formStates[key];
-        return <CollapsibleBox key={key} formKey={key} title={layout?.title || key} titleBoxCss={layout?.titleBoxCss} formState={formState} submitButtonProps={layout?.submitButtonProps} />;
+        return <CollapsibleBox
+          key={key} formKey={key} title={layout?.title || key} titleBoxCss={layout?.titleBoxCss} formState={formState}
+          submitButtonProps={layout?.submitButtonProps}
+          customButtonProps={layout?.customButtonProps}
+        />;
       })}
       {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
         <div className="w-full flex">

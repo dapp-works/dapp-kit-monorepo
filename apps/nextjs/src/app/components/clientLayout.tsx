@@ -1,7 +1,6 @@
 "use client";
 
-import { RootStore } from "@dappkit/store";
-import { AppProvider } from "@dappworks/kit";
+import { AppProvider, RootStore } from "@dappworks/kit";
 import { useEffect } from "react";
 import { init } from "~/store";
 import { DeviceDetectStore } from "~/store/deviceDetect";

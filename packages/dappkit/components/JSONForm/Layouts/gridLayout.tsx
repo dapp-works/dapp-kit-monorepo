@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Card } from "@nextui-org/react";
 import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
-import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
+import { BatchSubmitButton, CustomButton, SubmitButton, getFormState } from "./format";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { Grid, Col } from '../../../components/ui/grid';
 import { cn } from '../../../lib/utils';
@@ -28,6 +28,9 @@ export const GridLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
                 <div className={cn('mb-2 font-bold text-center', layout?.titleBoxCss)}>{layout?.title || key}</div>
                 <JSONSchemaForm formState={formStates[key]}>
                   {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+                  {layout?.customButtonProps
+                    &&
+                    <CustomButton formKey={key} formState={formStates[key]} buttonProps={layout.customButtonProps} />}
                 </JSONSchemaForm>
               </Card>
             </Col>
