@@ -85,6 +85,18 @@ type LoadingOptions = {
   };
 };
 
+type SortingUIOptions = {
+  showDropdown?: boolean;
+  dropdownTriggerBtnClassName?: string;
+  dropdownContentClassName?: string;
+  dropdownItemClassName?: string;
+  titles?: {
+    asc?: string;
+    desc?: string;
+    none?: string;
+  };
+};
+
 export interface JSONTableProps<T extends Record<string, any>> {
   className?: string;
   classNames?: SlotsToClasses<TableSlots>;
@@ -105,16 +117,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
   isHeaderSticky?: boolean;
-  sortingUIOptions?: {
-    dropdownTriggerBtnClassName?: string;
-    dropdownContentClassName?: string;
-    dropdownItemClassName?: string;
-    titles?: {
-      asc?: string;
-      desc?: string;
-      none?: string;
-    };
-  };
+  sortingUIOptions?: SortingUIOptions;
   extendedTableOptions?: {
     key: keyof T;
     columnOptions: ColumnOptions<any>;
@@ -275,65 +278,23 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
               <div className="flex items-center">
                 <span>{item.label}</span>
                 {!!sortableColumnsMap[item.key] && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <button className={cn('outline-none p-1', sortingUIOptions?.dropdownTriggerBtnClassName)}>
-                        {sortableColumnsMap[item.key] === 'desc' && <ChevronDown size={14} />}
-                        {sortableColumnsMap[item.key] === 'asc' && <ChevronUp size={14} />}
-                        {sortableColumnsMap[item.key] === 'none' && <ChevronsUpDown size={14} />}
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className={cn('p-2 space-y-1 min-w-[4rem]', sortingUIOptions?.dropdownContentClassName)} collisionPadding={10} sideOffset={5}>
-                      <DropdownMenuItem
-                        className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
-                        onClick={() => {
-                          const { sortableColumns, sortedData } = sortData({
-                            type: 'asc',
-                            key: item.key,
-                            sortKey: columnOptions?.[item.key]?.sortKey,
-                            sortableColumnsMap,
-                            dataSource,
-                          });
-                          setSortableColumnsMap(sortableColumns);
-                          setSortedData(sortedData);
-                        }}
-                      >
-                        {sortingUIOptions?.titles?.asc || 'ASC'}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
-                        onClick={() => {
-                          const { sortableColumns, sortedData } = sortData({
-                            type: 'desc',
-                            key: item.key,
-                            sortKey: columnOptions?.[item.key]?.sortKey,
-                            sortableColumnsMap,
-                            dataSource,
-                          });
-                          setSortableColumnsMap(sortableColumns);
-                          setSortedData(sortedData);
-                        }}
-                      >
-                        {sortingUIOptions?.titles?.desc || 'DESC'}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
-                        onClick={() => {
-                          const { sortableColumns, sortedData } = sortData({
-                            type: 'none',
-                            key: item.key,
-                            sortKey: columnOptions?.[item.key]?.sortKey,
-                            sortableColumnsMap,
-                            dataSource,
-                          });
-                          setSortableColumnsMap(sortableColumns);
-                          setSortedData(sortedData);
-                        }}
-                      >
-                        {sortingUIOptions?.titles?.none || 'NONE'}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <SortingComponent
+                    sortingUIOptions={sortingUIOptions}
+                    columnOptions={columnOptions}
+                    sortableColumnsMap={sortableColumnsMap}
+                    item={item}
+                    onSort={({ type, key, sortKey }) => {
+                      const { sortableColumns, sortedData } = sortData({
+                        type,
+                        key,
+                        sortKey,
+                        sortableColumnsMap,
+                        dataSource,
+                      });
+                      setSortableColumnsMap(sortableColumns);
+                      setSortedData(sortedData);
+                    }}
+                  />
                 )}
               </div>
             </TableColumn>
@@ -447,6 +408,113 @@ function sortData<T>({
     sortableColumns,
     sortedData,
   };
+}
+
+function SortingComponent<T>({
+  sortingUIOptions,
+  columnOptions,
+  sortableColumnsMap,
+  item,
+  onSort,
+}: {
+  sortingUIOptions: SortingUIOptions;
+  columnOptions?: ColumnOptions<T>;
+  sortableColumnsMap: { [k: string]: 'asc' | 'desc' | 'none' };
+  item: Column<T>;
+  onSort: (e: { type: 'asc' | 'desc' | 'none'; key: string; sortKey: string }) => void;
+}) {
+  if (sortingUIOptions?.showDropdown) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button className={cn('outline-none p-1', sortingUIOptions?.dropdownTriggerBtnClassName)}>
+            {sortableColumnsMap[item.key] === 'desc' && <ChevronDown size={14} />}
+            {sortableColumnsMap[item.key] === 'asc' && <ChevronUp size={14} />}
+            {sortableColumnsMap[item.key] === 'none' && <ChevronsUpDown size={14} />}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className={cn('p-2 space-y-1 min-w-[4rem]', sortingUIOptions?.dropdownContentClassName)} collisionPadding={10} sideOffset={5}>
+          <DropdownMenuItem
+            className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
+            onClick={() => {
+              onSort({
+                type: 'asc',
+                key: item.key,
+                sortKey: columnOptions?.[item.key]?.sortKey,
+              });
+            }}
+          >
+            {sortingUIOptions?.titles?.asc || 'ASC'}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
+            onClick={() => {
+              onSort({
+                type: 'desc',
+                key: item.key,
+                sortKey: columnOptions?.[item.key]?.sortKey,
+              });
+            }}
+          >
+            {sortingUIOptions?.titles?.desc || 'DESC'}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
+            onClick={() => {
+              onSort({
+                type: 'none',
+                key: item.key,
+                sortKey: columnOptions?.[item.key]?.sortKey,
+              });
+            }}
+          >
+            {sortingUIOptions?.titles?.none || 'NONE'}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  return (
+    <button className={cn('outline-none p-1', sortingUIOptions?.dropdownTriggerBtnClassName)}>
+      {sortableColumnsMap[item.key] === 'none' && (
+        <ChevronsUpDown
+          size={14}
+          onClick={() => {
+            onSort({
+              type: 'desc',
+              key: item.key,
+              sortKey: columnOptions?.[item.key]?.sortKey,
+            });
+          }}
+        />
+      )}
+      {sortableColumnsMap[item.key] === 'desc' && (
+        <ChevronDown
+          size={14}
+          onClick={() => {
+            onSort({
+              type: 'asc',
+              key: item.key,
+              sortKey: columnOptions?.[item.key]?.sortKey,
+            });
+          }}
+        />
+      )}
+      {sortableColumnsMap[item.key] === 'asc' && (
+        <ChevronUp
+          size={14}
+          onClick={() => {
+            onSort({
+              type: 'none',
+              key: item.key,
+              sortKey: columnOptions?.[item.key]?.sortKey,
+            });
+          }}
+        />
+      )}
+    </button>
+  );
 }
 
 function CardUI<T>({

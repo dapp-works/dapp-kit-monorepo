@@ -25,12 +25,8 @@ const CollapsibleBox = (
       </div>
       <div className={cn('mt-2', opened ? 'block' : 'hidden')}>
         <JSONSchemaForm formState={formState}>
-          {submitButtonProps
-            &&
-            <SubmitButton formKey={formKey} formState={formState} buttonProps={submitButtonProps} />}
-          {customButtonProps
-            &&
-            <CustomButton formKey={formKey} formState={formState} buttonProps={customButtonProps} />}
+          {submitButtonProps && <SubmitButton formKey={formKey} formState={formState} buttonProps={submitButtonProps} />}
+          {customButtonProps && <CustomButton formKey={formKey} formState={formState} buttonProps={customButtonProps} />}
         </JSONSchemaForm>
       </div>
     </div>
