@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Tab, Tabs } from "@nextui-org/react";
 import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
-import { BatchSubmitButton, SubmitButton, getFormState } from "./format";
+import { BatchSubmitButton, CustomButton, SubmitButton, getFormState } from "./format";
 import { cn } from "../../../lib/utils";
 
 export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
@@ -47,7 +47,12 @@ export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
             className={cn('mt-4', selectedTab === key ? '' : 'hidden')}
           >
             <JSONSchemaForm formState={formStates[key]}>
-              {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+              {layout?.submitButtonProps
+                &&
+                <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+              {layout?.customButtonProps
+                &&
+                <CustomButton formKey={key} formState={formStates[key]} buttonProps={layout.customButtonProps} />}
             </JSONSchemaForm>
           </div>
         );
