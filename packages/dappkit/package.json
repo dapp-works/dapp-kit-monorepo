@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.86",
+  "version": "0.4.88",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -89,7 +89,7 @@
   "peerDependencies": {
     "@iotexproject/iotex-address-ts": "^1.0.4",
     "@monaco-editor/react": ">=4.0.0",
-    "@nextui-org/react": "^2.3.6",
+    "@nextui-org/react": ">=2.3.6",
     "@radix-ui/react-dialog": ">=1.0.0",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@rjsf/core": ">=5.0.0",

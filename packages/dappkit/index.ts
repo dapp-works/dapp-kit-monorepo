@@ -7,6 +7,7 @@ export { BigNumberState } from "./store/standard/BigNumberState";
 export { BigNumberInputState } from "./store/standard/BigNumberInputState";
 export { StorageState } from "./store/standard/StorageState";
 export { PaginationState } from "./store/standard/PaginationState";
+export { ObjectPool } from "./store/standard/ObjectPool";
 
 export * from "./store/standard/base";
 
