@@ -49,13 +49,13 @@ export function SelectWidget(props: SelectWidgetProps) {
     },
     labelPlacement = 'inside',
     size = 'sm',
-    placeholder = 'Select an option',
     color,
     variant,
     radius,
     description,
   } = options;
   const { selectOptions = [], requiredErrMsg, validate } = uiSchema;
+  const placeholder = uiSchema['ui:options']?.placeholder;
   const [errMsg, setErrMsg] = useState<string>('');
   const isInvalid = !!errMsg;
   const checkValue = useCallback((value) => {
