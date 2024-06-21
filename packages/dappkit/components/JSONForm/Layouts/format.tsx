@@ -5,6 +5,7 @@ import { FormDataOfKey, JSONFormProps } from "..";
 import { CheckboxWidget } from "../../../components/JSONFormWidgets/CheckboxWidget";
 import { InputWidget } from "../../../components/JSONFormWidgets/InputWidget";
 import { SelectWidget } from "../../../components/JSONFormWidgets/SelectWidget";
+import { MultipleSelectWidget } from "../../../components/JSONFormWidgets/MultipleSelectWidget";
 import { EditorWidget } from '../../../components/JSONFormWidgets/EditorWidget';
 import {
   JSONSchemaFormState,
@@ -52,7 +53,11 @@ export const getFormState = <T,>(
 
       if (type === "string" || type === "number") {
         if (formConfigData[k]?.selectOptions) {
-          formConfigData[k]["ui:widget"] = SelectWidget;
+          if (formConfigData[k]?.isMultipleSelect) {
+            formConfigData[k]['ui:widget'] = MultipleSelectWidget;
+          } else {
+            formConfigData[k]['ui:widget'] = SelectWidget;
+          }
         } else {
           if (!formConfigData[k]["ui:widget"]) {
             formConfigData[k]["ui:widget"] = InputWidget;

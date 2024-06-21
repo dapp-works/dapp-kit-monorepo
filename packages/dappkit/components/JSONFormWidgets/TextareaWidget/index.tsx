@@ -30,9 +30,9 @@ export interface TextareaWidgetUIOptions {
 
 export function TextareaWidget(props: TextareaWidgetProps) {
   const { onChange, options, label, value, required, disabled, uiSchema } = props;
-  const { className, nextuiClassNames, labelPlacement = 'inside', size = 'md', minRows = 3, maxRows = 8, placeholder, color, variant, radius, startContent, endContent, description } = options;
+  const { className, nextuiClassNames, labelPlacement = 'inside', size = 'md', minRows = 3, maxRows = 8, color, variant, radius, startContent, endContent, description } = options;
   const { requiredErrMsg, validate } = uiSchema;
-
+  const placeholder = uiSchema['ui:options']?.placeholder;
   return (
     <Textarea
       className={cn('w-full', className)}

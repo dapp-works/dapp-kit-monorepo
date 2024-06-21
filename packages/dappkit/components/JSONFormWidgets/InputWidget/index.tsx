@@ -29,8 +29,9 @@ export interface InputWidgetUIOptions {
 
 export function InputWidget(props: InputWidgetProps) {
   const { onChange, options, label, value, required, disabled, uiSchema } = props;
-  const { className, nextuiClassNames, labelPlacement = 'inside', size = 'sm', inputType = 'text', placeholder, color, variant, radius, startContent, endContent, description } = options;
+  const { className, nextuiClassNames, labelPlacement = 'inside', size = 'sm', inputType = 'text', color, variant, radius, startContent, endContent, description } = options;
   const { requiredErrMsg, validate } = uiSchema;
+  const placeholder = uiSchema['ui:options']?.placeholder;
   return (
     <Input
       className={cn('w-full', className)}
