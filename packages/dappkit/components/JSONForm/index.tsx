@@ -61,6 +61,7 @@ export type FormConfigType<T> = {
       requiredErrMsg?: string;
       validate?: (v: any) => string | void;
       selectOptions?: { label: string; value: string }[];
+      isMultipleSelect?: boolean;
     } & UiSchema;
   };
 };

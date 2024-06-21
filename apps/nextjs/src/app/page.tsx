@@ -78,6 +78,7 @@ const HomePage = observer(() => {
           { label: 'city 2', value: 'city2' },
           { label: 'city 3', value: 'city3' },
         ],
+        // isMultipleSelect: true,
         required: true,
         validate: (v) => {
           if (v === 'city1') {
@@ -87,6 +88,10 @@ const HomePage = observer(() => {
         'ui:options': {
           placeholder: 'Select a city',
           description: 'This is a description',
+          // renderValue: (items) => {
+          //   const textList = items.map((item) => item.textValue);
+          //   return textList.join(', ');
+          // }
           // disabled: true,
         },
       },
