@@ -40,5 +40,6 @@ export default defineConfig({
     inspector: "inspector.ts",
     jsontable: "jsontable.ts",
     experimental: "experimental.ts",
+    aiem: "aiem.ts",
   },
 });
