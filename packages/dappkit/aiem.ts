@@ -1,4 +1,4 @@
-import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, Account, RpcSchema } from 'viem'
+import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient } from 'viem'
 
 export class Cache {
   kv: Record<string, any> = {};
@@ -32,7 +32,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     }
   }
 
-  constructor(args: Pick<AIem<Contracts, Chains, Addrs>, "contractMap" | "chainMap" | "nameMap">) {
+  getWallet?: () => WalletClient
+
+  constructor(args: Pick<AIem<Contracts, Chains, Addrs>, "contractMap" | "chainMap" | "nameMap" | "getWallet">) {
     Object.assign(this, args);
 
     this.contracts = new Proxy({}, {
@@ -47,18 +49,15 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         target[contractName] = new Proxy({}, {
           //@ts-ignore
           get: (innerTarget: any, contractAlias: keyof Addrs[keyof Addrs]) => {
-            if (!innerTarget[contractAlias]) {
-              const addressStr = this.nameMap[contractName]?.[contractAlias];
-              if (!addressStr) {
-                throw new Error(`Alias ${String(contractAlias)} for contract ${String(contractName)} not found`);
-              }
-              const [chainId, address] = addressStr.split('-');
-
-              innerTarget[contractAlias] = this.Get(contractName, String(chainId), address as `0x${string}`);
+            const addressStr = this.nameMap[contractName]?.[contractAlias];
+            if (!addressStr) {
+              throw new Error(`Alias ${String(contractAlias)} for contract ${String(contractName)} not found`);
             }
+            const [chainId, address] = addressStr.split('-');
+
 
             // Assuming getContractInstance is a function that retrieves a contract instance
-            return innerTarget[contractAlias]
+            return this.Get(contractName, String(chainId), address as `0x${string}`);
           }
         });
         return target[contractName];
@@ -97,16 +96,21 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
   //@ts-ignore
   Get<K extends keyof Contracts, C extends keyof Chains, Addr extends `0x${string}`>(contractName: K, chainId: C, address: Addr): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> {
+    const wallet = this.getWallet ? this.getWallet() : null
     //@ts-ignore
-    return this.cache.wrap(`contract: ${contractName}-${chainId}-${address} `, () => {
+    return this.cache.wrap(`contract: ${contractName}-${chainId}-${address}-${wallet ? wallet.account.address : wallet}`, () => {
       //@ts-ignore
       const contract = this.contractMap[contractName];
       //@ts-ignore
-      const client = this.PubClient(chainId)
+      const pubClient = this.PubClient(chainId)
 
       return getContract({
-        //@ts-ignore
-        client,
+        client: {
+          //@ts-ignore
+          public: pubClient,
+          //@ts-ignore
+          wallet
+        },
         address,
         abi: contract
       })
