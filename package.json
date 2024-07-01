@@ -24,12 +24,12 @@
     "dappkit": "^0.0.4",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.4.1",
-    "turbo": "latest",
-    "typescript": "^4.9.5"
+    "turbo": "latest"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.1.0",
     "nextjs": "^0.0.3",
-    "plop": "^4.0.0"
+    "plop": "^4.0.0",
+    "typescript": "^4.9.5"
   }
 }
