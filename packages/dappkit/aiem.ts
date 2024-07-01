@@ -1,27 +1,32 @@
 import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient } from 'viem'
+import QuickLRU from 'quick-lru';
+
 
 export class Cache {
-  kv: Record<string, any> = {};
+  kv = new QuickLRU<string, any>({ maxSize: 10000 });
 
   wrap<T>(key: string, fn: () => T | Promise<T>): T | Promise<T> {
-    if (this.kv[key]) {
-      return this.kv[key];
+    if (this.kv.has(key)) {
+      return this.kv.get(key);
     }
 
     const result = fn();
     if (result instanceof Promise) {
-      return result.then(res => {
-        this.kv[key] = res;
+      const promiseResult = result.then(res => {
+        this.kv.set(key, res);
         return res;
       });
+      this.kv.set(key, promiseResult);
+      return promiseResult;
     } else {
-      this.kv[key] = result;
+      this.kv.set(key, result);
       return result;
     }
   }
 }
+
 export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<string, Chain>, Addrs extends { [K in keyof Contracts]?: { [key: string]: `${string}-0x${string}` } }> {
-  private cache: Cache = new Cache()
+  cache?: Cache = new Cache()
   contractMap: Contracts
   chainMap: Chains
   nameMap: Addrs
@@ -34,7 +39,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
   getWallet?: () => WalletClient
 
-  constructor(args: Pick<AIem<Contracts, Chains, Addrs>, "contractMap" | "chainMap" | "nameMap" | "getWallet">) {
+  constructor(args: Pick<AIem<Contracts, Chains, Addrs>, "contractMap" | "chainMap" | "nameMap" | "getWallet" | "cache">) {
     Object.assign(this, args);
 
     this.contracts = new Proxy({}, {
@@ -98,7 +103,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   Get<K extends keyof Contracts, C extends keyof Chains, Addr extends `0x${string}`>(contractName: K, chainId: C, address: Addr): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> {
     const wallet = this.getWallet ? this.getWallet() : null
     //@ts-ignore
-    return this.cache.wrap(`contract: ${contractName}-${chainId}-${address}-${wallet ? wallet.account.address : wallet}`, () => {
+    const cacheKey = `contract: ${contractName}-${chainId}-${address}-${wallet ? wallet.account.address : wallet}`
+    return this.cache.wrap(cacheKey, () => {
       //@ts-ignore
       const contract = this.contractMap[contractName];
       //@ts-ignore
