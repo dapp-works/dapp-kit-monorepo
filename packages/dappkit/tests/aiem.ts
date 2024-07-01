@@ -1,7 +1,8 @@
 import { iotex, mainnet } from 'viem/chains'
 import { UniswapV2LPToken, ERC20 } from "./abi"
 import { AIem } from '../aiem';
-import { getContract } from 'viem';
+import { createPublicClient, getContract, http } from 'viem';
+import { heapStats } from "bun:jsc";
 
 //@ts-ignore
 mainnet.rpcUrls.default.http = ['https://eth-mainnet.g.alchemy.com/v2/98OrGEtrNEQ0ZDs953HdB0l39NZaDTXb']
@@ -36,3 +37,4 @@ aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").
 
 
 aiem.contracts.UniswapV2LPToken.test.read.symbol().then(console.log)
+
