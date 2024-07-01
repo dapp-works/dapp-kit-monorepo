@@ -9,7 +9,6 @@ import { DeviceDetectStore } from "../store/deviceDetect";
 import { JSONTable } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
-import { PaginationState } from "@dappkit/dist/index.mjs";
 import { Copy } from '@dappworks/kit/ui';
 import { RootStore } from "@dappworks/kit";
 
