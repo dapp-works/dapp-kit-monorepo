@@ -182,7 +182,7 @@ export function getFormState<T>(
       onSet: (v: T) => onSet(v, form),
     }),
   });
-  return form;
+  return form as any
 }
 
 export async function getSimpleFormData<T>(
