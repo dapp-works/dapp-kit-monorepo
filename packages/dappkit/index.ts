@@ -12,6 +12,3 @@ export { ObjectPool } from "./store/standard/ObjectPool";
 export * from "./store/standard/base";
 
 export { AppProvider } from "./module/AppProvider";
-
-export { cache } from "./lib/dexie";
-export { helper } from "./lib/helper";
