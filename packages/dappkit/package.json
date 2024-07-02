@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.94",
+  "version": "0.4.98",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -51,6 +51,10 @@
     "./aiem": {
       "import": "./dist/aiem.mjs",
       "require": "./dist/aiem.js"
+    },
+    "./utils": {
+      "import": "./dist/utils.mjs",
+      "require": "./dist/utils.js"
     }
   },
   "typesVersions": {
@@ -84,6 +88,9 @@
       ],
       "aiem": [
         "./dist/aiem.d.mts"
+      ],
+      "utils": [
+        "./dist/utils.d.mts"
       ]
     }
   },
@@ -123,8 +130,8 @@
     "react-dom": ">=18.2.0",
     "react-draggable": ">=4.0.0",
     "react-hot-toast": ">=2.0.0",
-    "typed-emitter": "^2.0.0",
-    "viem": "^2.16.5"
+    "typed-emitter": ">=2.0.0",
+    "viem": ">=2.16.5"
   },
   "author": "uuz",
   "license": "ISC",
@@ -137,6 +144,7 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.5.4",
+    "md5": "^2.3.0",
     "quick-lru": "^7.0.0"
   }
 }

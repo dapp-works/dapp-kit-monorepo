@@ -1,5 +1,15 @@
 import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient } from 'viem'
 import QuickLRU from 'quick-lru';
+import md5 from "md5"
+import { iotex, mainnet, bsc, polygon } from 'viem/chains'
+
+
+//@ts-ignore
+mainnet.rpcUrls.default.http = ['https://rpc.ankr.com/eth']
+//@ts-ignore
+mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"]
+
+
 
 
 export class Cache {
@@ -26,9 +36,15 @@ export class Cache {
 }
 
 export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<string, Chain>, Addrs extends { [K in keyof Contracts]?: { [key: string]: `${string}-0x${string}` } }> {
-  cache?: Cache = new Cache()
+  static cache?: Cache = new Cache()
   contractMap: Contracts
-  chainMap: Chains
+  //@ts-ignore
+  chainMap?: Chains = {
+    [iotex.id]: iotex,
+    [mainnet.id]: mainnet,
+    [bsc.id]: bsc,
+    [polygon.id]: polygon
+  }
   nameMap: Addrs
   contracts: {
     [K in keyof Addrs & keyof Contracts]: {
@@ -37,10 +53,22 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     }
   }
 
+  get cache() {
+    return AIem.cache
+  }
+
   getWallet?: () => WalletClient
 
-  constructor(args: Pick<AIem<Contracts, Chains, Addrs>, "contractMap" | "chainMap" | "nameMap" | "getWallet" | "cache">) {
-    Object.assign(this, args);
+  constructor(args: Pick<AIem<Contracts, Chains, Addrs>, "contractMap" | "chainMap" | "nameMap" | "getWallet">) {
+
+    const { chainMap = {}, contractMap = {}, ...rest } = args || {}
+    //@ts-ignore
+    this.chainMap = Object.assign({}, this.chainMap || {}, chainMap)
+    //@ts-ignore
+    this.contractMap = Object.assign({}, this.contractMap || {}, contractMap)
+
+    Object.assign(this, rest)
+
 
     this.contracts = new Proxy({}, {
       //@ts-ignore
@@ -110,6 +138,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       //@ts-ignore
       const pubClient = this.PubClient(chainId)
 
+      //@ts-ignore
       return getContract({
         client: {
           //@ts-ignore
@@ -119,6 +148,38 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         },
         address,
         abi: contract
+      })
+    }) as any
+  }
+
+
+  static init(): AIem<any, any, any> {
+    if (!globalThis.aiem) {
+      //@ts-ignore
+      globalThis.aiem = new AIem();
+    }
+
+    return globalThis.aiem;
+  }
+
+  //@ts-ignore
+  static Get<TAbi extends Abi = any>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient): GetContractReturnType<TAbi, PublicClient<HttpTransport, Chain, any, any>> {
+    const aiem = this.init()
+    const cacheKey = `contract ${md5(JSON.stringify(abi))}-${chainId}-${address}-${wallet ? wallet.account.address : null}`
+    return aiem.cache.wrap(cacheKey, () => {
+      //@ts-ignore
+      const pubClient = aiem.PubClient(chainId)
+
+      //@ts-ignore
+      return getContract({
+        client: {
+          //@ts-ignore
+          public: pubClient,
+          //@ts-ignore
+          wallet
+        },
+        address,
+        abi
       })
     }) as any
   }

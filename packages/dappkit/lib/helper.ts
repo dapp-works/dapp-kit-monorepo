@@ -314,7 +314,7 @@ export const helper = {
         if (addressMode == "io" && helper.address.validateEthAddress(address)) {
           return from(address).string();
         }
-      } catch (error) {}
+      } catch (error) { }
       return address;
     },
     validateEthAddress: (address: string) => /^0x[a-fA-F0-9]{40}$/.test(address),

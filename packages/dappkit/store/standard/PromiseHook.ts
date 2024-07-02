@@ -1,6 +1,6 @@
 
 
-import { makeAutoObservable, observable } from 'mobx';
+import { observable } from 'mobx';
 
 export class KV {
   //@ts-ignore
@@ -15,7 +15,7 @@ export abstract class ContractBase {
 
 export type ContractClass<T extends ContractBase> = new (args: Partial<T>) => T
 
-export type PromiseHookData<T, U> = { value: Awaited<U>; get: T; call: T, loading: boolean }
+export type PromiseHookData<T, U> = { value: Awaited<U>; get: T; call: T; func: T, loading: boolean, errorRetry: number };
 
 export class PromiseHook {
   static entities = observable([]);
@@ -31,6 +31,8 @@ export class PromiseHook {
             const hooks = Object.entries(instance)
               .filter((i) => {
                 if (!this.isPromiseHook(instance[i[0]])) return false
+                //@ts-ignore
+                if (i[1].lazy) return false
                 if (select && !select[i[0]]) return false
                 if (unselect && unselect[i[0]]) return false
                 return true
@@ -65,12 +67,12 @@ export class PromiseHook {
 
 
   //ttl : ms
-  static wrap<T extends (...args: any[]) => Promise<any>, U = ReturnType<T>>({ func, defaultValue }: { func: T; defaultValue?: Awaited<U>; }): PromiseHookData<T, U> {
+  static wrap<T extends (...args: any[]) => Promise<any>, U = ReturnType<T>>({ func, defaultValue, lazy }: { func: T; defaultValue?: Awaited<U>; lazy?: boolean }): PromiseHookData<T, U> {
     let context;
-    const call = () => {
+    const call = (args) => {
       context.loading = true;
       if (!context._call) {
-        context._call = func()
+        context._call = func(args)
           .then((i) => {
             context.value = i;
             context.loading = false;
@@ -89,10 +91,10 @@ export class PromiseHook {
 
       return context._call
     };
-    const get = async () => {
+    const get = async (args: any) => {
       if (!context.value) {
 
-        return call();
+        return call(args);
       }
       return context.value;
     };
@@ -108,6 +110,8 @@ export class PromiseHook {
           context['_value'] = val;
         },
         get,
+        lazy,
+
         loading: false,
         call,
         defaultValue,
