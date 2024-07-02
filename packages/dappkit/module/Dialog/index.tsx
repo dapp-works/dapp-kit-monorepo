@@ -5,17 +5,17 @@ import { Store } from "../../store/standard/base";
 import Provider from "./Provider";
 
 export class DialogStore implements Store {
-  sid = 'DialogStore';
+  sid = "DialogStore";
   provider = () => <Provider />;
 
   isOpen = false;
-  title = '';
-  size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
-  className: string = '';
+  title = "";
+  size: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "xs" | "3xl" | "4xl" | "5xl" = "md";
+  className: string = "";
   classNames: Partial<{
-    [key in 'wrapper' | 'base' | 'backdrop' | 'header' | 'body' | 'footer' | 'closeButton']: string;
+    [key in "wrapper" | "base" | "backdrop" | "header" | "body" | "footer" | "closeButton"]: string;
   }> = {};
-  content: React.ReactNode | ((props: any) => React.ReactNode) = '';
+  content: React.ReactNode | ((props: any) => React.ReactNode) = "";
   isDismissable = true;
 
   constructor(args?: Partial<DialogStore>) {
@@ -29,10 +29,10 @@ export class DialogStore implements Store {
 
   close() {
     this.isOpen = false;
-    this.title = '';
-    this.content = '';
-    this.size = 'md';
-    this.className = '';
+    this.title = "";
+    this.content = "";
+    this.size = "md";
+    this.className = "";
     this.classNames = {};
     this.isDismissable = true;
   }
@@ -50,4 +50,3 @@ export class DialogStore implements Store {
     modal.close();
   }
 }
-

@@ -2,7 +2,6 @@ import { EventEmitter } from "events";
 import { makeAutoObservable, makeObservable } from "mobx";
 import type TypedEmitter from "typed-emitter";
 import { type Store, type StoreClass } from "./standard/base";
-import { useLocalObservable } from "mobx-react-lite";
 
 export type EventMap = {
   "*": (args: any) => void;
@@ -151,9 +150,9 @@ export class RootStore<T extends EventMap = any> {
     return this.init().get(store, config);
   }
 
-  static Local<T>(func: () => T, config: { sid?: string; args?: Partial<T> } = {}, ann?: any): T {
-    const val = useLocalObservable(func, ann);
-    RootStore.init().instance["Local." + config.sid] = val;
-    return val;
-  }
+  // static Local<T>(func: () => T, config: { sid?: string; args?: Partial<T> } = {}, ann?: any): T {
+  //   const val = useLocalObservable(func, ann);
+  //   RootStore.init().instance["Local." + config.sid] = val;
+  //   return val;
+  // }
 }

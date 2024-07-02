@@ -358,6 +358,9 @@ importers:
       lucide-react:
         specifier: '>=0.343.0'
         version: 0.343.0(react@18.2.0)
+      md5:
+        specifier: ^2.3.0
+        version: 2.3.0
       mobx:
         specifier: '>=6.0.0'
         version: 6.10.2
@@ -373,6 +376,9 @@ importers:
       numeral:
         specifier: '>=2.0.0'
         version: 2.0.6
+      quick-lru:
+        specifier: ^7.0.0
+        version: 7.0.0
       react:
         specifier: '>=18.0.0'
         version: 18.2.0
@@ -389,15 +395,15 @@ importers:
         specifier: '>=2.0.0'
         version: 2.4.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
       typed-emitter:
-        specifier: ^2.0.0
+        specifier: '>=2.0.0'
         version: 2.1.0
       viem:
-        specifier: ^2.16.5
+        specifier: '>=2.16.5'
         version: 2.16.5(typescript@5.5.2)
     devDependencies:
       tsup:
         specifier: ^7.2.0
-        version: 7.2.0(postcss@8.4.31)(typescript@5.5.2)
+        version: 7.2.0(typescript@4.9.5)
 
   packages/db:
     dependencies:
@@ -8471,6 +8477,10 @@ packages:
   /chardet@0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
 
+  /charenc@0.0.2:
+    resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
+    dev: false
+
   /chokidar@3.5.3:
     resolution: {integrity: sha512-Dr3sfKRP6oTcjf2JmUmFJfeVMvXBdegxB0iVQ5eb2V10uFJUCAS8OByZdVAyVb8xXNz3GjjTgj9kLWsZTqE6kw==}
     engines: {node: '>= 8.10.0'}
@@ -8782,6 +8792,10 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  /crypt@0.0.2:
+    resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
+    dev: false
 
   /crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
@@ -10711,6 +10725,10 @@ packages:
       has-tostringtag: 1.0.0
     dev: false
 
+  /is-buffer@1.1.6:
+    resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+    dev: false
+
   /is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
     engines: {node: '>= 0.4'}
@@ -11501,6 +11519,14 @@ packages:
       react: '>= 0.14.0'
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /md5@2.3.0:
+    resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
+    dependencies:
+      charenc: 0.0.2
+      crypt: 0.0.2
+      is-buffer: 1.1.6
     dev: false
 
   /media-typer@0.3.0:
@@ -12694,6 +12720,11 @@ packages:
 
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  /quick-lru@7.0.0:
+    resolution: {integrity: sha512-MX8gB7cVYTrYcFfAnfLlhRd0+Toyl8yX8uBx1MrX7K0jegiz9TumwOK27ldXrgDlHRdVi+MqU9Ssw6dr4BNreg==}
+    engines: {node: '>=18'}
+    dev: false
 
   /randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
@@ -14223,7 +14254,7 @@ packages:
       typescript: 5.5.2
     dev: false
 
-  /tsup@7.2.0(postcss@8.4.31)(typescript@5.5.2):
+  /tsup@7.2.0(typescript@4.9.5):
     resolution: {integrity: sha512-vDHlczXbgUvY3rWvqFEbSqmC1L7woozbzngMqTtL2PGBODTtWlRwGDDawhvWzr5c1QjKe4OAKqJGfE1xeXUvtQ==}
     engines: {node: '>=16.14'}
     hasBin: true
@@ -14247,14 +14278,13 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss: 8.4.31
       postcss-load-config: 4.0.1(postcss@8.4.31)
       resolve-from: 5.0.0
       rollup: 3.29.4
       source-map: 0.8.0-beta.0
       sucrase: 3.34.0
       tree-kill: 1.2.2
-      typescript: 5.5.2
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -14487,6 +14517,7 @@ packages:
     resolution: {integrity: sha512-NcRtPEOsPFFWjobJEtfihkLCZCXZt/os3zf8nTxjVH3RvTSxjrCamJpbExGvYOF+tFHc3pA65qpdwPbzjohhew==}
     engines: {node: '>=14.17'}
     hasBin: true
+    dev: false
 
   /ua-parser-js@0.7.37:
     resolution: {integrity: sha512-xV8kqRKM+jhMvcHWUKthV9fNebIzrNy//2O9ZwWcfiBFR5f25XVZPLlEajk/sf3Ra15V92isyQqnIEXRDaZWEA==}

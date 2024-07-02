@@ -41,5 +41,6 @@ export default defineConfig({
     jsontable: "jsontable.ts",
     experimental: "experimental.ts",
     aiem: "aiem.ts",
+    utils: "utils.ts"
   },
 });
