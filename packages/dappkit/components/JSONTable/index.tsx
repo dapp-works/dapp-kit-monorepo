@@ -100,7 +100,7 @@ type SortingUIOptions = {
 export interface JSONTableProps<T extends Record<string, any>> {
   className?: string;
   classNames?: SlotsToClasses<TableSlots>;
-  rowKey?: keyof T;
+  rowKey?: string;
   dataSource: T[];
   headerKeys?: HeaderKeys<T>;
   columnOptions?: ColumnOptions<T>;
@@ -137,7 +137,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       limit: 8,
     }),
     nextuiPaginationProps = {},
-    rowKey = 'id',
+    rowKey,
     onRowClick,
     rowCss,
     asCard = false,
@@ -307,7 +307,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
             {data.map((item, index) => {
               return (
                 <TableRow
-                  key={item[rowKey] || index}
+                  key={rowKey ? item[rowKey] || index : index}
                   className={cn('', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
                   onClick={() => {
                     onRowClick?.(item);
@@ -537,7 +537,7 @@ function CardUI<T>({
   data: T[];
   columns: Column<T>[];
   columnOptions?: ColumnOptions<T>;
-  rowKey: string | number | symbol;
+  rowKey?: string;
   cardOptions?: CardOptions;
   pagination: PaginationState;
   nextuiPaginationProps: PaginationProps | {};
@@ -562,7 +562,7 @@ function CardUI<T>({
           data.map((item, index) => {
             return (
               <Card
-                key={item[rowKey] || index}
+                key={rowKey ? item[rowKey] || index : index}
                 className={cn('w-full shadow-sm p-4', cardOptions?.cardClassName)}
                 isPressable={!!onRowClick}
                 onPress={() => {
@@ -652,7 +652,7 @@ function CollapseBody<T>({
   rowCss,
 }: {
   data: T[];
-  rowKey: string | number | symbol;
+  rowKey?: string;
   columns: Column<T>[];
   extendedTables: ExtendedTable<any>[];
   rowCss?: string | ((item: T) => string | undefined);
@@ -660,7 +660,7 @@ function CollapseBody<T>({
   return (
     <TableBody>
       {data.map((item, index) => {
-        return <CollapseBodyRow key={item[rowKey] || index} item={item} columns={columns} extendedTables={extendedTables} rowCss={rowCss} />;
+        return <CollapseBodyRow key={rowKey ? item[rowKey] || index : index} item={item} columns={columns} extendedTables={extendedTables} rowCss={rowCss} />;
       })}
     </TableBody>
   );
