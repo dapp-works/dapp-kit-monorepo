@@ -55,13 +55,14 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       [KK in keyof Addrs[K]]: GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>, any, any>
     }
   }
-  funcMap?: { [key: string]: { ttl?: number } } = {
-    "totalSupply": { ttl: 15 },
-    "symbol": { ttl: 60 },
-    "name": { ttl: 60 },
-    "decimals": { ttl: 60 },
-    "balanceOf": { ttl: 5 }
+  static _defaultFuncMap = {
+    "totalSupply": { ttl: 15 * 1000 },
+    "symbol": { ttl: 60 * 1000 },
+    "name": { ttl: 60 * 1000 },
+    "decimals": { ttl: 60 * 1000 },
+    "balanceOf": { ttl: 5 * 1000 }
   }
+  funcMap?: { [key: string]: { ttl?: number } } = {}
 
 
   get _cache() {
