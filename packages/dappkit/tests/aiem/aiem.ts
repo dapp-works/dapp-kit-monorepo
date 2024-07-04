@@ -17,9 +17,10 @@ export const aiem = AIem.Set({
     }
   },
   funcMap: {
+    ...AIem._defaultFuncMap,
     name: {
-      ttl: 5000,
-    },
+      ttl: 1000
+    }
   }
 })
 
@@ -29,7 +30,7 @@ await aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1
 setTimeout(async () => {
   console.time()
 
-  await Promise.all(new Array(1000).fill(1).map(i => aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").read.name().then(console.log)))
+  await Promise.all(new Array(100).fill(1).map(i => aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").read.name().then(console.log)))
   console.timeEnd()
 
 }, 1000)
