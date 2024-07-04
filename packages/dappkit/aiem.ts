@@ -55,7 +55,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       [KK in keyof Addrs[K]]: GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>, any, any>
     }
   }
-  static _defaultFuncMap = {
+  static defaultFuncMap = {
     "totalSupply": { ttl: 15 * 1000 },
     "symbol": { ttl: 60 * 1000 },
     "name": { ttl: 60 * 1000 },

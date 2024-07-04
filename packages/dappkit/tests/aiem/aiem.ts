@@ -17,7 +17,7 @@ export const aiem = AIem.Set({
     }
   },
   funcMap: {
-    ...AIem._defaultFuncMap,
+    ...AIem.defaultFuncMap,
     name: {
       ttl: 1000
     }
