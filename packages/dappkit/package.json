@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.101",
+  "version": "0.4.102",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -144,7 +144,7 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.5.4",
-    "md5": "^2.3.0",
-    "quick-lru": "^7.0.0"
+    "@isaacs/ttlcache": "^1.4.1",
+    "md5": "^2.3.0"
   }
 }
