@@ -161,7 +161,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   Get<K extends keyof Contracts, C extends keyof Chains, Addr extends `0x${string}`>(contractName: K, chainId: C, address: Addr): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> {
     const wallet = this.getWallet ? this.getWallet() : null
     //@ts-ignore
-    const cacheKey = `contract: ${contractName}-${chainId}-${address}-${wallet ? wallet.account.address : wallet}`
+    const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`
     return this._cache.wrap(cacheKey, () => {
       //@ts-ignore
       const contract = this.contractMap[contractName];
@@ -238,7 +238,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   static Get<TAbi extends Abi = any>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient): GetContractReturnType<TAbi, PublicClient<HttpTransport, Chain, any, any>> {
     const aiem = this.init()
 
-    const cacheKey = `contract ${md5(JSON.stringify(abi))}-${chainId}-${address}-${wallet ? wallet.account.address : null}`
+    const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`
     return aiem._cache.wrap(cacheKey, () => {
       //@ts-ignore
       const pubClient = aiem.PubClient(chainId)
@@ -275,16 +275,17 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
             // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
             const fieldMetadata = getFieldMetadata(obj, key);
 
+            let call: any
             // console.log(key, fieldMetadata, instance)
             if (fieldMetadata) {
               switch (fieldMetadata.type) {
                 case 'read':
                   if (Array.isArray(sel[key])) {
                     //@ts-ignore
-                    promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[key](sel[key]).then((value: any) => res[key] = value));
+                    call = this.Get(instance.abi, instance.chainId, instance.address).read[key](sel[key]).then((value: any) => res[key] = value)
                   } else {
                     //@ts-ignore
-                    promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[key]().then((value: any) => res[key] = value));
+                    call = this.Get(instance.abi, instance.chainId, instance.address).read[key]().then((value: any) => res[key] = value)
                   }
                   break
                 case 'write':
@@ -296,19 +297,17 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   })
                   break
                 case 'custom':
-                  promises.push(obj[key](...(Array.isArray(sel[key]) ? sel[key] : [])).then((value: any) => res[key] = value));
+                  call = obj[key](...(Array.isArray(sel[key]) ? sel[key] : [])).then((value: any) => res[key] = value)
                   break;
                 case 'contract':
                   // console.log(fieldMetadata)
                   if (fieldMetadata.targetKey) {
                     //@ts-ignore
-                    promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
+                    call = this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
                       // console.log({ address, sel: sel[key] })
                       //@ts-ignore
-                      return this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }]).then((val: any) => {
-                        res[key] = val[0]
-                      })
-                    }))
+                      return this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }])
+                    })
                   }
                   break;
                 default:
@@ -317,7 +316,20 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
             } else if (sel[key] === true) {
               res[key] = obj[key];
             }
+
+            if (call) {
+              if (fieldMetadata?.options?.ttl) {
+                //@ts-ignore
+                const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`
+                promises.push(this.cache.wrap(cacheKey, () => call, fieldMetadata.options))
+              }
+              // console.log(fieldMetadata)
+              promises.push(call.then(value => {
+                res[key] = value
+              }));
+            }
           }
+
           await Promise.all(promises);
         };
 
@@ -329,6 +341,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     };
   };
 }
+
 export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
   ? U extends AbiFunction
   ? U['stateMutability'] extends 'view' | 'pure'

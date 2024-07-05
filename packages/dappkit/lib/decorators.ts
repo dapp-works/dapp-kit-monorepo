@@ -6,7 +6,7 @@ export const FIELD_KEY = Symbol('aiem_field');
 
 
 export interface FieldParams {
-
+  ttl?: number
 }
 
 
