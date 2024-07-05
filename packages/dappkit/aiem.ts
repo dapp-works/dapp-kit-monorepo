@@ -260,9 +260,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   static Query = <E, S extends QuerySelect<E>>(
     entity: ClassType<E>,
     select: S
-  ): ((entities: Partial<E>[]) => Promise<Array<Partial<QueryReturnType<E, S>>>>) => {
-    return async (entities: Partial<E>[]): Promise<Array<Partial<QueryReturnType<E, S>>>> => {
-      const results: Array<Partial<QueryReturnType<E, S>>> = [];
+  ): ((entities: Partial<E>[]) => Promise<Array<QueryReturnType<E, S>>>) => {
+    return async (entities: Partial<E>[]): Promise<Array<QueryReturnType<E, S>>> => {
+      const results: Array<QueryReturnType<E, S>> = [];
 
       for (const entityData of entities) {
         const instance = Object.assign(new entity(), entityData);
@@ -325,7 +325,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         results.push(result);
       }
 
-      return results;
+      return results
     };
   };
 }
