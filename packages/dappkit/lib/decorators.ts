@@ -27,7 +27,7 @@ export class Fields {
   }
 
   static custom(options: FieldParams = {}) {
-    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
+    return function (target: (...args: any[]) => Promise<any>, propertyKey: any, descriptor?: PropertyDescriptor) {
       Reflect.defineMetadata(FIELD_KEY, { type: 'custom', options }, target, propertyKey);
     };
   }

@@ -296,7 +296,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   })
                   break
                 case 'custom':
-                  promises.push(obj[key]().then((value: any) => res[key] = value));
+                  promises.push(obj[key](...(Array.isArray(sel[key]) ? sel[key] : [])).then((value: any) => res[key] = value));
                   break;
                 case 'contract':
                   // console.log(fieldMetadata)
@@ -339,18 +339,14 @@ export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
 
 
 type QuerySelect<E> = {
-  [K in keyof E]?: E[K] extends (...args: any[]) => any
-  ? boolean | Parameters<E[K]>
-  : E[K] extends object
-  ? QuerySelect<E[K]>
-  : boolean;
+  [K in keyof E]?:
+  E[K] extends (...args: any[]) => any ? boolean | Parameters<E[K]> :
+  E[K] extends object ? QuerySelect<E[K]> : boolean;
 };
 
-type QueryReturnType<E, S> = {
-  [K in keyof S]: S[K] extends true
-  ? K extends keyof E ? E[K] : never
-  : S[K] extends QuerySelect<infer T>
-  //@ts-ignore
-  ? QueryReturnType<E[K], T>
-  : never;
+type QueryReturnType<E, S extends QuerySelect<E>> = {
+  [K in keyof S]:
+  S[K] extends true ? K extends keyof E ? E[K] : never :
+  S[K] extends any[] ? K extends keyof E ? E[K] extends (...args: any[]) => any ? Awaited<ReturnType<E[K]>> : never : never :
+  S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> : never : never
 };
