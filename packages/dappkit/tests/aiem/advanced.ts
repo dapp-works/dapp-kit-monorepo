@@ -32,6 +32,12 @@ class ERC20Entity {
   chainId = "1" as const
   abi = ERC20
 
+  @Fields.read()
+  balanceOf: (address: string) => Promise<string>
+
+  @Fields.write()
+  approve: (receiver: string, amount: string) => Promise<string>
+
 
   @Fields.read()
   totalSupply: number
@@ -42,7 +48,9 @@ const res = await AIem.Query(UniswapV2LPEntity, {
   totalSupplyUSD: true,
   Token0: {
     address: true,
-    totalSupply: true
+    totalSupply: true,
+    balanceOf: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"],
+    approve: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", "1000000000000000000000000"]
   }
 })([{ address: "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", chainId: "1" }])
 

@@ -1,4 +1,4 @@
-import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient, AbiFunction } from 'viem'
+import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient, AbiFunction, encodeFunctionData } from 'viem'
 import md5 from "md5"
 import { iotex, mainnet, bsc, polygon, iotexTestnet, } from 'viem/chains'
 import TTLCache from '@isaacs/ttlcache'
@@ -279,8 +279,21 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
             if (fieldMetadata) {
               switch (fieldMetadata.type) {
                 case 'read':
-                  //@ts-ignore
-                  promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[key]().then((value: any) => res[key] = value));
+                  if (Array.isArray(sel[key])) {
+                    //@ts-ignore
+                    promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[key](sel[key]).then((value: any) => res[key] = value));
+                  } else {
+                    //@ts-ignore
+                    promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[key]().then((value: any) => res[key] = value));
+                  }
+                  break
+                case 'write':
+                  res[key] = encodeFunctionData({
+                    //@ts-ignore
+                    abi: instance.abi,
+                    functionName: key,
+                    args: sel[key],
+                  })
                   break
                 case 'custom':
                   promises.push(obj[key]().then((value: any) => res[key] = value));
@@ -327,7 +340,7 @@ export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
 
 type QuerySelect<E> = {
   [K in keyof E]?: E[K] extends (...args: any[]) => any
-  ? boolean
+  ? boolean | Parameters<E[K]>
   : E[K] extends object
   ? QuerySelect<E[K]>
   : boolean;
