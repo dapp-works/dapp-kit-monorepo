@@ -2,6 +2,8 @@ import { type Chain, type GetContractReturnType, createPublicClient, getContract
 import md5 from "md5"
 import { iotex, mainnet, bsc, polygon, iotexTestnet, } from 'viem/chains'
 import TTLCache from '@isaacs/ttlcache'
+import { ClassType } from "./lib/interface"
+import { Fields, getFieldMetadata } from "./lib/decorators"
 
 //@ts-ignore
 mainnet.rpcUrls.default.http = ['https://rpc.ankr.com/eth']
@@ -11,12 +13,14 @@ mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"]
 
 
 
+export { Fields } from "./lib/decorators"
+
 export class Cache {
   kv = new TTLCache<string, any>({ max: 10000, ttl: 1000 * 60, });
 
   wrap<T>(key: string, fn: () => T | Promise<T>, config: TTLCache.Options<any, any> = {}): T | Promise<T> {
     if (this.kv.has(key)) {
-      console.log(`load ${key} from cache`)
+      // console.log(`load ${key} from cache`)
       return this.kv.get(key);
     }
 
@@ -252,9 +256,64 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       })
     }) as any
   }
+
+  static Query = <E, S extends QuerySelect<E>>(
+    entity: ClassType<E>,
+    select: S
+  ): ((entities: Partial<E>[]) => Promise<Array<Partial<QueryReturnType<E, S>>>>) => {
+    return async (entities: Partial<E>[]): Promise<Array<Partial<QueryReturnType<E, S>>>> => {
+      const results: Array<Partial<QueryReturnType<E, S>>> = [];
+
+      for (const entityData of entities) {
+        const instance = Object.assign(new entity(), entityData);
+        const result: any = {};
+
+        const fetchFields = async (obj: any, sel: any, res: any) => {
+          const promises = [];
+          for (const key in sel) {
+            // return console.log(key, getFieldMetadata(obj, key))
+            // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
+            const fieldMetadata = getFieldMetadata(obj, key);
+
+            // console.log(key, fieldMetadata, instance)
+            if (fieldMetadata) {
+              switch (fieldMetadata.type) {
+                case 'read':
+                  //@ts-ignore
+                  promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[key]().then((value: any) => res[key] = value));
+                  break
+                case 'custom':
+                  promises.push(obj[key]().then((value: any) => res[key] = value));
+                  break;
+                case 'contract':
+                  // console.log(fieldMetadata)
+                  if (fieldMetadata.targetKey) {
+                    //@ts-ignore
+                    promises.push(this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
+                      // console.log({ address, sel: sel[key] })
+                      //@ts-ignore
+                      return this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }]).then((val: any) => {
+                        res[key] = val[0]
+                      })
+                    }))
+                  }
+                  break;
+                default:
+                  break;
+              }
+            }
+          }
+          await Promise.all(promises);
+        };
+
+        await fetchFields(instance, select, result);
+        results.push(result);
+      }
+
+      return results;
+    };
+  };
 }
-
-
 export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
   ? U extends AbiFunction
   ? U['stateMutability'] extends 'view' | 'pure'
@@ -262,3 +321,21 @@ export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
   : never
   : never
   : never;
+
+
+type QuerySelect<E> = {
+  [K in keyof E]?: E[K] extends (...args: any[]) => any
+  ? boolean
+  : E[K] extends object
+  ? QuerySelect<E[K]>
+  : boolean;
+};
+
+type QueryReturnType<E, S> = {
+  [K in keyof S]: S[K] extends true
+  ? K extends keyof E ? E[K] : never
+  : S[K] extends QuerySelect<infer T>
+  //@ts-ignore
+  ? QueryReturnType<E[K], T>
+  : never;
+};
