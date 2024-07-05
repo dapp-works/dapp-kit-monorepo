@@ -33,18 +33,18 @@ class ERC20Entity {
   chainId = "1" as const
   abi = ERC20
 
-  @Fields.read()
+  @Fields.read({ ttl: 5 * 1000 })
   balanceOf: (address: string) => Promise<string>
 
   @Fields.write()
   approve: (receiver: string, amount: string) => Promise<string>
 
-  @Fields.custom()
+  @Fields.custom({ ttl: 5 * 1000 })
   async test(...args: string[]) {
     return args
   }
 
-  @Fields.read()
+  @Fields.read({ ttl: 15 * 1000 })
   totalSupply: number
 }
 
