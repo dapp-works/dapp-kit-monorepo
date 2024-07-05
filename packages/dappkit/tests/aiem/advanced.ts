@@ -56,7 +56,7 @@ const res = await AIem.Query(UniswapV2LPEntity, {
     totalSupply: true,
     balanceOf: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"],
     approve: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", "1000000000000000000000000"],
-    test: ["1", 2]
+    test: ["1", "2"]
   }
 })([{ address: "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", chainId: "1" }])
 
