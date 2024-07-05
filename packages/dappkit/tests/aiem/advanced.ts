@@ -50,7 +50,7 @@ class ERC20Entity {
 
 const res = await AIem.Query(UniswapV2LPEntity, {
   totalSupply: true,
-  totalSupplyUSD: [],
+  totalSupplyUSD: true,
   Token0: {
     address: true,
     totalSupply: true,
