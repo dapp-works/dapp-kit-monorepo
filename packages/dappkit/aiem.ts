@@ -301,6 +301,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                 default:
                   break;
               }
+            } else if (sel[key] === true) {
+              res[key] = obj[key];
             }
           }
           await Promise.all(promises);
