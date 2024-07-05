@@ -340,13 +340,15 @@ export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
 
 type QuerySelect<E> = {
   [K in keyof E]?:
-  E[K] extends (...args: any[]) => any ? boolean | Parameters<E[K]> :
-  E[K] extends object ? QuerySelect<E[K]> : boolean;
+  E[K] extends (...args: any[]) => any ? Parameters<E[K]> :
+  E[K] extends object ? QuerySelect<E[K]>
+  : true;
 };
 
 type QueryReturnType<E, S extends QuerySelect<E>> = {
   [K in keyof S]:
   S[K] extends true ? K extends keyof E ? E[K] : never :
   S[K] extends any[] ? K extends keyof E ? E[K] extends (...args: any[]) => any ? Awaited<ReturnType<E[K]>> : never : never :
-  S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> : never : never
+  S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> : never
+  : never
 };
