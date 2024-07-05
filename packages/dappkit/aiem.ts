@@ -284,10 +284,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                 case 'read':
                   if (Array.isArray(sel[key])) {
                     //@ts-ignore
-                    call = this.Get(instance.abi, instance.chainId, instance.address).read[key](sel[key]).then((value: any) => res[key] = value)
+                    call = () => this.Get(instance.abi, instance.chainId, instance.address).read[key](sel[key])
                   } else {
                     //@ts-ignore
-                    call = this.Get(instance.abi, instance.chainId, instance.address).read[key]().then((value: any) => res[key] = value)
+                    call = () => this.Get(instance.abi, instance.chainId, instance.address).read[key]()
                   }
                   break
                 case 'write':
@@ -299,17 +299,35 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   })
                   break
                 case 'custom':
-                  call = obj[key](...(Array.isArray(sel[key]) ? sel[key] : [])).then((value: any) => res[key] = value)
+                  call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []))
                   break;
                 case 'contract':
                   // console.log(fieldMetadata)
                   if (fieldMetadata.targetKey) {
-                    //@ts-ignore
-                    call = this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
-                      // console.log({ address, sel: sel[key] })
+                    const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
+
+                    if (targetMetadata?.options?.ttl) {
                       //@ts-ignore
-                      return this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }])
-                    })
+                      const cacheKey = `call ${instance.chainId}-${instance.address}-${fieldMetadata.targetKey}`
+                      //@ts-ignore
+                      call = () => new Promise(async resolve => {
+                        //@ts-ignore
+                        const address = await this.cache.wrap(cacheKey, async () => this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]())
+                        //@ts-ignore
+                        resolve(this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }]))
+                      })
+
+
+                    } else {
+                      //@ts-ignore
+                      call = () => this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
+                        // console.log({ address, sel: sel[key] })
+                        //@ts-ignore
+                        return this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }])
+                      })
+                    }
+
+
                   }
                   break;
                 default:
@@ -323,12 +341,16 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
               if (fieldMetadata?.options?.ttl) {
                 //@ts-ignore
                 const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`
-                promises.push(this.cache.wrap(cacheKey, () => call, fieldMetadata.options))
+                promises.push(new Promise(async (resolve) => {
+                  const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options)
+                  res[key] = value
+                  resolve(value)
+                }))
+              } else {
+                promises.push(call().then(value => {
+                  res[key] = value
+                }))
               }
-              // console.log(fieldMetadata)
-              promises.push(call.then(value => {
-                res[key] = value
-              }));
             }
           }
 
