@@ -199,7 +199,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         if (typeof target[funcName] === 'function') {
           return async (...args: any[]) => {
             const methodConfig = this.funcMap?.[funcName as string];
-            const cacheKey = `method:${client.public.chain.id}-${address}-${String(funcName)}-${JSON.stringify(args)}`;
+            // const cacheKey = `method:${client.public.chain.id}-${address}-${String(funcName)}-${JSON.stringify(args)}`;
+            const cacheKey = `call ${client.public.chain.id}-${address}-${funcName}-${JSON.stringify(args)}`
+
 
             if (methodConfig) {
               return this.cache.wrap(cacheKey, () => {
