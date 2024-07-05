@@ -9,17 +9,17 @@ class UniswapV2LPEntity {
   chainId = "1" as const
   abi = UniswapV2LPToken
 
-  @Fields.read()
+  @Fields.read({ ttl: 5 * 1000 })
   totalSupply: number
 
-  @Fields.read()
+  @Fields.read({ ttl: 5 * 1000 })
   token0: string
 
   @Fields.contract<UniswapV2LPEntity, ERC20Entity>(() => ERC20Entity, 'token0')
   Token0: ERC20Entity
 
 
-  @Fields.custom()
+  @Fields.custom({ ttl: 5 * 1000 })
   async totalSupplyUSD() {
     const totalSuppy = await AIem.Get(UniswapV2LPToken, this.chainId, this.address).read.totalSupply()
     const price = 1
@@ -44,20 +44,28 @@ class ERC20Entity {
     return args
   }
 
-  @Fields.read({ ttl: 15 * 1000 })
+  @Fields.read({ ttl: 5 * 1000 })
   totalSupply: number
 }
 
-const res = await AIem.Query(UniswapV2LPEntity, {
-  totalSupply: true,
-  totalSupplyUSD: true,
-  Token0: {
-    address: true,
-    totalSupply: true,
-    balanceOf: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"],
-    approve: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", "1000000000000000000000000"],
-    test: ["1", "2"]
-  }
-})([{ address: "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", chainId: "1" }])
 
-console.log(res[0])
+setInterval(async () => {
+  console.time()
+  const res = await AIem.Query(UniswapV2LPEntity, {
+    totalSupply: true,
+    totalSupplyUSD: true,
+    Token0: {
+      address: true,
+      totalSupply: true,
+      balanceOf: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"],
+      approve: ["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", "1000000000000000000000000"],
+      test: ["1", "2"]
+    }
+  })([{ address: "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", chainId: "1" }])
+
+  console.log(res[0])
+  console.timeEnd()
+
+
+
+}, 1000)
