@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.117",
+  "version": "0.4.118",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -136,6 +136,7 @@
   "author": "uuz",
   "license": "ISC",
   "devDependencies": {
+    "currency.js": "^2.0.4",
     "tsup": "^7.2.0"
   },
   "publishConfig": {
