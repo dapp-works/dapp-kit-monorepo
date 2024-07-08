@@ -42,7 +42,9 @@ class ERC20Entity {
   totalSupply: any
 
   @Fields.write()
-  approve: (receiver: string, amount: string) => Promise<any>
+  approve: (receiver: string, amount: string) => Promise<string>
+
+
 }
 
 class IUniswapV2LPEntity extends UniswapV2LPEntity {
@@ -53,12 +55,12 @@ class IUniswapV2LPEntity extends UniswapV2LPEntity {
 class IERC20Entity extends ERC20Entity {
 
   @Fields.custom()
-  async _totalSupply() {
+  async _totalSupply(a: string) {
     const [value, decimals] = await Promise.all([this.contract.read.totalSupply(), this.contract.read.decimals()])
     return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
   }
   @Fields.custom()
-  async _balanceOf(address: `0x${string}`) {
+  async _balanceOf(address: any) {
     const [value, decimals] = await Promise.all([this.contract.read.balanceOf([address]), this.contract.read.decimals()])
     return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
   }
@@ -70,10 +72,20 @@ class IERC20Entity extends ERC20Entity {
 const res = await AIem.Query(IUniswapV2LPEntity, {
   totalSupply: true,
   Token0: {
-    _totalSupply: true,
+    _totalSupply: ["test"],
     _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
     approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
   }
 })({ address: "0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", chainId: "4689", })
 
-console.log(res.Token0, res.Token0.foo())
+console.log(res.Token0)
+
+// const resArr = await AIem.QueryMany(IUniswapV2LPEntity, {
+//   totalSupply: true,
+//   Token0: {
+//     _totalSupply: ["test"],
+//     _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
+//     approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
+//   }
+// })([{ address: "0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", chainId: "4689", }])
+// console.log(resArr[0])
