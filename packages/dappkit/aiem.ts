@@ -4,6 +4,8 @@ import { iotex, mainnet, bsc, polygon, iotexTestnet, } from 'viem/chains'
 import TTLCache from '@isaacs/ttlcache'
 import { ClassType } from "./lib/interface"
 import { Fields, getFieldMetadata } from "./lib/decorators"
+import { helper } from './utils'
+import BigNumber from 'bignumber.js'
 
 //@ts-ignore
 mainnet.rpcUrls.default.http = ['https://rpc.ankr.com/eth']
@@ -262,15 +264,21 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   static Query = <E, S extends QuerySelect<E>>(
     entity: ClassType<E>,
     select: S
-  ): ((entities: Partial<E>[]) => Promise<Array<QueryReturnType<E, S>>>) => {
-    return async (entities: Partial<E>[]): Promise<Array<QueryReturnType<E, S>>> => {
+  ): ((entities: Partial<E> | Partial<E>[]) => Promise<QueryResult<E, S>>) => {
+    return async (entities: Partial<E> | Partial<E>[]): Promise<QueryResult<E, S>> => {
       const results: Array<QueryReturnType<E, S>> = [];
+      const isArrayInput = Array.isArray(entities);
 
+      if (!isArrayInput) {
+        //@ts-ignore
+        entities = [entities];
+      }
+      //@ts-ignore
       for (const entityData of entities) {
         const instance = Object.assign(new entity(), entityData);
-        const result: any = {};
+        // const result: any = {};
 
-        const fetchFields = async (obj: any, sel: any, res: any) => {
+        const fetchFields = async (obj: any, sel: any) => {
           const promises = [];
           for (const key in sel) {
             // return console.log(key, getFieldMetadata(obj, key))
@@ -284,16 +292,16 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                 case 'read':
                   if (Array.isArray(sel[key])) {
                     //@ts-ignore
-                    call = () => this.Get(instance.abi, instance.chainId, instance.address).read[key](sel[key])
+                    call = () => this.Get(entity.abi, instance.chainId, instance.address).read[key](sel[key])
                   } else {
                     //@ts-ignore
-                    call = () => this.Get(instance.abi, instance.chainId, instance.address).read[key]()
+                    call = () => this.Get(entity.abi, instance.chainId, instance.address).read[key]()
                   }
                   break
                 case 'write':
-                  res[key] = encodeFunctionData({
+                  obj[key] = encodeFunctionData({
                     //@ts-ignore
-                    abi: instance.abi,
+                    abi: entity.abi,
                     functionName: key,
                     args: sel[key],
                   })
@@ -312,29 +320,27 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                       //@ts-ignore
                       call = () => new Promise(async resolve => {
                         //@ts-ignore
-                        const address = await this.cache.wrap(cacheKey, async () => this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]())
+                        const address = await this.cache.wrap(cacheKey, async () => this.Get(entity.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]())
                         //@ts-ignore
-                        resolve(this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }]))
+                        resolve(this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId }))
                       })
 
 
                     } else {
                       //@ts-ignore
-                      call = () => this.Get(instance.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
+                      call = () => this.Get(entity.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]().then((address: any) => {
                         // console.log({ address, sel: sel[key] })
                         //@ts-ignore
-                        return this.Query(fieldMetadata.entity(), sel[key])([{ address, chainId: instance.chainId }])
+                        return this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId })
                       })
                     }
-
-
                   }
                   break;
                 default:
                   break;
               }
             } else if (sel[key] === true) {
-              res[key] = obj[key];
+              obj[key] = obj[key];
             }
 
             if (call) {
@@ -343,12 +349,12 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                 const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`
                 promises.push(new Promise(async (resolve) => {
                   const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options)
-                  res[key] = value
+                  obj[key] = value
                   resolve(value)
                 }))
               } else {
                 promises.push(call().then(value => {
-                  res[key] = value
+                  obj[key] = value
                 }))
               }
             }
@@ -357,39 +363,66 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
           await Promise.all(promises);
         };
 
-        await fetchFields(instance, select, result);
-        results.push(result);
+        await fetchFields(instance, select);
+        //@ts-ignore
+        results.push(instance);
       }
 
-      return results
+      return isArrayInput ? results as any : results[0] as any;
+
     };
   };
+
+  static async getPrice({ chainId = "4689", address }: { chainId?: string, address: string }) {
+    const priceMap = await this.cache.wrap(`token-price`, async () => {
+      const res = await (await fetch("https://api.iopay.me/api/rest/price")).json()
+      return Object.values(res).flat().reduce((p, c: { platforms: string, current_price: number }) => {
+        p[`${4689}-${c.platforms.toLowerCase()}`] = c.current_price
+        return p
+      }, {})
+    }, { ttl: 1000 * 60 })
+    return priceMap[`${chainId}-${address}`]
+  }
+
+  static utils = {
+    autoFormat: async ({ value, decimals, chainId, address }: { value: string, decimals: number, chainId: string, address: string }) => {
+      const wrap = helper.number.warpBigNumber(value, decimals, { format: '0,0.000000', fallback: '' })
+      const price = await this.getPrice({ chainId, address: address.toLowerCase() })
+      const usd = new BigNumber(wrap.originFormat).multipliedBy(price || 1).toFixed(2)
+      return { ...wrap, usd }
+    }
+  }
 }
 
-export type ReadFunctionKeys<T extends Abi> = T[number] extends infer U
-  ? U extends AbiFunction
-  ? U['stateMutability'] extends 'view' | 'pure'
-  ? U['name']
-  : never
-  : never
-  : never;
+export type QueryResult<E, S extends QuerySelect<E>> =
+  E extends Array<any> ? Promise<Array<QueryReturnType<E[number], S>>> :
+  E extends object ? Promise<QueryReturnType<E, S>> :
+  never;
 
-
-type QuerySelect<E> = {
+export type QuerySelect<E> = {
   [K in keyof E]?:
   E[K] extends (...args: any[]) => any ? Parameters<E[K]> | true :
-  E[K] extends object ? QuerySelect<E[K]>
+  E[K] extends object ? QuerySelect<E[K]> | true
   : true;
 };
 
-type QueryReturnType<E, S extends QuerySelect<E>> = {
-  [K in keyof S]:
-  K extends keyof E ?
+
+export type QueryReturnType<E, S extends QuerySelect<E>> = {
+  [K in keyof E]:
+  K extends keyof S ?
   E[K] extends (...args: any[]) => any ? Awaited<ReturnType<E[K]>> :
-  E[K] extends object ? S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> :
-  E[K] : E[K] : E[K]
-  // S[K] extends true ? K extends keyof E ? E[K] : never :
-  // S[K] extends any[] ? K extends keyof E ? E[K] extends (...args: any[]) => any ? Awaited<ReturnType<E[K]>> : never : never :
-  // S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> : never
-  : never
+  E[K] extends object ? S[K] extends object ? QueryReturnType<E[K], S[K]> :
+  E[K] : E[K]
+  : E[K]
 };
+// export type QueryReturnType<E, S extends QuerySelect<E>> = {
+//   [K in keyof S]:
+//   K extends keyof E ?
+//   E[K] extends (...args: any[]) => any ? Awaited<ReturnType<E[K]>> :
+//   E[K] extends object ? S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> :
+//   E[K] : E[K] : E[K]
+//   // S[K] extends true ? K extends keyof E ? E[K] : never :
+//   // S[K] extends any[] ? K extends keyof E ? E[K] extends (...args: any[]) => any ? Awaited<ReturnType<E[K]>> : never : never :
+//   // S[K] extends object ? K extends keyof E ? QueryReturnType<E[K], S[K]> : never
+//   : never
+// };

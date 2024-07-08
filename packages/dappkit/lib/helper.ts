@@ -4,7 +4,6 @@ import { _ } from "./lodash";
 import copy from "copy-to-clipboard";
 import numeral from "numeral";
 import { from } from "@iotexproject/iotex-address-ts";
-import { BigNumberState } from "../store/standard/BigNumberState";
 
 const valMap = {
   undefined: "",
@@ -249,13 +248,13 @@ export const helper = {
           isZero: true,
         };
       }
-      const BigNumberResponse = new BigNumberState({ value: new BigNumber(value), decimals });
+      const BigNumberResponse = { value: new BigNumber(value), decimals }
       return {
         value: BigNumberResponse.value.toFixed(0),
         originFormat: BigNumberResponse.value.div(10 ** decimals).toFixed(),
         format: helper.number.numberFormat(BigNumberResponse.value.div(10 ** decimals).toFixed(), format, { fallback, min }),
         decimals: String(BigNumberResponse.decimals),
-        isZero: BigNumberResponse.value.isZero(),
+        // isZero: BigNumberResponse.value.isZero(),
       };
     },
     //http://numeraljs.com/ format params does not need to deal with decimal places
