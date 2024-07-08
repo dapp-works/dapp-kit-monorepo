@@ -15,6 +15,11 @@ export type ContractParams<T extends any = any, K extends keyof T = keyof T> = K
 
 
 export class Fields {
+  static hide(options: FieldParams = {}) {
+    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
+      Reflect.defineMetadata(FIELD_KEY, { type: 'hide', options }, target, propertyKey);
+    };
+  }
   static read(options: FieldParams = {}) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
       Reflect.defineMetadata(FIELD_KEY, { type: 'read', options }, target, propertyKey);
@@ -38,6 +43,8 @@ export class Fields {
     };
   }
 }
+
+export class Format { }
 
 export function getFieldMetadata(target: any, propertyKey: string) {
   return Reflect.getMetadata(FIELD_KEY, target, propertyKey);
