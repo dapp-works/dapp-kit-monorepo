@@ -54,13 +54,13 @@ class IERC20Entity extends ERC20Entity {
 
   @Fields.custom()
   async _totalSupply() {
-    const [totalSupply, decimals] = await Promise.all([this.contract.read.totalSupply(), this.contract.read.decimals()])
-    return AIem.utils.autoFormat({ value: totalSupply.toString(), decimals, chainId: this.chainId, address: this.address })
+    const [value, decimals] = await Promise.all([this.contract.read.totalSupply(), this.contract.read.decimals()])
+    return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
   }
   @Fields.custom()
   async _balanceOf(address: `0x${string}`) {
-    const [totalSupply, decimals] = await Promise.all([this.contract.read.balanceOf([address]), this.contract.read.decimals()])
-    return AIem.utils.autoFormat({ value: totalSupply.toString(), decimals, chainId: this.chainId, address: this.address })
+    const [value, decimals] = await Promise.all([this.contract.read.balanceOf([address]), this.contract.read.decimals()])
+    return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
   }
   foo() {
     return 123
