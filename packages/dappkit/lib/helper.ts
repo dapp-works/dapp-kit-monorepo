@@ -244,6 +244,7 @@ export const helper = {
         return {
           value: "...",
           format: "...",
+          originFormat: "...",
           decimals: "0",
           isZero: true,
         };
@@ -254,7 +255,7 @@ export const helper = {
         originFormat: BigNumberResponse.value.div(10 ** decimals).toFixed(),
         format: helper.number.numberFormat(BigNumberResponse.value.div(10 ** decimals).toFixed(), format, { fallback, min }),
         decimals: String(BigNumberResponse.decimals),
-        // isZero: BigNumberResponse.value.isZero(),
+        isZero: BigNumberResponse.value.isZero(),
       };
     },
     //http://numeraljs.com/ format params does not need to deal with decimal places
