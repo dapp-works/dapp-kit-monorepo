@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from "react";
 import { WidgetProps } from "@rjsf/utils";
-import { ListboxProps, Select, SelectItem, SelectProps, SelectSlots, SlotsToClasses } from "@nextui-org/react";
+import { Select, SelectItem, SelectProps, SelectSlots, SlotsToClasses } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
   nextuiClassNames?: SlotsToClasses<SelectSlots>;
-  listboxProps?: Partial<ListboxProps>;
+  listboxProps?: SelectProps['listboxProps'];
   labelPlacement?: SelectProps["labelPlacement"];
   placeholder?: string;
   size: SelectProps["size"];

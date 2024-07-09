@@ -5,7 +5,9 @@ import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
+  nextuiClassNames?: SelectProps['classNames'];
   labelPlacement?: SelectProps['labelPlacement'];
+  listboxProps?: SelectProps['listboxProps'];
   size: SelectProps['size'];
   color?: SelectProps['color'];
   placeholder?: string;
@@ -30,7 +32,7 @@ export interface MultipleSelectWidgetUIOptions {
 export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
   const { onChange, options, label, value, required, uiSchema = {} } = props;
   const { selectOptions = [], requiredErrMsg, validate } = uiSchema;
-  const { className, labelPlacement = 'inside', size = 'sm', color, description, renderValue = DefaultRenderValue } = options;
+  const { className, nextuiClassNames = {}, labelPlacement = 'inside', listboxProps = {}, size = 'sm', color, description, renderValue = DefaultRenderValue } = options;
   const placeholder = uiSchema['ui:options']?.placeholder || 'Select an option';
   const selectedKeys = useMemo(() => {
     return value ? value.split(',') : [];
@@ -74,6 +76,7 @@ export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
         base: 'w-full',
         trigger: 'min-h-12 py-1',
         popoverContent: 'rounded-lg shadow-md border dark:border-[#3e3e3e]',
+        ...nextuiClassNames
       }}
       listboxProps={{
         itemClasses: {
@@ -89,6 +92,7 @@ export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
             'data-[focus-visible=true]:ring-default-500',
           ],
         },
+        ...listboxProps
       }}
       description={description}
       renderValue={renderValue}

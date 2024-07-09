@@ -1,6 +1,7 @@
 "use client";
-import { rootStore, Store, helper, } from "@dappworks/kit";
+import { rootStore, Store } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
+import { helper } from "@dappworks/kit/utils";
 // import { DevTool } from "@dappworks/kit/dev"
 // import { StoragePlugin } from "@dappworks/kit/plugins"
 import { DevInspectorPlugin } from "@dappworks/kit/inspector"

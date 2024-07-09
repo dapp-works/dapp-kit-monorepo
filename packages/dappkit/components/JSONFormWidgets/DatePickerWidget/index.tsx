@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { DateInputProps, DatePicker, DatePickerProps, DatePickerSlots, SlotsToClasses } from '@nextui-org/react';
+import { DatePicker, DatePickerProps } from '@nextui-org/react';
 import { RJSFSchema, Widget, WidgetProps } from "@rjsf/utils";
 import { DateValue, parseAbsoluteToLocal } from '@internationalized/date';
 import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
-  nextuiClassNames?: SlotsToClasses<DatePickerSlots> & DateInputProps<any>["classNames"];
+  nextuiClassNames?: Record<"base" | "selectorButton" | "selectorIcon" | "popoverContent" | "calendar" | "calendarContent" | "timeInputLabel" | "timeInput", string>;
+  dateInputClassNames?: Record<
+    | "base"
+    | "label"
+    | "inputWrapper"
+    | "innerWrapper"
+    | "input"
+    | "helperWrapper"
+    | "description"
+    | "errorMessage",
+    string
+  >;
   size: DatePickerProps["size"];
   labelPlacement?: DatePickerProps["labelPlacement"];
   color: DatePickerProps["color"];
@@ -24,7 +35,7 @@ export interface DatePickerWidgetUIOptions {
 }
 
 export function DatePickerWidget({ label, options, value, required, disabled, uiSchema, onChange }: DatePickerWidgetProps) {
-  const { className, nextuiClassNames = { calendarContent: 'min-w-fit', }, labelPlacement = 'inside', size = 'sm', granularity = 'day', color = 'default', description } = options;
+  const { className, nextuiClassNames = { calendarContent: 'min-w-fit', }, dateInputClassNames, labelPlacement = 'inside', size = 'sm', granularity = 'day', color = 'default', description } = options;
   const [date, setDate] = useState<DateValue>();
   const { requiredErrMsg, validate } = uiSchema;
 
@@ -45,6 +56,7 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
       showMonthAndYearPickers
       className={cn('w-full', className)}
       classNames={nextuiClassNames}
+      dateInputClassNames={dateInputClassNames}
       label={label}
       size={size}
       labelPlacement={labelPlacement}
