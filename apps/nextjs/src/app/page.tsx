@@ -112,6 +112,9 @@ const HomePage = observer(() => {
         title: 'Boolean',
         'ui:options': {
           // disabled: true,
+          nextuiClassNames: {
+            base: 'py-1 px-2'
+          }
         }
       },
       // boolean2: {
