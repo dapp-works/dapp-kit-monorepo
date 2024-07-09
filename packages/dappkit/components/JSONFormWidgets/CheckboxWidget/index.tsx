@@ -6,6 +6,7 @@ import { cn } from "../../../lib/utils";
 
 type Options = {
   className?: string;
+  nextuiClassNames?: CheckboxProps["classNames"];
   size: CheckboxProps["size"];
   color: CheckboxProps["color"];
   description?: string;
@@ -24,7 +25,7 @@ export interface CheckboxWidgetUIOptions {
 export function CheckboxWidget({
   onChange, options, label, value, disabled, uiSchema
 }: CheckboxWidgetProps) {
-  const { className, size = 'sm', color = 'primary', description, descriptionClassName } = options;
+  const { className, nextuiClassNames = {}, size = 'sm', color = 'primary', description, descriptionClassName } = options;
   const { validate } = uiSchema;
   const [errMsg, setErrMsg] = useState<string>('');
   const isInvalid = !!errMsg;
@@ -34,7 +35,8 @@ export function CheckboxWidget({
       <Checkbox
         className={cn('w-full', className)}
         classNames={{
-          base: cn('m-0 flex items-center justify-start w-full', 'cursor-pointer rounded-lg gap-2 p-[13px] bg-content2 border-1 border-transparent', value ? `border-${color}` : ''),
+          ...nextuiClassNames,
+          base: cn('m-0 flex items-center justify-start w-full', 'cursor-pointer rounded-lg gap-2 p-[13px] bg-content2 border-1 border-transparent', nextuiClassNames.base, value ? `border-${color}` : ''),
         }}
         defaultSelected={value}
         isDisabled={disabled}
