@@ -69,17 +69,25 @@ class IERC20Entity extends ERC20Entity {
   }
 }
 
-const res = await AIem.Query(IUniswapV2LPEntity, {
-  totalSupply: true,
-  Token0: {
-    _totalSupply: ["test"],
-    _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
-    approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
-  }
-})({ address: "0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", chainId: "4689", })
 
-console.log(res.Token0)
+const test = async () => {
+  const res = await AIem.Query(IUniswapV2LPEntity, {
+    totalSupply: true,
+    Token0: {
+      _totalSupply: ["test"],
+      _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
+      approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
+      foo: true
+    }
+  })({ address: "0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", chainId: "4689", })
 
+  console.log(res.Token0)
+
+}
+
+setInterval(() => {
+  test()
+}, 100)
 // const resArr = await AIem.QueryMany(IUniswapV2LPEntity, {
 //   totalSupply: true,
 //   Token0: {
