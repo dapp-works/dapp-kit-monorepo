@@ -14,38 +14,53 @@ export type ContractParams<T extends any = any, K extends keyof T = keyof T> = K
 
 
 
+const metadataCache = new WeakMap<any, Map<any, any>>();
+
 export class Fields {
-  static hide(options: FieldParams = {}) {
+  static hide(options: any = {}) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Reflect.defineMetadata(FIELD_KEY, { type: 'hide', options }, target, propertyKey);
-    };
-  }
-  static read(options: FieldParams = {}) {
-    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Reflect.defineMetadata(FIELD_KEY, { type: 'read', options }, target, propertyKey);
-    };
-  }
-  static write(options: FieldParams = {}) {
-    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Reflect.defineMetadata(FIELD_KEY, { type: 'write', options }, target, propertyKey);
+      Fields.setMetadata(target, propertyKey, { type: 'hide', options });
     };
   }
 
-  static custom(options: FieldParams = {}) {
-    return function (target: (...args: any[]) => Promise<any>, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Reflect.defineMetadata(FIELD_KEY, { type: 'custom', options }, target, propertyKey);
+  static read(options: any = {}) {
+    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
+      Fields.setMetadata(target, propertyKey, { type: 'read', options });
     };
   }
 
-  static contract<T = any, R = any>(entity: () => ClassType<R>, options: ContractParams<T>) {
+  static write(options: any = {}) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Reflect.defineMetadata(FIELD_KEY, { type: 'contract', entity, targetKey: options }, target, propertyKey);
+      Fields.setMetadata(target, propertyKey, { type: 'write', options });
     };
+  }
+
+  static custom(options: any = {}) {
+    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
+      Fields.setMetadata(target, propertyKey, { type: 'custom', options });
+    };
+  }
+
+  static contract<T = any, R = any>(entity: () => ClassType<R>, options: any) {
+    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
+      Fields.setMetadata(target, propertyKey, { type: 'contract', entity, targetKey: options });
+    };
+  }
+  private static setMetadata(target: any, propertyKey: any, metadata: any) {
+    let targetMetadata = metadataCache.get(target);
+    if (!targetMetadata) {
+      targetMetadata = new Map<any, any>();
+      metadataCache.set(target, targetMetadata);
+    }
+    targetMetadata.set(propertyKey, metadata);
+    Reflect.defineMetadata(FIELD_KEY, metadata, target, propertyKey);
   }
 }
 
-export class Format { }
-
 export function getFieldMetadata(target: any, propertyKey: string) {
+  const targetMetadata = metadataCache.get(target);
+  if (targetMetadata) {
+    return targetMetadata.get(propertyKey);
+  }
   return Reflect.getMetadata(FIELD_KEY, target, propertyKey);
 }
