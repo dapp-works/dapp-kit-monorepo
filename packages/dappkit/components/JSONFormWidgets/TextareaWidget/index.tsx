@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { InputProps, InputSlots, SlotsToClasses, Textarea } from '@nextui-org/react';
 import { WidgetProps } from '@rjsf/utils';
 import { cn } from "../../../lib/utils";
@@ -33,6 +33,8 @@ export function TextareaWidget(props: TextareaWidgetProps) {
   const { className, nextuiClassNames, labelPlacement = 'inside', size = 'md', minRows = 3, maxRows = 8, color, variant, radius, startContent, endContent, description } = options;
   const { requiredErrMsg, validate } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
+  const isFirstChecked = useRef(true);
+
   return (
     <Textarea
       className={cn('w-full', className)}
@@ -54,6 +56,10 @@ export function TextareaWidget(props: TextareaWidgetProps) {
       endContent={endContent}
       onChange={(e) => onChange(e.target.value)}
       validate={() => {
+        if (isFirstChecked.current) {
+          isFirstChecked.current = false;
+          return true;
+        }
         if (value === '' && required) {
           return requiredErrMsg || 'This field is required';
         }
