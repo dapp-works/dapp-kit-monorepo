@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import { Input, InputProps, InputSlots, SlotsToClasses } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
 import { cn } from "../../../lib/utils";
@@ -32,6 +32,8 @@ export function InputWidget(props: InputWidgetProps) {
   const { className, nextuiClassNames, labelPlacement = 'inside', size = 'sm', inputType = 'text', color, variant, radius, startContent, endContent, description } = options;
   const { requiredErrMsg, validate } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
+  const isFirstChecked = useRef(true);
+
   return (
     <Input
       className={cn('w-full', className)}
@@ -52,6 +54,10 @@ export function InputWidget(props: InputWidgetProps) {
       endContent={endContent}
       onChange={(e) => onChange(e.target.value)}
       validate={() => {
+        if (isFirstChecked.current) {
+          isFirstChecked.current = false;
+          return true;
+        }
         if (value === '' && required) {
           return requiredErrMsg || 'This field is required';
         }

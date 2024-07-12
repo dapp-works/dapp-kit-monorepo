@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DatePicker, DatePickerProps } from '@nextui-org/react';
 import { RJSFSchema, Widget, WidgetProps } from "@rjsf/utils";
 import { DateValue, parseAbsoluteToLocal } from '@internationalized/date';
@@ -38,6 +38,7 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
   const { className, nextuiClassNames = { calendarContent: 'min-w-fit', }, dateInputClassNames, labelPlacement = 'inside', size = 'sm', granularity = 'day', color = 'default', description } = options;
   const [date, setDate] = useState<DateValue>();
   const { requiredErrMsg, validate } = uiSchema;
+  const isFirstChecked = useRef(true);
 
   useEffect(() => {
     if (value) {
@@ -73,6 +74,10 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
         }
       }}
       validate={() => {
+        if (isFirstChecked.current) {
+          isFirstChecked.current = false;
+          return true;
+        }
         if (value === '' && required) {
           return requiredErrMsg || 'This field is required';
         }
