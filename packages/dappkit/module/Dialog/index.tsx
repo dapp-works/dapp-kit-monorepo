@@ -14,7 +14,9 @@ export class DialogStore implements Store {
   className: string = "";
   classNames: Partial<{
     [key in "wrapper" | "base" | "backdrop" | "header" | "body" | "footer" | "closeButton"]: string;
-  }> = {};
+  }> = {
+      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+    };
   content: React.ReactNode | ((props: any) => React.ReactNode) = "";
   isDismissable = true;
 
@@ -33,7 +35,9 @@ export class DialogStore implements Store {
     this.content = "";
     this.size = "md";
     this.className = "";
-    this.classNames = {};
+    this.classNames = {
+      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+    };
     this.isDismissable = true;
   }
 
