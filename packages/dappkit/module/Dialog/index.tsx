@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { rootStore } from "../../store";
 import { Store } from "../../store/standard/base";
 import Provider from "./Provider";
+import { ModalSlots, SlotsToClasses } from "@nextui-org/react";
 
 export class DialogStore implements Store {
   sid = "DialogStore";
@@ -12,11 +13,9 @@ export class DialogStore implements Store {
   title = "";
   size: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "xs" | "3xl" | "4xl" | "5xl" = "md";
   className: string = "";
-  classNames: Partial<{
-    [key in "wrapper" | "base" | "backdrop" | "header" | "body" | "footer" | "closeButton"]: string;
-  }> = {
-      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-    };
+  classNames?: SlotsToClasses<ModalSlots> = {
+    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+  };
   content: React.ReactNode | ((props: any) => React.ReactNode) = "";
   isDismissable = true;
 
