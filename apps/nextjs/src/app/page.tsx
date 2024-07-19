@@ -11,6 +11,7 @@ import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getCom
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { Copy } from '@dappworks/kit/ui';
 import { RootStore } from "@dappworks/kit";
+import ThemeSwitcher from "./components/ThemeSwitcher";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -138,6 +139,7 @@ const HomePage = observer(() => {
   };
   return (
     <div className="p-4 w-full lg:w-[900px] mx-auto">
+      <ThemeSwitcher />
       <JSONTable
         className="my-4 h-auto"
         classNames={{
