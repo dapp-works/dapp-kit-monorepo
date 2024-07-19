@@ -3,23 +3,24 @@ import { observer } from "mobx-react-lite";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
 import { useStore } from "../../store";
 import { ConfirmStore } from ".";
-import { cn } from "../../lib/utils";
 
 const ConfirmModal = observer(() => {
   const rootStore = useStore();
   const confirmStore = rootStore.get(ConfirmStore);
-  const { isOpen, title, description, size, className, cancelText, okText } = confirmStore;
+  const { isOpen, title, description, size, className, classNames, cancelText, okText } = confirmStore;
   return (
     <Modal
       isOpen={isOpen}
       size={size}
+      className={className}
+      classNames={classNames}
       onOpenChange={(open: boolean) => {
         if (!open) {
           confirmStore.close();
         }
       }}
     >
-      <ModalContent className={cn("max-h-screen overflow-auto", className)}>
+      <ModalContent className="max-h-screen overflow-auto">
         {() => (
           <>
             {title && <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>}
