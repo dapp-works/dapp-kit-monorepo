@@ -144,6 +144,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   //     })
   // }
 
+  static PubClient(chainId: string) {
+    return this.init().PubClient(chainId);
+  }
+
   PubClient<C extends keyof Chains>(chainId: C): PublicClient<HttpTransport, Chain, any, any> {
     //@ts-ignore
     return this._cache.wrap(`publicClient-${String(chainId)}`, () => {
