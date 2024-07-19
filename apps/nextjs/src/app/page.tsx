@@ -442,7 +442,7 @@ const HomePage = observer(() => {
 
 
       />
-      <div>123123</div>
+
       <JSONForm
         className="mt-10"
         formData={formData}

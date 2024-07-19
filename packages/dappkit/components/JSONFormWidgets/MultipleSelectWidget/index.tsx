@@ -32,7 +32,20 @@ export interface MultipleSelectWidgetUIOptions {
 export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
   const { onChange, options, label, value, required, uiSchema = {} } = props;
   const { selectOptions = [], requiredErrMsg, validate } = uiSchema;
-  const { className, nextuiClassNames = {}, labelPlacement = 'inside', listboxProps = {}, size = 'sm', color, description, renderValue = DefaultRenderValue } = options;
+  const {
+    className,
+    nextuiClassNames = {
+      base: 'w-full',
+      trigger: 'min-h-12 py-1 rounded-lg bg-transparent shadow-none border dark:border-[#2c2c2c] data-[hover=true]:bg-default-50',
+      popoverContent: 'rounded-lg shadow-md border dark:border-[#3e3e3e]',
+    },
+    labelPlacement = 'inside',
+    listboxProps = {},
+    size = 'sm',
+    color,
+    description,
+    renderValue = DefaultRenderValue
+  } = options;
   const placeholder = uiSchema['ui:options']?.placeholder || 'Select an option';
   const selectedKeys = useMemo(() => {
     return value ? value.split(',') : [];
@@ -72,12 +85,7 @@ export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
         checkValue(_v);
       }}
       items={selectOptions}
-      classNames={{
-        base: 'w-full',
-        trigger: 'min-h-12 py-1',
-        popoverContent: 'rounded-lg shadow-md border dark:border-[#3e3e3e]',
-        ...nextuiClassNames
-      }}
+      classNames={nextuiClassNames}
       listboxProps={{
         itemClasses: {
           base: [
