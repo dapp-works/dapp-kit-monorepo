@@ -23,7 +23,9 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
   title = '';
   form: JSONSchemaFormState<T> = null;
   className: string = '';
-  classNames?: SlotsToClasses<ModalSlots>;
+  classNames?: SlotsToClasses<ModalSlots> = {
+    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+  };
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
   closeOnOverlayClick = false;
@@ -44,7 +46,9 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
     this.title = '';
     this.form = null;
     this.className = '';
-    this.classNames = undefined;
+    this.classNames = {
+      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+    };
     this.modalSize = 'md';
     this.scrollBehavior = 'normal';
     this.closeOnOverlayClick = false;
