@@ -2,7 +2,6 @@ import React from "react";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
 import { DialogStore } from ".";
-import { cn } from "../../lib/utils";
 import { useStore } from "../../store/index";
 
 const Dialog = observer(() => {
@@ -19,10 +18,11 @@ const Dialog = observer(() => {
           modal.close();
         }
       }}
+      className={className}
       classNames={classNames}
       isDismissable={isDismissable}
     >
-      <ModalContent className={cn("max-h-screen overflow-auto", className)}>
+      <ModalContent className="max-h-screen overflow-auto">
         {() => (
           <>
             {title && <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>}
@@ -32,7 +32,7 @@ const Dialog = observer(() => {
           </>
         )}
       </ModalContent>
-    </Modal>
+    </Modal >
   );
 });
 
