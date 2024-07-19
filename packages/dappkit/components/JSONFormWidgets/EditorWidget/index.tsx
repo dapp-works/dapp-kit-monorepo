@@ -87,7 +87,7 @@ export const EditorWidget = ({ label, options = {}, value, required, uiSchema, d
         </div>
       }
       {description && <div className={cn('mb-2 text-xs text-[#A1A1A9] dark:text-[#717179]', descriptionClassName)}>{description}</div>}
-      <div className={cn("rounded-lg overflow-hidden relative", editorBoxClassName)}>
+      <div className={cn("rounded-lg overflow-hidden relative border dark:border-[#2c2c2c]", editorBoxClassName)}>
         <MonacoEditor
           options={{ readOnly: readOnly || disabled, minimap: { enabled: false } }}
           height={editorHeight}
@@ -104,6 +104,15 @@ export const EditorWidget = ({ label, options = {}, value, required, uiSchema, d
               const json = helper.json.safeParse(value);
               editor.setValue(JSON.stringify(json, null, jsonStrSpace));
             }
+            monaco.editor.defineTheme('myCustomTheme', {
+              base: 'vs-dark',
+              inherit: true,
+              rules: [],
+              colors: {
+                'editor.background': '#09090B',
+              },
+            });
+            monaco.editor.setTheme('myCustomTheme');
           }}
         />
       </div>

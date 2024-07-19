@@ -19,7 +19,9 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, LayoutType>;
   className = '';
-  classNames?: SlotsToClasses<ModalSlots>;
+  classNames?: SlotsToClasses<ModalSlots> = {
+    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+  };
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
   isDismissable = true;
@@ -46,7 +48,9 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
     this.formConfig = undefined;
     this.layoutConfig = undefined;
     this.className = '';
-    this.classNames = undefined;
+    this.classNames = {
+      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
+    };
     this.modalSize = 'md';
     this.scrollBehavior = 'normal';
     this.isDismissable = true;
