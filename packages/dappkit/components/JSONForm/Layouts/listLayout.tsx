@@ -17,11 +17,11 @@ const CollapsibleBox = (
   return (
     <div id={`form-${formKey}`}>
       <div
-        className="mt-5 mb-[10px] flex justify-between items-center cursor-pointer border-t-[1px solid #E5E5EA] py-[5px] hover:bg-[#F2F2F7] dark:hover:bg-gray-900"
+        className="mt-5 mb-[10px] flex justify-between items-center cursor-pointer border-t-[1px solid #E5E5EA] py-[5px]"
         onClick={() => setOpened((o) => !o)}
       >
         <div className={cn('text-gray-900 dark:text-gray-100 font-bold text-base', titleBoxCss)}>{title}</div>
-        {opened ? <ChevronUp /> : <ChevronDown />}
+        {opened ? <ChevronUp size={18} className="text-[#717179] dark:text-[#A1A1A9]" /> : <ChevronDown size={18} className="text-[#717179] dark:text-[#A1A1A9]" />}
       </div>
       <div className={cn('mt-2', opened ? 'block' : 'hidden')}>
         <JSONSchemaForm formState={formState}>

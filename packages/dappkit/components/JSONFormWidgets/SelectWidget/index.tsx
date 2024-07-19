@@ -30,7 +30,8 @@ export function SelectWidget(props: SelectWidgetProps) {
   const {
     className,
     nextuiClassNames = {
-      popoverContent: 'rounded-lg shadow-md border dark:border-[#3e3e3e]',
+      trigger: 'rounded-lg bg-transparent shadow-none border dark:border-[#2c2c2c] data-[hover=true]:bg-default-50',
+      popoverContent: 'rounded-lg shadow-md border border-[#F4F4F5] dark:border-[#3e3e3e]',
     },
     listboxProps = {
       itemClasses: {

@@ -22,6 +22,7 @@ type Options = {
   labelPlacement?: DatePickerProps["labelPlacement"];
   color: DatePickerProps["color"];
   granularity?: DatePickerProps["granularity"];
+  variant?: DatePickerProps['variant'];
   description?: string;
 };
 
@@ -35,7 +36,19 @@ export interface DatePickerWidgetUIOptions {
 }
 
 export function DatePickerWidget({ label, options, value, required, disabled, uiSchema, onChange }: DatePickerWidgetProps) {
-  const { className, nextuiClassNames = { calendarContent: 'min-w-fit', }, dateInputClassNames, labelPlacement = 'inside', size = 'sm', granularity = 'day', color = 'default', description } = options;
+  const {
+    className,
+    nextuiClassNames = { calendarContent: 'min-w-fit' },
+    dateInputClassNames = {
+      inputWrapper: 'rounded-lg bg-transparent border dark:border-[#2c2c2c] hover:bg-default-50',
+    },
+    labelPlacement = 'inside',
+    size = 'sm',
+    granularity = 'day',
+    color = 'default',
+    description,
+    variant,
+  } = options;
   const [date, setDate] = useState<DateValue>();
   const { requiredErrMsg, validate } = uiSchema;
   const isFirstChecked = useRef(true);
@@ -63,6 +76,7 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
       labelPlacement={labelPlacement}
       color={color}
       granularity={granularity}
+      variant={variant}
       value={date}
       isRequired={required}
       description={description || ''}

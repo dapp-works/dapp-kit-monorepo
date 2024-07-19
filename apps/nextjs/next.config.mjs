@@ -9,7 +9,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 });
 /** @type {import("next").NextConfig} */
 const config = {
-  // reactStrictMode: true,
+  reactStrictMode: false,
   // swcMinify: true,
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: ["@acme/api", "@acme/auth", "@acme/db", "@dappworks/kit"],
