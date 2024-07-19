@@ -25,7 +25,16 @@ export interface CheckboxWidgetUIOptions {
 export function CheckboxWidget({
   onChange, options, label, value, disabled, uiSchema
 }: CheckboxWidgetProps) {
-  const { className, nextuiClassNames = {}, size = 'sm', color = 'primary', description, descriptionClassName } = options;
+  const {
+    className,
+    nextuiClassNames = {
+      base: 'm-0 flex items-center justify-start w-full cursor-pointer rounded-lg gap-2 p-[13px] bg-transparent border dark:border-[#2c2c2c]',
+    },
+    size = 'sm',
+    color = 'primary',
+    description,
+    descriptionClassName,
+  } = options;
   const { validate } = uiSchema;
   const [errMsg, setErrMsg] = useState<string>('');
   const isInvalid = !!errMsg;
@@ -34,10 +43,7 @@ export function CheckboxWidget({
     <>
       <Checkbox
         className={cn('w-full', className)}
-        classNames={{
-          ...nextuiClassNames,
-          base: cn('m-0 flex items-center justify-start w-full', 'cursor-pointer rounded-lg gap-2 p-[13px] bg-content2 border-1 border-transparent', nextuiClassNames.base, value ? `border-${color}` : ''),
-        }}
+        classNames={nextuiClassNames}
         defaultSelected={value}
         isDisabled={disabled}
         icon={<Check className="bg-white dark:bg-black" />}

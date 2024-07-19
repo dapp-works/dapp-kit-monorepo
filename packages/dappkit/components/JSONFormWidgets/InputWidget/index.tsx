@@ -29,7 +29,21 @@ export interface InputWidgetUIOptions {
 
 export function InputWidget(props: InputWidgetProps) {
   const { onChange, options, label, value, required, disabled, uiSchema } = props;
-  const { className, nextuiClassNames, labelPlacement = 'inside', size = 'sm', inputType = 'text', color, variant, radius, startContent, endContent, description } = options;
+  const {
+    className,
+    nextuiClassNames = {
+      inputWrapper: 'rounded-lg shadow-none border dark:border-[#2c2c2c] !bg-transparent data-[hover=true]:!bg-default-50 group-data-[focus=true]:!bg-transparent',
+    },
+    labelPlacement = 'inside',
+    size = 'sm',
+    inputType = 'text',
+    color,
+    variant,
+    radius,
+    startContent,
+    endContent,
+    description,
+  } = options;
   const { requiredErrMsg, validate } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
   const isFirstChecked = useRef(true);
