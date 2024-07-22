@@ -1,7 +1,8 @@
-import React, { ReactNode, useRef } from 'react';
+import React, { ReactNode, useMemo, useRef } from 'react';
 import { InputProps, InputSlots, SlotsToClasses, Textarea } from '@nextui-org/react';
 import { WidgetProps } from '@rjsf/utils';
 import { cn } from "../../../lib/utils";
+import { getStyle } from '../../../themes';
 
 type Options = {
   className?: string;
@@ -46,14 +47,21 @@ export function TextareaWidget(props: TextareaWidgetProps) {
     endContent,
     description,
   } = options;
-  const { requiredErrMsg, validate } = uiSchema;
+  const { requiredErrMsg, validate, theme } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
   const isFirstChecked = useRef(true);
+  const classNames = useMemo(() => {
+    const themeStyle = getStyle(theme || 'default', 'InputWidget');
+    return {
+      ...themeStyle.classNames,
+      ...nextuiClassNames
+    }
+  }, [theme, nextuiClassNames]);
 
   return (
     <Textarea
       className={cn('w-full', className)}
-      classNames={nextuiClassNames}
+      classNames={classNames}
       label={label}
       placeholder={placeholder}
       value={value}

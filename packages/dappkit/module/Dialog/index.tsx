@@ -4,26 +4,32 @@ import { rootStore } from "../../store";
 import { Store } from "../../store/standard/base";
 import Provider from "./Provider";
 import { ModalSlots, SlotsToClasses } from "@nextui-org/react";
+import { getStyle, ThemeType } from "../../themes";
 
 export class DialogStore implements Store {
   sid = "DialogStore";
   provider = () => <Provider />;
 
   isOpen = false;
-  placement: "center" | "auto" | "top" | "bottom" | "top-center" | "bottom-center" = 'auto';
+  placement: "center" | "auto" | "top" | "bottom" | "top-center" | "bottom-center";
   title = "";
   size: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "xs" | "3xl" | "4xl" | "5xl" = "md";
   className: string = "";
-  classNames?: SlotsToClasses<ModalSlots> = {
-    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-  };
+  classNames?: SlotsToClasses<ModalSlots>;
+  theme: ThemeType = "default";
   content: React.ReactNode | ((props: any) => React.ReactNode) = "";
   isDismissable = true;
 
   constructor(args?: Partial<DialogStore>) {
-    Object.assign(this, args);
+    const modalStyle = getStyle(args?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...args?.classNames
+    }
+    Object.assign(this, args, { classNames });
     makeAutoObservable(this);
   }
+
 
   setData(v: Partial<DialogStore>) {
     Object.assign(this, v);
@@ -31,27 +37,27 @@ export class DialogStore implements Store {
 
   close() {
     this.isOpen = false;
-    this.placement = 'auto';
     this.title = "";
     this.content = "";
     this.size = "md";
-    this.className = "";
-    this.classNames = {
-      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-    };
     this.isDismissable = true;
   }
 
   static show(v: Partial<DialogStore>) {
-    const modal = rootStore.get(DialogStore);
-    modal.setData({
+    const modalStyle = getStyle(v?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...v?.classNames
+    }
+    rootStore.get(DialogStore).setData({
       ...v,
+      classNames,
       isOpen: true,
+
     });
   }
 
   static close() {
-    const modal = rootStore.get(DialogStore);
-    modal.close();
+    rootStore.get(DialogStore).close();
   }
 }

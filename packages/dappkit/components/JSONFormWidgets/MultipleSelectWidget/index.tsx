@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Chip, Select, SelectItem, SelectProps, SelectedItems } from '@nextui-org/react';
 import { WidgetProps } from '@rjsf/utils';
 import { cn } from "../../../lib/utils";
+import { getStyle } from '../../../themes';
 
 type Options = {
   className?: string;
@@ -31,14 +32,10 @@ export interface MultipleSelectWidgetUIOptions {
 
 export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
   const { onChange, options, label, value, required, uiSchema = {} } = props;
-  const { selectOptions = [], requiredErrMsg, validate } = uiSchema;
+  const { selectOptions = [], requiredErrMsg, validate, theme } = uiSchema;
   const {
     className,
-    nextuiClassNames = {
-      base: 'w-full',
-      trigger: 'min-h-12 py-1 rounded-lg bg-transparent shadow-none border dark:border-[#2c2c2c] data-[hover=true]:bg-default-50',
-      popoverContent: 'rounded-lg shadow-md border dark:border-[#3e3e3e]',
-    },
+    nextuiClassNames,
     labelPlacement = 'inside',
     listboxProps = {},
     size = 'sm',
@@ -50,6 +47,13 @@ export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
   const selectedKeys = useMemo(() => {
     return value ? value.split(',') : [];
   }, [value]);
+  const classNames = useMemo(() => {
+    const themeStyle = getStyle(theme || 'default', 'MultipleSelectWidget');
+    return {
+      ...themeStyle.classNames,
+      ...nextuiClassNames
+    }
+  }, [theme, nextuiClassNames]);
   const [errMsg, setErrMsg] = useState<string>('');
   const isInvalid = !!errMsg;
   const checkValue = useCallback((value) => {
@@ -85,7 +89,7 @@ export function MultipleSelectWidget(props: MultipleSelectWidgetProps) {
         checkValue(_v);
       }}
       items={selectOptions}
-      classNames={nextuiClassNames}
+      classNames={classNames}
       listboxProps={{
         itemClasses: {
           base: [

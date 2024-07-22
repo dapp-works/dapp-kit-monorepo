@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import { Select, SelectItem, SelectProps, SelectSlots, SlotsToClasses } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
+import { getStyle } from "../../../themes";
 
 type Options = {
   className?: string;
@@ -29,10 +30,7 @@ export function SelectWidget(props: SelectWidgetProps) {
   const { onChange, options, label, value, required, disabled, uiSchema } = props;
   const {
     className,
-    nextuiClassNames = {
-      trigger: 'rounded-lg bg-transparent shadow-none border dark:border-[#2c2c2c] data-[hover=true]:bg-default-50',
-      popoverContent: 'rounded-lg shadow-md border border-[#F4F4F5] dark:border-[#3e3e3e]',
-    },
+    nextuiClassNames,
     listboxProps = {
       itemClasses: {
         base: [
@@ -55,8 +53,15 @@ export function SelectWidget(props: SelectWidgetProps) {
     radius,
     description,
   } = options;
-  const { selectOptions = [], requiredErrMsg, validate } = uiSchema;
+  const { selectOptions = [], requiredErrMsg, validate, theme } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
+  const classNames = useMemo(() => {
+    const themeStyle = getStyle(theme || 'default', 'MultipleSelectWidget');
+    return {
+      ...themeStyle.classNames,
+      ...nextuiClassNames
+    }
+  }, [theme, nextuiClassNames]);
   const [errMsg, setErrMsg] = useState<string>('');
   const isInvalid = !!errMsg;
   const checkValue = useCallback((value) => {
@@ -76,7 +81,7 @@ export function SelectWidget(props: SelectWidgetProps) {
     <Select
       label={label?.trim()}
       className={cn('w-full', className)}
-      classNames={nextuiClassNames}
+      classNames={classNames}
       labelPlacement={labelPlacement}
       placeholder={placeholder}
       size={size}

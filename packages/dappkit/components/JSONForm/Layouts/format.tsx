@@ -13,10 +13,12 @@ import {
 } from "../../../store/standard/JSONSchemaState";
 import { helper } from "../../../lib/helper";
 import { cn } from "../../../lib/utils";
+import { ThemeType } from "../../../themes";
 
 export const getFormState = <T,>(
   props: JSONFormProps<T>,
   formLayout: { [x: string]: { fieldLayout?: any[] } } = {},
+  theme: ThemeType = 'default'
 ) => {
   const { formData, formConfig, onSet, onChange } = props;
 
@@ -91,6 +93,7 @@ export const getFormState = <T,>(
         formConfigData[k]['ui:widget'] = EditorWidget;
       }
 
+      formConfigData[k]['theme'] = theme;
       return p;
     }, {});
     const schema = {

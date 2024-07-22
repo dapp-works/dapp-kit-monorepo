@@ -4,9 +4,9 @@ import { JSONSchemaForm } from '../../../components/JSONSchemaForm';
 import { BatchSubmitButton, SubmitButton, getFormState } from './format';
 
 export const SimpleLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
-  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady } = props;
+  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady, theme } = props;
   const { $type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'SimpleLayout'>;
-  const formStates = getFormState(props, formLayout);
+  const formStates = getFormState(props, formLayout, theme);
 
   useEffect(() => {
     if (formStates && onReady) {

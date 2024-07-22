@@ -65,6 +65,7 @@ const JSONViewModal = observer(() => {
               {complexFormModal.title && <ModalHeader className="flex flex-col gap-1 draggable-handle cursor-move">{complexFormModal.title}</ModalHeader>}
               <ModalBody className={cn('max-h-[90vh] overflow-auto')}>
                 <JSONForm
+                  theme={complexFormModal.theme}
                   formData={formData}
                   formConfig={complexFormModal.formConfig}
                   layoutConfig={layoutConfig}

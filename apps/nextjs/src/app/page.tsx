@@ -12,6 +12,7 @@ import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { Copy } from '@dappworks/kit/ui';
 import { RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "./components/ThemeSwitcher";
+import { DialogStore } from "@dappworks/kit/plugins";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -109,15 +110,15 @@ const HomePage = observer(() => {
           granularity: 'minute'
         }
       },
-      boolean: {
-        title: 'Boolean',
-        'ui:options': {
-          // disabled: true,
-          nextuiClassNames: {
-            base: 'py-1 px-2'
-          }
-        }
-      },
+      // boolean: {
+      //   title: 'Boolean',
+      //   'ui:options': {
+      //     // disabled: true,
+      //     nextuiClassNames: {
+      //       base: 'py-1 px-2'
+      //     }
+      //   }
+      // },
       // boolean2: {
       //   // description: 'This is a description',
       //   'ui:options': {
@@ -260,6 +261,7 @@ const HomePage = observer(() => {
 
       <JSONForm
         className="mt-10"
+        theme="primary"
         // Required field
         formData={formData}
         // Optional field
@@ -343,6 +345,7 @@ const HomePage = observer(() => {
 
       <JSONForm
         className="mt-10"
+        // theme="primary"
         formData={formData}
         formConfig={formConfig}
         layoutConfig={{
@@ -372,8 +375,9 @@ const HomePage = observer(() => {
         }}
       />
 
-      <JSONForm
+      {/* <JSONForm
         className="mt-10"
+        theme="primary"
         formData={formData}
         formConfig={{
           personalInfo: {
@@ -441,9 +445,7 @@ const HomePage = observer(() => {
           //   titleBoxCss: 'font-bold text-red-500',
           // },
         }}
-
-
-      />
+      /> */}
 
       <JSONForm
         className="mt-10"
@@ -455,46 +457,68 @@ const HomePage = observer(() => {
         }}
       />
 
-      <Button
-        className="my-10"
-        onClick={async () => {
-          const data = await getComplexFormData({
-            // Optional field
-            title: 'Complex Form',
-            // className: 'w-[100%] md:w-[80%] lg:w-[60%]',
-            modalSize: '5xl',
-            formData,
-            // Optional field
-            formConfig,
-            // Optional field
-            layoutConfig: {
-              $type: 'GridLayout',
-              $gridColumn: 2,
-              personalInfo: {
-                title: 'Personal Information',
-                fieldLayout: [['name', 'age'], 'phone', 'city'],
+      <div className="flex items-center gap-2">
+        <Button
+          className="my-10"
+          color="primary"
+          onClick={async () => {
+            const data = await getComplexFormData({
+              // Optional field
+              title: 'Complex Form',
+              // className: 'w-[100%] md:w-[80%] lg:w-[60%]',
+              theme: 'primary',
+              // classNames: {
+              //   body: "bg-red-500"
+              // },
+              modalSize: '5xl',
+              formData,
+              // Optional field
+              formConfig,
+              // Optional field
+              layoutConfig: {
+                $type: 'GridLayout',
+                $gridColumn: 2,
+                personalInfo: {
+                  title: 'Personal Information',
+                  fieldLayout: [['name', 'age'], 'phone', 'city'],
+                },
+                extraInfo: {
+                  title: 'Extra Information',
+                },
               },
-              extraInfo: {
-                title: 'Extra Information',
+              // Optional field
+              onBatchSubmit: async (data, setLoading) => {
+                console.log('[getComplexFormData onBatchSubmit]:', data);
+                setLoading?.(true);
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+                setLoading?.(false);
+                RootStore.Get(ComplexFormModalStore).close();
               },
-            },
-            // Optional field
-            onBatchSubmit: async (data, setLoading) => {
-              console.log('[getComplexFormData onBatchSubmit]:', data);
-              setLoading?.(true);
-              await new Promise((resolve) => setTimeout(resolve, 2000));
-              setLoading?.(false);
-              RootStore.Get(ComplexFormModalStore).close();
-            },
-            // onChange: (data) => {
-            //   console.log('[getComplexFormData onChange]:', data);
-            // }
-          });
-          console.log('[getComplexFormData]:', data);
-        }}
-      >
-        Get Complex Form Data
-      </Button>
+              // onChange: (data) => {
+              //   console.log('[getComplexFormData onChange]:', data);
+              // }
+            });
+            console.log('[getComplexFormData]:', data);
+          }}
+        >
+          Get Complex Form Data
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={() => {
+            DialogStore.show({
+              title: 'Dialog Title',
+              size: 'md',
+              content: 'Dialog Content',
+              // theme: 'primary',
+              placement: 'top'
+            })
+          }}
+        >
+          Show Dialog
+        </Button>
+      </div>
 
       <MetricsView
         data={{

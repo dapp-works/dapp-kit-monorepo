@@ -34,9 +34,9 @@ const CollapsibleBox = (
 };
 
 export const ListLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
-  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady } = props;
+  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady, theme } = props;
   const { $type, ...formLayout } = layoutConfig as LayoutConfigType<T, 'ListLayout'>;
-  const formStates = getFormState(props, formLayout);
+  const formStates = getFormState(props, formLayout, theme);
 
   useEffect(() => {
     if (formStates && onReady) {

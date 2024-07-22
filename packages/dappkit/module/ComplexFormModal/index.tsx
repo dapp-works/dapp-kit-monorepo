@@ -8,6 +8,7 @@ import { makeAutoObservable } from "mobx";
 import { RootStore } from "../../store";
 import React, { Dispatch, SetStateAction } from "react";
 import { ButtonProps, SlotsToClasses, ModalSlots } from "@nextui-org/react";
+import { getStyle, ThemeType } from "../../themes";
 
 export class ComplexFormModalStore<T extends FormDataType> implements Store {
   sid = 'ComplexFormModalStore';
@@ -19,9 +20,8 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, LayoutType>;
   className = '';
-  classNames?: SlotsToClasses<ModalSlots> = {
-    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-  };
+  classNames?: SlotsToClasses<ModalSlots>;
+  theme: ThemeType = "default";
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
   isDismissable = true;
@@ -33,7 +33,12 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
   batchSubmitButtonProps?: ButtonProps & { onBatchSubmit?: (formData: T, setLoading: Dispatch<SetStateAction<boolean>>) => void };
 
   constructor(args?: Partial<ComplexFormModalStore<T>>) {
-    Object.assign(this, args);
+    const modalStyle = getStyle(args?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...args?.classNames
+    }
+    Object.assign(this, args, { classNames });
     makeAutoObservable(this);
   }
 
@@ -47,10 +52,6 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
     this.formData = undefined;
     this.formConfig = undefined;
     this.layoutConfig = undefined;
-    this.className = '';
-    this.classNames = {
-      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-    };
     this.modalSize = 'md';
     this.scrollBehavior = 'normal';
     this.isDismissable = true;
@@ -64,10 +65,16 @@ export class ComplexFormModalStore<T extends FormDataType> implements Store {
 
 export async function getComplexFormData<T extends FormDataType>(v: Partial<ComplexFormModalStore<T>>) {
   return new Promise<T>((resolve, reject) => {
+    const modalStyle = getStyle(v?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...v?.classNames
+    }
     const complexFormModal = RootStore.Get(ComplexFormModalStore);
     // @ts-ignore
     complexFormModal.setData({
       ...v,
+      classNames,
       isOpen: true,
     });
     complexFormModal.event.on('batchSubmit', (formData: T) => {
