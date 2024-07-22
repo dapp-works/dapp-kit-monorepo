@@ -10,6 +10,7 @@ export class DialogStore implements Store {
   provider = () => <Provider />;
 
   isOpen = false;
+  placement: "center" | "auto" | "top" | "bottom" | "top-center" | "bottom-center" = 'auto';
   title = "";
   size: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "xs" | "3xl" | "4xl" | "5xl" = "md";
   className: string = "";
@@ -30,6 +31,7 @@ export class DialogStore implements Store {
 
   close() {
     this.isOpen = false;
+    this.placement = 'auto';
     this.title = "";
     this.content = "";
     this.size = "md";

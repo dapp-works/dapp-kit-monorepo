@@ -7,12 +7,13 @@ import { useStore } from "../../store/index";
 const Dialog = observer(() => {
   const rootStore = useStore();
   const modal = rootStore.get(DialogStore);
-  const { className, classNames, isOpen, title, size, content, isDismissable } = modal;
+  const { className, classNames, isOpen, placement, title, size, content, isDismissable } = modal;
   const Content = typeof content === 'function' ? content : () => content;
   return (
     <Modal
       isOpen={isOpen}
       size={size}
+      placement={placement}
       onOpenChange={(open: boolean) => {
         if (!open) {
           modal.close();
