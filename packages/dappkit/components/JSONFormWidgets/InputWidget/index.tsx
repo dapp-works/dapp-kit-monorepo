@@ -1,7 +1,8 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode, useMemo, useRef } from "react";
 import { Input, InputProps, InputSlots, SlotsToClasses } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
 import { cn } from "../../../lib/utils";
+import { getStyle } from "../../../themes";
 
 type Options = {
   className?: string;
@@ -31,9 +32,7 @@ export function InputWidget(props: InputWidgetProps) {
   const { onChange, options, label, value, required, disabled, uiSchema } = props;
   const {
     className,
-    nextuiClassNames = {
-      inputWrapper: 'rounded-lg shadow-none border dark:border-[#2c2c2c] !bg-transparent data-[hover=true]:!bg-default-50 group-data-[focus=true]:!bg-transparent',
-    },
+    nextuiClassNames,
     labelPlacement = 'inside',
     size = 'sm',
     inputType = 'text',
@@ -44,14 +43,20 @@ export function InputWidget(props: InputWidgetProps) {
     endContent,
     description,
   } = options;
-  const { requiredErrMsg, validate } = uiSchema;
+  const { requiredErrMsg, validate, theme } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
   const isFirstChecked = useRef(true);
-
+  const classNames = useMemo(() => {
+    const themeStyle = getStyle(theme || 'default', 'InputWidget');
+    return {
+      ...themeStyle.classNames,
+      ...nextuiClassNames
+    }
+  }, [theme, nextuiClassNames]);
   return (
     <Input
       className={cn('w-full', className)}
-      classNames={nextuiClassNames}
+      classNames={classNames}
       label={label}
       placeholder={placeholder}
       value={value}

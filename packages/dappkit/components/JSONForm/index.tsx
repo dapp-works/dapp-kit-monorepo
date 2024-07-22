@@ -6,6 +6,7 @@ import { GridLayout } from "./Layouts/gridLayout";
 import { ListLayout } from "./Layouts/listLayout";
 import { SimpleLayout } from "./Layouts/simpleLayout";
 import { TabLayout } from "./Layouts/tabLayout";
+import { ThemeType } from "../../themes";
 
 export type LayoutType = 'TabLayout' | 'GridLayout' | 'ListLayout' | 'SimpleLayout';
 
@@ -72,6 +73,7 @@ export type FormDataOfKey<T = FormDataType> = T[FormKey<T>];
 
 export type JSONFormProps<T = FormDataType> = {
   className?: string;
+  theme?: ThemeType;
   formData: T;
   formConfig?: FormConfigType<T>;
   layoutConfig?: LayoutConfigType<T, LayoutType>;

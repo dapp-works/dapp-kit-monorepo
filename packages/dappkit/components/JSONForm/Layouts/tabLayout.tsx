@@ -6,7 +6,7 @@ import { BatchSubmitButton, CustomButton, SubmitButton, getFormState } from "./f
 import { cn } from "../../../lib/utils";
 
 export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
-  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady } = props;
+  const { layoutConfig = {}, onBatchSubmit, batchSubmitButtonProps, onReady, theme } = props;
   const {
     $type,
     $tabsProps = {
@@ -14,7 +14,7 @@ export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
     },
     ...formLayout
   } = layoutConfig as LayoutConfigType<T, 'TabLayout'>;
-  const formStates = useMemo(() => getFormState(props, formLayout), [props.formData, props.formConfig, props.layoutConfig]);
+  const formStates = useMemo(() => getFormState(props, formLayout, theme), [props.formData, props.formConfig, props.layoutConfig]);
   const formKeys = Object.keys(formStates);
   const [selectedTab, setSelectedTab] = useState(formKeys[0] || '');
 

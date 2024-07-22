@@ -1,0 +1,42 @@
+{
+  "Modal": {
+    "classNames": {
+      "base": ""
+    }
+  },
+  "InputWidget": {
+    "classNames": {
+      "inputWrapper": ""
+    }
+  },
+  "TextareaWidget": {
+    "classNames": {
+      "inputWrapper": ""
+    }
+  },
+  "DatePickerWidget": {
+    "dateInputClassNames": {
+      "inputWrapper": ""
+    }
+  },
+  "SelectWidget": {
+    "classNames": {
+      "popoverContent": "rounded-lg shadow-md border dark:border-[#3e3e3e]"
+    }
+  },
+  "MultipleSelectWidget": {
+    "classNames": {
+      "base": "w-full",
+      "trigger": "min-h-12 py-1",
+      "popoverContent": "rounded-lg shadow-md border dark:border-[#3e3e3e]"
+    }
+  },
+  "CheckboxWidget": {
+    "classNames": {
+      "base": "m-0 flex items-center justify-start w-full cursor-pointer rounded-lg gap-2 p-[13px] bg-content2"
+    }
+  },
+  "Card": {
+    "className": ""
+  }
+}
