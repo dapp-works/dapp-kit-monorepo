@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DatePicker, DatePickerProps } from '@nextui-org/react';
 import { RJSFSchema, Widget, WidgetProps } from "@rjsf/utils";
 import { DateValue, parseAbsoluteToLocal } from '@internationalized/date';
 import { cn } from "../../../lib/utils";
+import { getStyle } from "../../../themes";
 
 type Options = {
   className?: string;
@@ -39,9 +40,7 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
   const {
     className,
     nextuiClassNames = { calendarContent: 'min-w-fit' },
-    dateInputClassNames = {
-      inputWrapper: 'rounded-lg bg-transparent border dark:border-[#2c2c2c] hover:bg-default-50',
-    },
+    dateInputClassNames,
     labelPlacement = 'inside',
     size = 'sm',
     granularity = 'day',
@@ -50,8 +49,15 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
     variant,
   } = options;
   const [date, setDate] = useState<DateValue>();
-  const { requiredErrMsg, validate } = uiSchema;
+  const { requiredErrMsg, validate, theme } = uiSchema;
   const isFirstChecked = useRef(true);
+  const dateInputStyle = useMemo(() => {
+    const themeStyle = getStyle(theme || 'default', 'DatePickerWidget');
+    return {
+      ...themeStyle.dateInputClassNames,
+      ...dateInputClassNames
+    }
+  }, [theme, dateInputClassNames]);
 
   useEffect(() => {
     if (value) {
@@ -70,7 +76,7 @@ export function DatePickerWidget({ label, options, value, required, disabled, ui
       showMonthAndYearPickers
       className={cn('w-full', className)}
       classNames={nextuiClassNames}
-      dateInputClassNames={dateInputClassNames}
+      dateInputClassNames={dateInputStyle}
       label={label}
       size={size}
       labelPlacement={labelPlacement}

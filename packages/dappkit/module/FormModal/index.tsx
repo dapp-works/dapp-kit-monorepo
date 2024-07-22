@@ -14,6 +14,7 @@ import { CheckboxWidget } from "../../components/JSONFormWidgets/CheckboxWidget"
 import { EditorWidget } from "../../components/JSONFormWidgets/EditorWidget";
 import { RootStore } from "../../store";
 import { SlotsToClasses, ModalSlots } from "@nextui-org/react";
+import { getStyle, ThemeType } from "../../themes";
 
 export class FormModalStore<T = { [key: string]: any }> implements Store {
   sid = 'FormModalStore';
@@ -23,9 +24,8 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
   title = '';
   form: JSONSchemaFormState<T> = null;
   className: string = '';
-  classNames?: SlotsToClasses<ModalSlots> = {
-    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-  };
+  classNames?: SlotsToClasses<ModalSlots>;
+  theme: ThemeType = "default";
   modalSize: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   scrollBehavior?: 'normal' | 'inside' | 'outside' = 'normal';
   closeOnOverlayClick = false;
@@ -33,7 +33,12 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
   onAfterSubmit?: (data: T) => void;
 
   constructor(args?: Partial<FormModalStore>) {
-    Object.assign(this, args);
+    const modalStyle = getStyle(args?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...args?.classNames
+    }
+    Object.assign(this, args, { classNames });
     makeAutoObservable(this);
   }
 
@@ -45,10 +50,6 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
     this.isOpen = false;
     this.title = '';
     this.form = null;
-    this.className = '';
-    this.classNames = {
-      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-    };
     this.modalSize = 'md';
     this.scrollBehavior = 'normal';
     this.closeOnOverlayClick = false;
@@ -59,9 +60,15 @@ export class FormModalStore<T = { [key: string]: any }> implements Store {
 
 export async function getFormData<T = { [key: string]: any }>(v: Partial<FormModalStore>) {
   return new Promise<T>((resolve, reject) => {
+    const modalStyle = getStyle(v?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...v?.classNames
+    }
     const formModal = RootStore.Get(FormModalStore);
     formModal.setData({
       ...v,
+      classNames,
       isOpen: true,
     });
     formModal.event.on('afterSubmit', (formData: T) => {
@@ -85,11 +92,13 @@ export function getFormState<T>(
     metadata = {},
     onSet = (v: T, form) => v,
     onSubmit,
+    theme = 'default',
   }: {
     data: T;
     metadata?: { [key: string]: any } & Partial<JSONSchemaFormState<any>>;
     onSet?: (v: T, form: JSONSchemaFormState<T, UiSchema>) => T;
     onSubmit?: (data: T) => void;
+    theme: ThemeType;
   }
 ): JSONSchemaFormState<T, UiSchema> {
   const value = {};
@@ -155,6 +164,7 @@ export function getFormState<T>(
       delete metadata[k].required;
     }
 
+    metadata[k]['theme'] = theme;
     return p;
   }, {});
   const schema = {
@@ -196,8 +206,9 @@ export async function getSimpleFormData<T>(
   onSet = (v: T, form: JSONSchemaFormState<T, UiSchema>) => {
     return v;
   },
+  theme: ThemeType = 'default'
 ) {
-  const form = getFormState({ data, metadata, onSet });
+  const form = getFormState({ data, metadata, onSet, theme });
   return getFormData<T>({
     ...config,
     //@ts-ignore

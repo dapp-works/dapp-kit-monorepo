@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import Provider from "./Provider";
 import React from "react";
 import { ModalSlots, SlotsToClasses } from "@nextui-org/react";
+import { getStyle, ThemeType } from "../../themes";
 
 export class ConfirmStore implements Store {
   sid = 'ConfirmStore';
@@ -13,9 +14,8 @@ export class ConfirmStore implements Store {
   description?: string = '';
   size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'xs' | '3xl' | '4xl' | '5xl' = 'md';
   className: string = '';
-  classNames?: SlotsToClasses<ModalSlots> = {
-    base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-  };
+  classNames?: SlotsToClasses<ModalSlots>;
+  theme: ThemeType = "default";
   cancelText?: string = 'Cancel';
   okText?: string = 'Apply';
 
@@ -32,7 +32,13 @@ export class ConfirmStore implements Store {
   onCancel() { }
 
   show(confirmProps: Partial<ConfirmStore>) {
-    Object.assign(this, confirmProps);
+    const modalStyle = getStyle(confirmProps?.theme || 'default', 'Modal');
+    const classNames = {
+      ...modalStyle.classNames,
+      ...confirmProps?.classNames
+    }
+    Object.assign(this, confirmProps, { classNames });
+
     this.toggleOpen(true);
   }
 
@@ -43,9 +49,5 @@ export class ConfirmStore implements Store {
     this.size = 'md';
     this.cancelText = 'Cancel';
     this.okText = 'Apply';
-    this.className = '';
-    this.classNames = {
-      base: 'dark:bg-[#09090B] border dark:border-[#2c2c2c] rounded-lg shadow-md',
-    };
   }
 }

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Checkbox, CheckboxProps } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
 import { Check } from "lucide-react";
 import { cn } from "../../../lib/utils";
+import { getStyle } from "../../../themes";
 
 type Options = {
   className?: string;
@@ -27,23 +28,27 @@ export function CheckboxWidget({
 }: CheckboxWidgetProps) {
   const {
     className,
-    nextuiClassNames = {
-      base: 'm-0 flex items-center justify-start w-full cursor-pointer rounded-lg gap-2 p-[13px] bg-transparent border dark:border-[#2c2c2c]',
-    },
+    nextuiClassNames,
     size = 'sm',
     color = 'primary',
     description,
     descriptionClassName,
   } = options;
-  const { validate } = uiSchema;
+  const { validate, theme } = uiSchema;
   const [errMsg, setErrMsg] = useState<string>('');
   const isInvalid = !!errMsg;
-
+  const classNames = useMemo(() => {
+    const themeStyle = getStyle(theme || 'default', 'CheckboxWidget');
+    return {
+      ...themeStyle.classNames,
+      ...nextuiClassNames
+    }
+  }, [theme, nextuiClassNames]);
   return (
     <>
       <Checkbox
         className={cn('w-full', className)}
-        classNames={nextuiClassNames}
+        classNames={classNames}
         defaultSelected={value}
         isDisabled={disabled}
         icon={<Check className="bg-white dark:bg-black" />}
