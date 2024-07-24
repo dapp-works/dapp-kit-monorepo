@@ -125,9 +125,9 @@ function DefaultRenderValue(
   }>,
 ) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1">
       {items.map((item) => (
-        <Chip color="secondary" size="sm" key={item.key}>
+        <Chip className="rounded-sm h-auto py-[2px] text-xs" color="secondary" size="sm" key={item.key}>
           {item.textValue}
         </Chip>
       ))}
