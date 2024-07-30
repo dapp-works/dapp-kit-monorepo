@@ -1,5 +1,4 @@
-import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient, AbiFunction, encodeFunctionData } from "viem";
-import md5 from "md5";
+import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient, AbiFunction, encodeFunctionData, Transport, Account } from "viem";
 import { iotex, mainnet, bsc, polygon, iotexTestnet } from "viem/chains";
 import TTLCache from "@isaacs/ttlcache";
 import { ClassType } from "./lib/interface";
@@ -166,7 +165,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     chainId: C,
     address: Addr,
     //@ts-ignore
-  ): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> {
+  ): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> & { encode: GetContractReturnType<Contracts[K], WalletClient<HttpTransport, Chain, Account, any>>["write"] } {
     const wallet = this.getWallet ? this.getWallet() : null;
     //@ts-ignore
     const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
@@ -204,6 +203,20 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }) {
     const handler = {
       get: (target: any, funcName: any) => {
+        if (funcName == 'encode') {
+          return new Proxy({}, {
+            get(t1, f1) {
+              return async (args: any) => {
+                return encodeFunctionData({
+                  abi,
+                  functionName: f1,
+                  args
+                })
+              }
+            }
+          });
+        }
+
         if (typeof target[funcName] === "function") {
           return async (...args: any[]) => {
             const methodConfig = this.funcMap?.[funcName as string];
@@ -247,7 +260,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   //@ts-ignore
-  static Get<TAbi extends Abi = any>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient): GetContractReturnType<TAbi, PublicClient<HttpTransport, Chain, any, any>> {
+  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient): ReturnType & { encode: ReturnType["write"] } {
     const aiem = this.init();
 
     const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
