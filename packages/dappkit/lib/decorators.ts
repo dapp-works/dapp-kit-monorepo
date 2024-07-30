@@ -41,7 +41,7 @@ export class Fields {
     };
   }
 
-  static contract<T = any, R = any>(entity: () => ClassType<R>, options: any) {
+  static contract<T = any, R = any>(entity: () => ClassType<R>, options: ((e: T) => any) | string) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
       Fields.setMetadata(target, propertyKey, { type: 'contract', entity, targetKey: options });
     };

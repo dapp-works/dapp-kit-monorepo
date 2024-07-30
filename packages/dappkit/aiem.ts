@@ -322,7 +322,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
             // return console.log(key, getFieldMetadata(obj, key))
             // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
             const fieldMetadata = getFieldMetadata(obj, key);
-
             let call: any;
             // console.log(key, fieldMetadata, instance)
             if (fieldMetadata) {
@@ -348,9 +347,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []));
                   break;
                 case "contract":
-                  // console.log(fieldMetadata)
-                  if (fieldMetadata.targetKey) {
-                    const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
+                  const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
+
+                  if (typeof fieldMetadata.targetKey == 'string') {
 
                     if (targetMetadata?.options?.ttl) {
                       //@ts-ignore
@@ -375,6 +374,12 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                             return this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId });
                           });
                     }
+                  } else {
+                    //@ts-ignore
+                    call = () => fieldMetadata.targetKey(instance).then((args) => {
+                      // console.log(args)
+                      return Array.isArray(args) ? this.QueryMany(fieldMetadata.entity(), sel[key])(args) : this.Query(fieldMetadata.entity(), sel[key])(args)
+                    })
                   }
                   break;
                 default:
@@ -429,7 +434,7 @@ export type Item<T> = T extends (infer U)[] ? U : T;
 //   never;
 
 type QuerySelect<E> = {
-  [K in keyof E]?: E[K] extends (...args: any[]) => any ? Parameters<E[K]> | true : E[K] extends object ? QuerySelect<E[K]> : true;
+  [K in keyof E]?: E[K] extends (...args: any[]) => any ? Parameters<E[K]> | true : E[K] extends object ? QuerySelect<Item<E[K]>> : true;
 };
 
 // type FunctionReturn<T> = T extends (...args: any[]) => any ? Awaited<ReturnType<T>> : T;
