@@ -332,12 +332,15 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         const fetchFields = async (obj: any, sel: any) => {
           const promises = [];
           for (const key in sel) {
+
             // return console.log(key, getFieldMetadata(obj, key))
             // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
             const fieldMetadata = getFieldMetadata(obj, key);
             let call: any;
             // console.log(key, fieldMetadata, instance)
-            if (fieldMetadata) {
+            if (sel[key] == false) {
+              call = async () => null
+            } else if (fieldMetadata) {
               switch (fieldMetadata.type) {
                 case "read":
                   if (Array.isArray(sel[key])) {
@@ -355,6 +358,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                     functionName: key,
                     args: sel[key],
                   });
+
                   break;
                 case "custom":
                   call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []));
@@ -398,8 +402,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                 default:
                   break;
               }
-            } else if (sel[key] === true) {
-              obj[key] = obj[key];
             }
 
             if (call) {
@@ -447,7 +449,7 @@ export type Item<T> = T extends (infer U)[] ? U : T;
 //   never;
 
 type QuerySelect<E> = {
-  [K in keyof E]?: E[K] extends (...args: any[]) => any ? Parameters<E[K]> | true : E[K] extends object ? QuerySelect<Item<E[K]>> : true;
+  [K in keyof E]?: E[K] extends (...args: any[]) => any ? Parameters<E[K]> | boolean : E[K] extends object ? QuerySelect<Item<E[K]>> : boolean;
 };
 
 // type FunctionReturn<T> = T extends (...args: any[]) => any ? Awaited<ReturnType<T>> : T;

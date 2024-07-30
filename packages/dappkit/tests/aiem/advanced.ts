@@ -1,4 +1,6 @@
-
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
 import { AIem } from '../../aiem';
 import { Fields } from '../../lib/decorators';
 import { ERC20, UniswapV2LPToken } from './abi';
@@ -12,6 +14,9 @@ class UniswapV2LPEntity {
   get contract() {
     return AIem.Get(UniswapV2LPToken, this.chainId, this.address)
   }
+
+  @Fields.read()
+  balanceOf: (address: any) => Promise<any>
 
   @Fields.read()
   totalSupply: any
@@ -75,8 +80,10 @@ class IERC20Entity extends ERC20Entity {
 
 
 const test = async () => {
+  let user = null
   const res = await AIem.Query(IUniswapV2LPEntity, {
     totalSupply: true,
+    balanceOf: user ? [user] : false,
     TokenMany: {
       _totalSupply: ["test"],
       _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
