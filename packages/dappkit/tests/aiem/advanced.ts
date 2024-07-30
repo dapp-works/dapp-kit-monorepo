@@ -73,7 +73,8 @@ class IERC20Entity extends ERC20Entity {
     const [value, decimals] = await Promise.all([this.contract.read.balanceOf([address]), this.contract.read.decimals()])
     return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
   }
-  foo() {
+  @Fields.custom()
+  async foo() {
     return 123
   }
 }
