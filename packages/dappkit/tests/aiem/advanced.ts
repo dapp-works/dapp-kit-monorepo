@@ -21,9 +21,6 @@ class UniswapV2LPEntity {
 
   @Fields.read()
   token0: any
-
-  @Fields.contract<UniswapV2LPEntity, ERC20Entity>(() => ERC20Entity, 'token0')
-  Token0: ERC20Entity
 }
 
 class ERC20Entity {
@@ -48,8 +45,15 @@ class ERC20Entity {
 }
 
 class IUniswapV2LPEntity extends UniswapV2LPEntity {
-  @Fields.contract<UniswapV2LPEntity, IERC20Entity>(() => IERC20Entity, 'token0')
+
+  @Fields.contract(() => IERC20Entity, 'token0')
   Token0: IERC20Entity
+
+  @Fields.contract(() => IERC20Entity, async (e: UniswapV2LPEntity) => ({ address: await e.contract.read.token0(), chainId: e.chainId }))
+  TokenOne: IERC20Entity
+
+  @Fields.contract(() => IERC20Entity, async (e: UniswapV2LPEntity) => ([{ address: await e.contract.read.token0(), chainId: e.chainId }]))
+  TokenMany: IERC20Entity[]
 }
 
 class IERC20Entity extends ERC20Entity {
@@ -73,7 +77,7 @@ class IERC20Entity extends ERC20Entity {
 const test = async () => {
   const res = await AIem.Query(IUniswapV2LPEntity, {
     totalSupply: true,
-    Token0: {
+    TokenMany: {
       _totalSupply: ["test"],
       _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
       approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
@@ -81,13 +85,13 @@ const test = async () => {
     }
   })({ address: "0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", chainId: "4689", })
 
-  console.log(res.Token0)
+  console.log(res)
 
 }
 
-setInterval(() => {
-  test()
-}, 100)
+// setInterval(() => {
+test()
+// }, 100)
 // const resArr = await AIem.QueryMany(IUniswapV2LPEntity, {
 //   totalSupply: true,
 //   Token0: {
