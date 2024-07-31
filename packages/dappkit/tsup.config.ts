@@ -29,6 +29,7 @@ export default defineConfig({
     "lodash-es",
     "bignumber.js",
     "lucide-react",
+    "viem"
   ],
   entry: {
     index: "index.ts",
