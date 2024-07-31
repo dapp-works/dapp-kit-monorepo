@@ -1,8 +1,12 @@
-import { type Chain, type GetContractReturnType, createPublicClient, getContract, http, type Abi, PublicClient, HttpTransport, WalletClient, AbiFunction, encodeFunctionData, Transport, Account } from "viem";
+import { type Chain, type GetContractReturnType, type Abi, type PublicClient, type HttpTransport, type WalletClient, type Transport, type Account } from "viem";
+import { encodeFunctionData } from "viem/utils/abi/encodeFunctionData"
+import { http } from "viem/clients/transports/http"
+import { getContract } from "viem/actions/getContract"
+import { createPublicClient } from "viem/clients/createPublicClient"
 import { iotex, mainnet, bsc, polygon, iotexTestnet } from "viem/chains";
 import TTLCache from "@isaacs/ttlcache";
 import { ClassType } from "./lib/interface";
-import { Fields, getFieldMetadata } from "./lib/decorators";
+import { getFieldMetadata } from "./lib/decorators";
 import { helper } from "./utils";
 import BigNumber from "bignumber.js";
 
@@ -143,8 +147,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   //     })
   // }
 
-  static PubClient(chainId: string) {
-    return this.init().PubClient(chainId);
+  static PubClient(chainId: string): PublicClient<HttpTransport, Chain, any, any> {
+    //@ts-ignore
+    return this.init().PubClient(chainId)
   }
 
   PubClient<C extends keyof Chains>(chainId: C): PublicClient<HttpTransport, Chain, any, any> {
@@ -154,8 +159,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       return createPublicClient({
         //@ts-ignore
         chain: this.chainMap[chainId],
+        //@ts-ignore
         transport: http(),
-      }) as PublicClient<HttpTransport, Chain, any, any>;
+      })
     });
   }
 
