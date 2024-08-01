@@ -1,8 +1,4 @@
-import { type Chain, type GetContractReturnType, type Abi, type PublicClient, type HttpTransport, type WalletClient, type Transport, type Account } from "viem";
-import { encodeFunctionData } from "viem/utils/abi/encodeFunctionData"
-import { http } from "viem/clients/transports/http"
-import { getContract } from "viem/actions/getContract"
-import { createPublicClient } from "viem/clients/createPublicClient"
+import { type Chain, type GetContractReturnType, type Abi, type PublicClient, type HttpTransport, type WalletClient, type Transport, type Account, encodeFunctionData, http, getContract, createPublicClient } from "viem";
 import { iotex, mainnet, bsc, polygon, iotexTestnet } from "viem/chains";
 import TTLCache from "@isaacs/ttlcache";
 import { ClassType } from "./lib/interface";
@@ -11,7 +7,21 @@ import { helper } from "./utils";
 import BigNumber from "bignumber.js";
 
 //@ts-ignore
-mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"];
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
+
+iotexTestnet.contracts = {
+  multicall3: {
+    address: '0xb5cecd6894c6f473ec726a176f1512399a2e355d',
+    blockCreated: 24347592,
+  },
+},
+
+
+  //@ts-ignore
+  mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"];
 //@ts-ignore
 mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"];
 
@@ -159,6 +169,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       return createPublicClient({
         //@ts-ignore
         chain: this.chainMap[chainId],
+        batch: {
+          multicall: true
+        },
         //@ts-ignore
         transport: http(),
       })
