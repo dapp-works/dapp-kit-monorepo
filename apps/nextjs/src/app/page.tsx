@@ -2,22 +2,169 @@
 
 import "~/store/index";
 
-import { observer } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { StoragePlugin } from "@dappworks/kit/experimental";
-import { Button } from "@nextui-org/react";
+import { Button, Card } from "@nextui-org/react";
 import { DeviceDetectStore } from "../store/deviceDetect";
 import { JSONTable } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { Copy } from '@dappworks/kit/ui';
-import { RootStore } from "@dappworks/kit";
+import { PromiseState, RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "./components/ThemeSwitcher";
-import { DialogStore } from "@dappworks/kit/plugins";
+import { DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
+import { useMemo } from "react";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
     console.log('test.inputValue onset', v);
   }
+});
+
+const PromiseStateGroupTest = observer(() => {
+  const promiseStateGroup = useMemo(() => {
+    const ps1 = new PromiseState({
+      function: async () => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(1);
+          }, 2000);
+        });
+      }
+    });
+    const ps2 = new PromiseState({
+      function: async () => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            reject(new Error('2'));
+          }, 2000);
+        });
+      }
+    });
+    const ps3 = new PromiseState({
+      function: async () => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(3);
+          }, 2000);
+        });
+      }
+    });
+    const promiseStateGroup = new PromiseStateGroup({
+      group: [ps1, ps2, ps3],
+      groupOptions: [
+        {
+          title: '====P1===='
+        },
+        {
+          title: '====P2===='
+        },
+        {
+          title: '====P3===='
+        }
+      ]
+    });
+    return promiseStateGroup;
+  }, [])
+  return (
+    <Card className="my-4 p-4">
+      <div className="mb-4">PromiseStateGroup Test</div>
+      {promiseStateGroup.render()}
+      <div className="mt-4 flex items-center space-x-2">
+        <Button
+          color="primary"
+          size="sm"
+          onClick={async () => {
+            promiseStateGroup.onPrevious();
+          }}
+        >
+          Pre Step
+        </Button>
+        <Button
+          color="primary"
+          size="sm"
+          onClick={async () => {
+            const res = await promiseStateGroup.stepCall(promiseStateGroup.currentCallStepNo);
+            console.log('Current Step Call:', res);
+            if (!res.errMsg) {
+              promiseStateGroup.onNext();
+            }
+          }}
+        >
+          Step Call
+        </Button>
+        <Button
+          color="primary"
+          size="sm"
+          onClick={async () => {
+            const res = await promiseStateGroup.call();
+            console.log('PromiseStateGroup Call:', res);
+          }}
+        >
+          Auto Next
+        </Button>
+        <Button
+          color="primary"
+          size="sm"
+          onClick={async () => {
+            const ps1 = new PromiseState({
+              function: async () => {
+                return new Promise((resolve) => {
+                  setTimeout(() => {
+                    resolve(1);
+                  }, 2000);
+                });
+              }
+            });
+            const ps2 = new PromiseState({
+              function: async () => {
+                return new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    resolve(3);
+                  }, 2000);
+                });
+              }
+            });
+            const promiseStateGroup = new PromiseStateGroup({
+              group: [ps1, ps2],
+              groupOptions: [
+                {
+                  title: '====P1===='
+                },
+                {
+                  title: '====P2===='
+                },
+              ]
+            });
+            const res = await promiseStateGroup
+              .showDialog(
+                {
+                  title: 'PromiseStateGroup Dialog',
+                  size: 'sm',
+                  // classNames: {
+                  //   base: 'bg-[#000] text-white border border-[#f9f9f9]',
+                  // }
+                },
+                {
+                  className: 'pb-4',
+                  spinnerProps: {
+                    size: 'sm',
+                    color: 'success'
+                  },
+                  // SuccessIcon: <Check size={20} color="#fff" />,
+                  // FailureIcon: <X size={20} color="#fff" />
+                }
+              )
+              .call();
+
+            console.log('PromiseStateGroup Call:', res);
+          }}
+        >
+          Show Dialog
+        </Button>
+      </div>
+    </Card>
+  )
 });
 
 const HomePage = observer(() => {
@@ -141,6 +288,9 @@ const HomePage = observer(() => {
   return (
     <div className="p-4 w-full lg:w-[900px] mx-auto">
       <ThemeSwitcher />
+
+      <PromiseStateGroupTest />
+
       <JSONTable
         className="my-4 h-auto"
         classNames={{
