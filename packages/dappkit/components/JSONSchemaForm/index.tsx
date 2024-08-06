@@ -14,6 +14,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { cn } from "../../lib/utils";
 import { JSONSchemaFormState } from "../../store/standard/JSONSchemaState";
+import { toJS } from "mobx";
 
 function FieldTemplate(props: FieldTemplateProps) {
   const { id, classNames, label, help, required, description, errors, children, schema, uiSchema } = props;
@@ -151,7 +152,7 @@ export const JSONSchemaForm = observer(({ children, formState }: Props) => {
         ErrorListTemplate,
         ButtonTemplates: { SubmitButton },
       }}
-      formData={formState.formData}
+      formData={toJS(formState.formData)}
       readonly={formState.readonly}
       uiSchema={formState.uiSchema}
       schema={formState.schema}

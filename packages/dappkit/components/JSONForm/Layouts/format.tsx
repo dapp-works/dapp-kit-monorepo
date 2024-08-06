@@ -9,7 +9,7 @@ import { MultipleSelectWidget } from "../../../components/JSONFormWidgets/Multip
 import { EditorWidget } from '../../../components/JSONFormWidgets/EditorWidget';
 import {
   JSONSchemaFormState,
-  JSONValue,
+  JSONSchemaValue,
 } from "../../../store/standard/JSONSchemaState";
 import { helper } from "../../../lib/helper";
 import { cn } from "../../../lib/utils";
@@ -102,7 +102,7 @@ export const getFormState = <T,>(
       required,
     };
     const form = new JSONSchemaFormState({
-      //@ts-ignore
+      // @ts-ignore
       schema,
       uiSchema: {
         "ui:submitButtonOptions": {
@@ -116,20 +116,19 @@ export const getFormState = <T,>(
       // },
       afterChange: (e, id) => {
         const { formData } = e;
-        if (formData) {
+        if (formData && id) {
           const field = id.replace('root_', '');
           const data = {
             [key]: {
               [field]: formData[field],
             }
           };
-          //@ts-ignore
+          // @ts-ignore
           onChange?.(data);
         }
       },
-      value: new JSONValue({
-        default: value,
-        //@ts-ignore
+      value: new JSONSchemaValue({
+        default: value as FormDataOfKey<T>,
         onSet: (v) => {
           if (onSet) {
             return onSet(v as FormDataOfKey<T>, form);

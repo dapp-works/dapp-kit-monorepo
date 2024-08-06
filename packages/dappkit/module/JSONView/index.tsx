@@ -1,4 +1,4 @@
-import React from "react";
+import React, { HTMLAttributeAnchorTarget } from "react";
 import { _ } from "../../lib/lodash";
 import { RootStore } from "../../store";
 import { Store } from "../../store/standard/base";
@@ -14,7 +14,7 @@ export type JSONViewType = {
     slots?: Record<string, any>;
     [key: string]: any;
   };
-  uiConfigs?: Record<string, JSONViewType["uiConfig"]>;
+  uiConfigs?: Record<string, JSONViewType['uiConfig']>;
 };
 
 export type JSONDataType = {
@@ -22,35 +22,31 @@ export type JSONDataType = {
   icon?: any;
   render?: any;
   className?: string;
-  type?: "divider" | "checkbox" | "label" | "radio";
+  type?: 'divider' | 'checkbox' | 'label' | 'radio';
   shortcut?: string;
   disabled?: boolean;
   children?: Record<string, JSONDataType>;
   value?: any;
   link?: any;
+  target?: HTMLAttributeAnchorTarget;
+  needAuth?: boolean;
   events?: Record<string, any>;
   onChange?: (args: { e: any; v: any }) => void;
   onClick?: (args: { e: any; v: any }) => void;
 };
 
 export class JSONViewPlugin implements Store {
-  sid = "JSONViewPlugin";
+  sid = 'JSONViewPlugin';
   autoObservable?: boolean = false;
 
   JSONView = {
     Test: {
-      name: "Test",
+      name: 'Test',
       render: () => <div>Test</div>,
     },
   };
 
-  onNewStore({
-    rootStore,
-    store,
-  }: {
-    rootStore: RootStore<any>;
-    store: Store;
-  }): void {
+  onNewStore({ rootStore, store }: { rootStore: RootStore<any>; store: Store }): void {
     this.crawl(store);
   }
 
@@ -65,21 +61,15 @@ export class JSONViewPlugin implements Store {
 
     return (
       <>
-        {/* @ts-ignore  */}
         {Object.keys(props.uiConfigs).map((key) => {
-          /* @ts-ignore  */
           const config = props.uiConfigs[key] as any;
           const data = _.get(props.datas, key);
           const Component = jsonviewplugin.JSONView[config.type].render;
           const rootStore = RootStore.init();
-          Object.values(data).forEach((i) => {
-            /* @ts-ignore  */
+          Object.values(data).forEach((i: any) => {
             if (i.events) {
-              /* @ts-ignore  */
               Object.entries(i.events).forEach(([k, v]) => {
-                // @ts-ignore 
-                i[k] = (args) =>
-                  rootStore.events.emit(v as any, { ...args, action: k });
+                i[k] = (args) => rootStore.events.emit(v as any, { ...args, action: k });
               });
             }
           });

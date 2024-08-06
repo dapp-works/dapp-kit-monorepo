@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UiSchema } from "@rjsf/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { FormDataType, FormLayoutType, JSONFormProps, LayoutConfigType } from "..";
+import { FormDataType, JSONFormProps, LayoutConfigType } from "..";
 import { JSONSchemaForm } from "../../../components/JSONSchemaForm";
 import { cn } from "../../../lib/utils";
 import { JSONSchemaFormState } from "../../../store/standard/JSONSchemaState";
@@ -49,11 +49,17 @@ export const ListLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
       {Object.keys(formStates).map((key) => {
         const layout = formLayout[key];
         const formState = formStates[key];
-        return <CollapsibleBox
-          key={key} formKey={key} title={layout?.title || key} titleBoxCss={layout?.titleBoxCss} formState={formState}
-          submitButtonProps={layout?.submitButtonProps}
-          customButtonProps={layout?.customButtonProps}
-        />;
+        return (
+          <CollapsibleBox
+            key={key}
+            formKey={key}
+            title={layout?.title || key}
+            titleBoxCss={layout?.titleBoxCss}
+            formState={formState}
+            submitButtonProps={layout?.submitButtonProps}
+            customButtonProps={layout?.customButtonProps}
+          />
+        );
       })}
       {(onBatchSubmit || batchSubmitButtonProps?.onBatchSubmit) && (
         <div className="w-full flex">
