@@ -29,7 +29,7 @@ export default defineConfig({
     "lodash-es",
     "bignumber.js",
     "lucide-react",
-    "viem"
+    "viem",
   ],
   entry: {
     index: "index.ts",
@@ -42,6 +42,6 @@ export default defineConfig({
     jsontable: "jsontable.ts",
     experimental: "experimental.ts",
     aiem: "aiem.ts",
-    utils: "utils.ts"
+    utils: "utils.ts",
   },
 });

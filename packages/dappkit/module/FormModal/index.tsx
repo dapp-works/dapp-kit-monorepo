@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { Store } from "../../store/standard/base";
 import {
   JSONSchemaFormState,
-  JSONValue,
+  JSONSchemaValue,
 } from "../../store/standard/JSONSchemaState";
 import Provider from "./Provider";
 import { SelectWidget } from "../../components/JSONFormWidgets/SelectWidget";
@@ -190,9 +190,8 @@ export function getFormState<T>(
         formModal.event.emit('afterSubmit', e.formData);
       }
     },
-    value: new JSONValue({
+    value: new JSONSchemaValue({
       default: value,
-      //@ts-ignore
       onSet: (v: T) => onSet(v, form),
     }),
   });

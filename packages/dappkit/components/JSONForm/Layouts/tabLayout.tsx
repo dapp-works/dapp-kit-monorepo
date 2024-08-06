@@ -47,12 +47,8 @@ export const TabLayout = <T extends FormDataType>(props: JSONFormProps<T>) => {
             className={cn('mt-4', selectedTab === key ? '' : 'hidden')}
           >
             <JSONSchemaForm formState={formStates[key]}>
-              {layout?.submitButtonProps
-                &&
-                <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
-              {layout?.customButtonProps
-                &&
-                <CustomButton formKey={key} formState={formStates[key]} buttonProps={layout.customButtonProps} />}
+              {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+              {layout?.customButtonProps && <CustomButton formKey={key} formState={formStates[key]} buttonProps={layout.customButtonProps} />}
             </JSONSchemaForm>
           </div>
         );

@@ -12,7 +12,7 @@ export type LayoutType = 'TabLayout' | 'GridLayout' | 'ListLayout' | 'SimpleLayo
 
 export type FieldLayoutType<T, F extends keyof T> = Array<keyof NonNullable<T[F]>> | Array<Array<keyof NonNullable<T[F]>> | keyof NonNullable<T[F]>>;
 
-type customButtonProps<T> = ({ title: string, onClick: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void } & ButtonProps)[]
+type CustomButtonProps<T> = ({ title: string, onClick: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void } & ButtonProps)[];
 
 export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'SimpleLayout'
   ? {
@@ -20,8 +20,8 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
       title?: string;
       titleBoxCss?: string;
       fieldLayout?: FieldLayoutType<T, F>;
-      customButtonProps?: customButtonProps<T>
       submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
+      customButtonProps?: CustomButtonProps<T>;
     };
   }
   : L extends 'GridLayout'
@@ -32,8 +32,8 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
       fieldLayout?: FieldLayoutType<T, F>;
       colSpan?: number;
       cardCss?: string;
-      customButtonProps?: customButtonProps<T>
       submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
+      customButtonProps?: CustomButtonProps<T>;
     };
   }
   : never;
