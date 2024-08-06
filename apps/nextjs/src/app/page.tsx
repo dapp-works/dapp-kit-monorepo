@@ -484,15 +484,20 @@ const HomePage = observer(() => {
             setLoading(false);
           },
         }}
-        // onSet={(v, form) => {
-        //   console.log('[GridLayout onSet]', v, form);
-        //   return v;
-        // }}
-        onChange={(data) => {
-          console.log('[GridLayout onChange]', data);
+        onSet={(v, form) => {
+          console.log('[GridLayout onSet]', v, form);
+          // @ts-ignore
+          if (v.name && v.name !== form.formData.name) {
+            // @ts-ignore
+            v.phone = v.name;
+          }
+          return v;
         }}
+      // onChange={(data) => {
+      //   console.log('[GridLayout onChange]', data);
+      // }}
       />
-
+      {/* 
       <JSONForm
         className="mt-10"
         // theme="primary"
@@ -523,7 +528,7 @@ const HomePage = observer(() => {
           await new Promise((resolve) => setTimeout(resolve, 2000));
           setLoading(false);
         }}
-      />
+      /> */}
 
       {/* <JSONForm
         className="mt-10"
@@ -596,7 +601,7 @@ const HomePage = observer(() => {
           // },
         }}
       /> */}
-
+      {/* 
       <JSONForm
         className="mt-10"
         formData={formData}
@@ -605,7 +610,7 @@ const HomePage = observer(() => {
         onBatchSubmit={(data) => {
           console.log('[SimpleLayout onBatchSubmit]:', data);
         }}
-      />
+      /> */}
 
       <div className="flex items-center gap-2">
         <Button
@@ -688,7 +693,6 @@ const HomePage = observer(() => {
           chartClassName: 'h-[200px]',
         }}
       />
-      <Copy value="Copy test" iconSize={18} iconClassName="text-red-500" />
     </div>
   );
 })

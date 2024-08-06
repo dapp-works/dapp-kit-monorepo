@@ -21,7 +21,9 @@ export const SimpleLayout = <T extends FormDataType>(props: JSONFormProps<T>) =>
           const layout = formLayout[key];
           return (
             <div key={key} id={`form-${key}`}>
-              <JSONSchemaForm formState={formStates[key]}>{layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}</JSONSchemaForm>
+              <JSONSchemaForm formState={formStates[key]}>
+                {layout?.submitButtonProps && <SubmitButton formKey={key} formState={formStates[key]} buttonProps={layout.submitButtonProps} />}
+              </JSONSchemaForm>
             </div>
           );
         })}

@@ -3,18 +3,17 @@ import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { action, computed, makeObservable, observable, toJS } from "mobx";
-
 import { helper } from "../../lib/helper";
 
 export class JSONSchemaFormState<T, U = UiSchema> {
   formRef: LegacyRef<Form<any, RJSFSchema, any>> & Ref<Form<any, RJSFSchema, any>>;
-  value: JSONValue<T> = new JSONValue();
+  value: JSONSchemaValue<T> = new JSONSchemaValue();
   schema: RJSFSchema;
   uiSchema: U;
   reactive: boolean = true;
   readonly = false;
   liveValidate = false;
-  validator = validator
+  validator = validator;
 
   get formData() {
     return this.value.get();
@@ -28,7 +27,7 @@ export class JSONSchemaFormState<T, U = UiSchema> {
   getDymaicData = () => {
     return { ready: true };
   };
-  onChange = (e: IChangeEvent<T>, id: string) => {
+  onChange = (e: IChangeEvent<T>, id?: string) => {
     this.value.set(e.formData);
     if (this.afterChange) {
       this.afterChange(e, id);
@@ -40,7 +39,7 @@ export class JSONSchemaFormState<T, U = UiSchema> {
     }
   };
   afterSubmit: (e: IChangeEvent<T>) => void;
-  afterChange: (e: IChangeEvent<T>, id: string) => void;
+  afterChange: (e: IChangeEvent<T>, id?: string) => void;
   reset({ force = false } = {}) {
     if (force) {
       this.value.value = this.value.default;
@@ -50,12 +49,10 @@ export class JSONSchemaFormState<T, U = UiSchema> {
     return this;
   }
   customValidate = (formData: T, errors: any) => errors;
-
   constructor(args: Partial<JSONSchemaFormState<T, U>> = {}) {
     const formRef = createRef();
     Object.assign(this, args, { formRef });
     if (this.reactive) {
-      //@ts-ignore
       makeObservable(this, {
         formData: computed,
       });
@@ -63,7 +60,7 @@ export class JSONSchemaFormState<T, U = UiSchema> {
   }
 }
 
-export abstract class JSONSchemaValue<T> {
+export class JSONSchemaValue<T> {
   value?: T = null as T;
   default?: T = null as T;
   constructor(args: Partial<JSONSchemaValue<T>> = {}) {
@@ -76,7 +73,7 @@ export abstract class JSONSchemaValue<T> {
       set: action,
     });
   }
-  set(value: Partial<T>, { onSet = true } = {}) {
+  set(value: Partial<T>) {
     value = this.onSet(value);
     const newVal = helper.deepMerge(this.value, value);
     this.value = toJS(newVal);
@@ -93,11 +90,5 @@ export abstract class JSONSchemaValue<T> {
   }
   reset() {
     this.set(this.default);
-  }
-}
-
-export class JSONValue<T> extends JSONSchemaValue<T> {
-  constructor(args: Partial<JSONValue<T>> = {}) {
-    super(args);
   }
 }
