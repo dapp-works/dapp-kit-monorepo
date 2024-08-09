@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable } from "mobx";
 
 export class StorageState<T> {
   key: string;
@@ -27,8 +27,8 @@ export class StorageState<T> {
       }
       return this.value;
     } catch (error) {
-      console.error(error)
-      return null
+      console.error(error);
+      return null;
     }
   }
 
@@ -39,8 +39,8 @@ export class StorageState<T> {
       }
       window?.localStorage.setItem(this.key, JSON.stringify(value));
     } catch (error) {
-      console.error(error)
-      return null
+      console.error(error);
+      return null;
     }
   }
 
@@ -52,7 +52,7 @@ export class StorageState<T> {
     try {
       localStorage.removeItem(this.key);
     } catch (error) {
-      return null
+      return null;
     }
   }
 }

@@ -13,7 +13,7 @@ import { Copy } from '@dappworks/kit/ui';
 import { PromiseState, RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import { DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -285,6 +285,7 @@ const HomePage = observer(() => {
       },
     },
   };
+
   return (
     <div className="p-4 w-full lg:w-[900px] mx-auto">
       <ThemeSwitcher />
@@ -445,7 +446,75 @@ const HomePage = observer(() => {
             //     await new Promise((resolve) => setTimeout(resolve, 2000));
             //     setLoading(false);
             //   },
-            // },
+
+            customRender: {
+              Top: (formKey, formState) => {
+                console.log('[GridLayout Top]===>', formKey, formState);
+                return (
+                  <div className="mb-2 flex items-center gap-2">
+                    <Button
+                      color="primary"
+                      size="sm"
+                      onClick={() => {
+                        console.log('Top Button Click');
+                      }}
+                    >
+                      Top Button
+                    </Button>
+                  </div>
+                )
+              },
+              SubmitButtonAfter(formKey, formState) {
+                console.log('[GridLayout SubmitButtonAfter]===>', formKey, formState);
+
+                const CustomButton = ({ className, children, onClick, ...rest }) => {
+                  const [loading, setLoading] = useState(false);
+                  return (
+                    <Button
+                      className={className}
+                      type="submit"
+                      color="primary"
+                      size="sm"
+                      isLoading={loading}
+                      onClick={() => {
+                        const formData = formState.formRef.current?.state.formData;
+                        onClick?.(formKey, formData, setLoading);
+                      }}
+                      {...rest}
+                    >
+                      {children}
+                    </Button>
+                  )
+                }
+
+                const buttonPropsList = [
+                  {
+                    className: '',
+                    children: 'test1',
+                    onClick: async (formKey, formData, setLoading) => {
+                      console.log('click test1:', formKey, formData);
+                      setLoading(true);
+                      await new Promise((resolve) => setTimeout(resolve, 2000));
+                      setLoading(false);
+                    }
+                  },
+                  {
+                    className: '',
+                    children: 'test2',
+                    onClick: (formKey, formData, setLoading) => { console.log('click test2') }
+                  }
+                ]
+
+                return (
+                  <div className="mt-2 flex items-center gap-2">
+                    {buttonPropsList.map((item, index) => {
+                      return <CustomButton key={index} className={item.className} onClick={item.onClick}>{item.children}</CustomButton>
+                    })}
+                  </div>
+                )
+              }
+            },
+
           },
           // Optional field
           extraInfo: {
@@ -497,7 +566,7 @@ const HomePage = observer(() => {
       //   console.log('[GridLayout onChange]', data);
       // }}
       />
-      {/* 
+
       <JSONForm
         className="mt-10"
         // theme="primary"
@@ -528,9 +597,9 @@ const HomePage = observer(() => {
           await new Promise((resolve) => setTimeout(resolve, 2000));
           setLoading(false);
         }}
-      /> */}
+      />
 
-      {/* <JSONForm
+      <JSONForm
         className="mt-10"
         theme="primary"
         formData={formData}
@@ -567,23 +636,10 @@ const HomePage = observer(() => {
           },
         }}
         layoutConfig={{
-          $type: 'GridLayout',
-          $gridColumn: 1,
+          $type: 'ListLayout',
           personalInfo: {
-            title: 'Personal Information2',
-            customButtonProps: [
-              {
-                title: 'test',
-                onClick: async (key, data, setLoading) => {
-                  console.log('[GridLayout onBatchSubmit]:', key, data);
-                  setLoading(true);
-                  await new Promise((resolve) => setTimeout(resolve, 2000));
-                  setLoading(false);
-                }
-              },
-              {
-                title: 'test2', onClick: () => { console.log('click') }
-              }],
+            title: 'Personal Information',
+            titleBoxCss: 'font-bold text-red-500',
             submitButtonProps: {
               className: 'mx-auto',
               color: 'secondary',
@@ -595,12 +651,12 @@ const HomePage = observer(() => {
               ),
             }
           },
-          // extraInfo: {
-          //   title: 'Extra Information2',
-          //   titleBoxCss: 'font-bold text-red-500',
-          // },
+          extraInfo: {
+            title: 'Extra Information',
+            titleBoxCss: 'font-bold text-red-500',
+          },
         }}
-      /> */}
+      />
       {/* 
       <JSONForm
         className="mt-10"

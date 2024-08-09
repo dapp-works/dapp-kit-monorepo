@@ -1,4 +1,3 @@
-
 import { Store } from '../../../store/standard/base';
 
 export class Collection<T = any> implements Store {
