@@ -157,9 +157,9 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
         const message = error.message;
         if (message.includes("UNAUTHORIZED")) {
           toast.dismiss();
-          toast.error(message, {
-            id: "UNAUTHORIZED",
-          });
+          // toast.error(message, {
+          //   id: "UNAUTHORIZED",
+          // });
           this.signOut?.();
         } else {
           this.errMsg = message;
