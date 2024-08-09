@@ -12,7 +12,23 @@ export type LayoutType = 'TabLayout' | 'GridLayout' | 'ListLayout' | 'SimpleLayo
 
 export type FieldLayoutType<T, F extends keyof T> = Array<keyof NonNullable<T[F]>> | Array<Array<keyof NonNullable<T[F]>> | keyof NonNullable<T[F]>>;
 
-type CustomButtonProps<T> = ({ title: string, onClick: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void } & ButtonProps)[];
+type SubmitButtonProps<T> = ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
+
+type CombFormsCustomRender<T> = (formStates: { [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema> }) => React.ReactNode;
+
+type CombFormsCustomRenderMap<T> = {
+  Top?: CombFormsCustomRender<T>;
+  SubmitButtonBefore?: CombFormsCustomRender<T>;
+  SubmitButtonAfter?: CombFormsCustomRender<T>;
+}
+
+type SubformCustomRender<T> = (formKey: FormKey<T>, formState: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>) => React.ReactNode;
+
+type SubformCustomRenderMap<T> = {
+  Top?: SubformCustomRender<T>;
+  SubmitButtonBefore?: SubformCustomRender<T>;
+  SubmitButtonAfter?: SubformCustomRender<T>;
+}
 
 export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'SimpleLayout'
   ? {
@@ -20,8 +36,8 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
       title?: string;
       titleBoxCss?: string;
       fieldLayout?: FieldLayoutType<T, F>;
-      submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
-      customButtonProps?: CustomButtonProps<T>;
+      submitButtonProps?: SubmitButtonProps<T>;
+      customRender?: SubformCustomRenderMap<T>;
     };
   }
   : L extends 'GridLayout'
@@ -32,20 +48,20 @@ export type FormLayoutType<T, L> = L extends 'TabLayout' | 'ListLayout' | 'Simpl
       fieldLayout?: FieldLayoutType<T, F>;
       colSpan?: number;
       cardCss?: string;
-      submitButtonProps?: ButtonProps & { onAfterSubmit?: (formKey: FormKey<T>, data: FormDataOfKey<T>, setLoading: Dispatch<SetStateAction<boolean>>) => void };
-      customButtonProps?: CustomButtonProps<T>;
+      submitButtonProps?: SubmitButtonProps<T>;
+      customRender?: SubformCustomRenderMap<T>;
     };
   }
   : never;
 
 export type LayoutConfigType<T, L> = L extends 'TabLayout'
-  ? { $type: 'TabLayout'; $tabsProps?: TabsProps } & FormLayoutType<T, L>
+  ? { $type: 'TabLayout'; $tabsProps?: TabsProps; $combFormsCustomRender?: CombFormsCustomRenderMap<T> } & FormLayoutType<T, L>
   : L extends 'GridLayout'
-  ? { $type: 'GridLayout'; $gridColumn?: number; } & FormLayoutType<T, L>
+  ? { $type: 'GridLayout'; $gridColumn?: number; $combFormsCustomRender?: CombFormsCustomRenderMap<T> } & FormLayoutType<T, L>
   : L extends 'ListLayout'
-  ? { $type: 'ListLayout' } & FormLayoutType<T, L>
+  ? { $type: 'ListLayout'; $combFormsCustomRender?: CombFormsCustomRenderMap<T> } & FormLayoutType<T, L>
   : L extends 'SimpleLayout'
-  ? { $type: 'SimpleLayout' } & FormLayoutType<T, L>
+  ? { $type: 'SimpleLayout'; $combFormsCustomRender?: CombFormsCustomRenderMap<T> } & FormLayoutType<T, L>
   : never;
 
 export type FormDataType = {

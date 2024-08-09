@@ -249,7 +249,7 @@ export const helper = {
           isZero: true,
         };
       }
-      const BigNumberResponse = { value: new BigNumber(value), decimals }
+      const BigNumberResponse = { value: new BigNumber(value), decimals };
       return {
         value: BigNumberResponse.value.toFixed(0),
         originFormat: BigNumberResponse.value.div(10 ** decimals).toFixed(),
@@ -314,7 +314,7 @@ export const helper = {
         if (addressMode == "io" && helper.address.validateEthAddress(address)) {
           return from(address).string();
         }
-      } catch (error) { }
+      } catch (error) {}
       return address;
     },
     validateEthAddress: (address: string) => /^0x[a-fA-F0-9]{40}$/.test(address),

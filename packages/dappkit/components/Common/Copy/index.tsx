@@ -1,11 +1,19 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import copyToClipboard from "copy-to-clipboard";
 import { Copy as CopyIcon, CopyCheck } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
-export const Copy = ({ className = '', value, iconSize = 20, iconClassName = '' }: { className?: string; value: string; iconSize?: number, iconClassName?: string }) => {
+export const Copy = ({
+  className = '',
+  value,
+  iconSize = 20,
+  iconClassName = ''
+}: {
+  className?: string;
+  value: string;
+  iconSize?: number,
+  iconClassName?: string
+}) => {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (copied) {

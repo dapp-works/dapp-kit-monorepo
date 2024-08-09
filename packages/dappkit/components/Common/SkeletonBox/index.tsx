@@ -1,27 +1,30 @@
-
-import { Skeleton } from '@nextui-org/react';
+import { Skeleton, SlotsToClasses } from '@nextui-org/react';
 import React from 'react';
 import { cn } from '../../../lib/utils';
 
-export interface SkeletonBox {
+export const SkeletonBox = ({
+  line,
+  className,
+  skClassName,
+  skClassNames = {
+    base: 'transition-background !duration-900 before:transition-opacity before:!duration-900',
+    content: 'transition-opacity motion-reduce:transition-none !duration-900',
+  }
+}: {
   line?: number;
-  skClassName: string;
-}
-
-export const SkeletonBox = ({ line, skClassName, className }: SkeletonBox & { skClassName?: string; className?: string }) => {
+  className?: string;
+  skClassName?: string;
+  skClassNames?: SlotsToClasses<"base" | "content">
+}) => {
   const lineCamp = [...new Array(line || 1).keys()];
-
   return (
     <div className={cn('flex items-center gap-4', className)}>
       {lineCamp.map((_, index) => {
         return (
           <Skeleton
             key={index}
-            classNames={{
-              base: 'transition-background !duration-700 before:transition-opacity before:!duration-700',
-              content: 'transition-opacity motion-reduce:transition-none !duration-700',
-            }}
             className={cn('w-full h-10', skClassName)}
+            classNames={skClassNames}
           />
         );
       })}
