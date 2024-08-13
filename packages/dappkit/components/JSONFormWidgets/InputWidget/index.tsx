@@ -17,6 +17,8 @@ type Options = {
   startContent?: ReactNode;
   endContent?: ReactNode;
   description?: string;
+  min?: number;
+  max?: number;
 };
 
 export interface InputWidgetProps extends WidgetProps {
@@ -42,6 +44,8 @@ export function InputWidget(props: InputWidgetProps) {
     startContent,
     endContent,
     description,
+    min,
+    max
   } = options;
   const { requiredErrMsg, validate, theme } = uiSchema;
   const placeholder = uiSchema['ui:options']?.placeholder;
@@ -72,6 +76,8 @@ export function InputWidget(props: InputWidgetProps) {
       startContent={startContent}
       endContent={endContent}
       onChange={(e) => onChange(e.target.value)}
+      min={min}
+      max={max}
       validate={() => {
         if (isFirstChecked.current) {
           isFirstChecked.current = false;
