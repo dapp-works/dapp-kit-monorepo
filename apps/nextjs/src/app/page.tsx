@@ -530,6 +530,19 @@ const HomePage = observer(() => {
             //   },
             // },
           },
+
+          // $combFormsCustomRender: {
+          //   Top: (formStates) => {
+          //     return 'Top';
+          //   },
+          //   SubmitButtonBefore: (formStates) => {
+          //     return 'SubmitButtonBefore';
+          //   },
+          //   SubmitButtonAfter: (formStates) => {
+          //     return 'SubmitButtonAfter';
+          //   },
+          // }
+
         }}
         // onBatchSubmit={async (data, setLoading) => {
         //   console.log('[GridLayout onBatchSubmit]', data);
