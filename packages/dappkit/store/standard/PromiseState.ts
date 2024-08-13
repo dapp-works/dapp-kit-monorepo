@@ -141,6 +141,22 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     this.event.emit("update");
   }
 
+  async getOrCall(...args: Parameters<T>): Promise<Awaited<U>> {
+    if (this.value) {
+      if (Array.isArray(this.value)) {
+        if (this.value.length > 0) {
+          return this.value;
+        } else {
+          return this.call(...args);
+        }
+      } else {
+        return this.value;
+      }
+    } else {
+      return this.call(...args);
+    }
+  }
+
   async call(...args: Parameters<T>): Promise<Awaited<U>> {
     const toast = RootStore.Get(ToastPlugin);
     try {
