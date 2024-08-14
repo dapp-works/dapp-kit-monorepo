@@ -2,7 +2,7 @@ import { Store } from "../../store/standard/base";
 import { makeAutoObservable } from "mobx";
 import Provider from "./Provider";
 import React from "react";
-import { ModalSlots, SlotsToClasses } from "@nextui-org/react";
+import { ButtonProps, ModalSlots, SlotsToClasses } from "@nextui-org/react";
 import { getStyle, ThemeType } from "../../themes";
 
 export class ConfirmStore implements Store {
@@ -16,8 +16,8 @@ export class ConfirmStore implements Store {
   className: string = '';
   classNames?: SlotsToClasses<ModalSlots>;
   theme: ThemeType = "default";
-  cancelText?: string = 'Cancel';
-  okText?: string = 'Apply';
+  cancelBtnProps?: ButtonProps = {}
+  okBtnProps?: ButtonProps = {}
 
   constructor() {
     makeAutoObservable(this);
@@ -47,7 +47,7 @@ export class ConfirmStore implements Store {
     this.title = '';
     this.description = '';
     this.size = 'md';
-    this.cancelText = 'Cancel';
-    this.okText = 'Apply';
+    this.cancelBtnProps = {}
+    this.okBtnProps = {}
   }
 }

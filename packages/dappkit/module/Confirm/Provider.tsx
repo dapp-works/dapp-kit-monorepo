@@ -7,7 +7,7 @@ import { ConfirmStore } from ".";
 const ConfirmModal = observer(() => {
   const rootStore = useStore();
   const confirmStore = rootStore.get(ConfirmStore);
-  const { isOpen, title, description, size, className, classNames, cancelText, okText } = confirmStore;
+  const { isOpen, title, description, size, className, classNames, cancelBtnProps, okBtnProps } = confirmStore;
   return (
     <Modal
       isOpen={isOpen}
@@ -31,22 +31,24 @@ const ConfirmModal = observer(() => {
               <Button
                 color="primary"
                 variant="flat"
+                size="sm"
+                children="Cancel"
+                {...cancelBtnProps}
                 onClick={() => {
                   confirmStore.close();
                   confirmStore.onCancel();
                 }}
-              >
-                {cancelText}
-              </Button>
+              />
               <Button
                 color="primary"
+                size="sm"
+                children="Apply"
+                {...okBtnProps}
                 onPress={() => {
                   confirmStore.close();
                   confirmStore.onOk();
                 }}
-              >
-                {okText}
-              </Button>
+              />
             </ModalFooter>
           </>
         )}
