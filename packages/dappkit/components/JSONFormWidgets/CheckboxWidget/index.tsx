@@ -47,7 +47,7 @@ export function CheckboxWidget({
   return (
     <>
       <Checkbox
-        className={cn('w-full', className)}
+        className={cn('max-w-full', className)}
         classNames={classNames}
         defaultSelected={value}
         isDisabled={disabled}
