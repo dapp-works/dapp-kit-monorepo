@@ -12,7 +12,7 @@ import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { Copy } from '@dappworks/kit/ui';
 import { PromiseState, RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "./components/ThemeSwitcher";
-import { DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
+import { ConfirmStore, DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
 import { useMemo, useState } from "react";
 
 const inputValue = StoragePlugin.Get({
@@ -741,6 +741,32 @@ const HomePage = observer(() => {
           }}
         >
           Show Dialog
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={() => {
+            const confirmStore = RootStore.Get(ConfirmStore);
+            confirmStore.show({
+              title: 'Delete data table',
+              description: 'Are you sure to delete this data table?',
+              onOk: async () => {
+
+              },
+              onCancel: () => {
+
+              },
+              okBtnProps: {
+                color: 'warning',
+                children: 'Delete'
+              },
+              cancelBtnProps: {
+                color: 'default',
+              }
+            });
+          }}
+        >
+          ConfirmStore
         </Button>
       </div>
 
