@@ -5,40 +5,59 @@ import { _ } from "../../lib/lodash";
 
 export class StorageListState<T = any> {
   key: string;
-  size: number = 5;
   list: T[] = [];
-  currentIndex = 0;
-  get current() {
-    return this.list[this.currentIndex];
+
+  static safeParse(val: any) {
+    try {
+      return JSON.parse(val);
+    } catch (error) {
+      return val;
+    }
   }
 
-  constructor(args: { key: string; size?: number }) {
+  constructor(args: { key: string; }) {
     Object.assign(this, args);
     makeAutoObservable(this);
     this.load();
   }
 
-  push(value: T) {
-    this.list = _.uniqWith(this.list.concat(value), _.isEqual);
-    if (this.list.length > this.size) {
-      this.list.shift();
+
+  load() {
+    try {
+      const value = localStorage.getItem(this.key);
+      if (value) {
+        this.list = StorageListState.safeParse(value);
+      }
+      return StorageListState.safeParse(value)
+    } catch (error) {
+      console.error(error);
+      return null;
     }
-    this.currentIndex = this.list.length - 1;
+  }
+
+
+  push(value: T) {
+    this.list.push(value);
     this.save();
   }
 
-  load() {
-    const value = global?.localStorage?.getItem(this.key);
-    this.list = helper.json.safeParse(value) || [];
-    this.currentIndex = this.list.length - 1;
+  remove(index: number) {
+    this.list.splice(index, 1);
+    this.save();
   }
 
-  save() {
-    localStorage.setItem(this.key, JSON.stringify(this.list));
+  private save() {
+    try {
+      localStorage.setItem(this.key, JSON.stringify(this.list));
+    } catch (error) {
+    }
   }
 
   clear() {
-    localStorage.removeItem(this.key);
-    this.list = [];
+    try {
+      localStorage.removeItem(this.key);
+      this.list = [];
+    } catch (error) {
+    }
   }
 }
