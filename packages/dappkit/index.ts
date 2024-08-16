@@ -6,6 +6,7 @@ export { PromiseHook } from "./store/standard/PromiseHook";
 export { BigNumberState } from "./store/standard/BigNumberState";
 export { BigNumberInputState } from "./store/standard/BigNumberInputState";
 export { StorageState } from "./store/standard/StorageState";
+export { StorageListState } from "./store/standard/StorageListState";
 export { PaginationState } from "./store/standard/PaginationState";
 export { ObjectPool } from "./store/standard/ObjectPool";
 
