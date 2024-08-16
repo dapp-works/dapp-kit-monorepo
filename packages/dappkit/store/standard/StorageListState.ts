@@ -3,7 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { helper } from "../../lib/helper";
 import { _ } from "../../lib/lodash";
 
-export class JSONHistoryState<T = any> {
+export class StorageListState<T = any> {
   key: string;
   size: number = 5;
   list: T[] = [];
