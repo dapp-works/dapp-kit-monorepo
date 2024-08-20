@@ -105,6 +105,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   isServerPaging?: boolean;
   pagination?: PaginationState;
   nextuiPaginationProps?: PaginationProps | {};
+  showPagination?: boolean;
   onRowClick?: (item: T) => void;
   rowCss?: string | ((item: T) => string | undefined);
   asCard?: boolean;
@@ -135,6 +136,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       limit: 8,
     }),
     nextuiPaginationProps = {},
+    showPagination = true,
     rowKey,
     onRowClick,
     rowCss,
@@ -238,7 +240,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
     }
   }, [dataSource]);
 
-  const data = isServerPaging ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
+  const data = (isServerPaging || !showPagination) ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
   if (asCard) {
     return (
@@ -251,6 +253,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         cardOptions={cardOptions}
         pagination={pagination}
         nextuiPaginationProps={nextuiPaginationProps}
+        showPagination={showPagination}
         onRowClick={onRowClick}
         autoScrollToTop={autoScrollToTop}
         emptyContent={emptyContent}
@@ -322,7 +325,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           <TableBody emptyContent={emptyContent}>{[]}</TableBody>
         )}
       </Table>
-      {pagination.total > pagination.limit && (
+      {showPagination && pagination.total > pagination.limit && (
         <div className="flex justify-center">
           <NextuiPagination
             className="mt-2"
@@ -524,6 +527,7 @@ function CardUI<T>({
   cardOptions,
   pagination,
   nextuiPaginationProps,
+  showPagination,
   onRowClick,
   autoScrollToTop,
   emptyContent,
@@ -539,6 +543,7 @@ function CardUI<T>({
   cardOptions?: CardOptions;
   pagination: PaginationState;
   nextuiPaginationProps: PaginationProps | {};
+  showPagination: boolean;
   onRowClick?: (item: T) => void;
   autoScrollToTop?: boolean;
   emptyContent?: React.ReactNode;
@@ -586,7 +591,7 @@ function CardUI<T>({
           <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400', cardOptions?.cardClassName)}>{emptyContent}</Card>
         )}
       </div>
-      {pagination.total > pagination.limit && (
+      {showPagination && pagination.total > pagination.limit && (
         <div className="flex justify-center">
           <NextuiPagination
             className='mt-2'
