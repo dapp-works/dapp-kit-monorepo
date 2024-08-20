@@ -10,7 +10,7 @@ import { JSONTable } from "@dappworks/kit/jsontable";
 import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
 import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
 import { Copy } from '@dappworks/kit/ui';
-import { PromiseState, RootStore } from "@dappworks/kit";
+import { PaginationState, PromiseState, RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import { ConfirmStore, DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
 import { useMemo, useState } from "react";
@@ -397,6 +397,7 @@ const HomePage = observer(() => {
           // radius: 'none',
           isCompact: true
         }}
+        // showPagination={false}
         onRowClick={(item) => {
           console.log('Row Click:', item);
         }}
