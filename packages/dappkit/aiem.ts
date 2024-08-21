@@ -51,6 +51,10 @@ export class Cache {
   }
 }
 
+export type GetOptions = {
+  multicall?: boolean
+}
+
 export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<string, Chain>, Addrs extends { [K in keyof Contracts]?: { [key: string]: `${string}-0x${string}` } }> {
   static cache?: Cache = new Cache();
   cache?: Cache = new Cache();
@@ -162,16 +166,20 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     return this.init().PubClient(chainId)
   }
 
-  PubClient<C extends keyof Chains>(chainId: C): PublicClient<HttpTransport, Chain, any, any> {
+  PubClient<C extends keyof Chains>(chainId: C, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
     //@ts-ignore
-    return this._cache.wrap(`publicClient-${String(chainId)}`, () => {
+    return this._cache.wrap(`publicClient-${String(chainId)}-${options?.multicall}`, () => {
       //@ts-ignore
       return createPublicClient({
         //@ts-ignore
         chain: this.chainMap[chainId],
-        batch: {
-          multicall: true
-        },
+
+        ...(options?.multicall ? {
+          batch: {
+            multicall: true
+          },
+        } : {}),
+
         //@ts-ignore
         transport: http(),
       })
@@ -183,6 +191,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     contractName: K,
     chainId: C,
     address: Addr,
+    options: GetOptions = { multicall: true }
     //@ts-ignore
   ): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> & { encode: GetContractReturnType<Contracts[K], WalletClient<HttpTransport, Chain, Account, any>>["write"] } {
     const wallet = this.getWallet ? this.getWallet() : null;
@@ -192,7 +201,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       //@ts-ignore
       const contract = this.contractMap[contractName];
       //@ts-ignore
-      const pubClient = this.PubClient(chainId);
+      const pubClient = this.PubClient(chainId, options);
 
       //@ts-ignore
       return this.getContract({
@@ -279,13 +288,13 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   //@ts-ignore
-  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient): ReturnType & { encode: ReturnType["write"] } {
+  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient, options?: GetOptions = { multicall: true }): ReturnType & { encode: ReturnType["write"] } {
     const aiem = this.init();
 
     const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
     return aiem._cache.wrap(cacheKey, () => {
       //@ts-ignore
-      const pubClient = aiem.PubClient(chainId);
+      const pubClient = aiem.PubClient(chainId, options);
 
       //@ts-ignore
       return aiem.getContract({
@@ -356,6 +365,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
             // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
             const fieldMetadata = getFieldMetadata(obj, key);
             let call: any;
+            //@ts-ignore
+            const enableMulticall = entity.multicall == false ? false : true
             // console.log(key, fieldMetadata, instance)
             if (sel[key] == false) {
               call = async () => null
@@ -364,10 +375,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                 case "read":
                   if (Array.isArray(sel[key])) {
                     //@ts-ignore
-                    call = () => this.Get(entity.abi, instance.chainId, instance.address).read[key](sel[key]);
+                    call = () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[key](sel[key]);
                   } else {
                     //@ts-ignore
-                    call = () => this.Get(entity.abi, instance.chainId, instance.address).read[key]();
+                    call = () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[key]();
                   }
                   break;
                 case "write":
@@ -394,14 +405,14 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                       call = () =>
                         new Promise(async (resolve) => {
                           //@ts-ignore
-                          const address = await this.cache.wrap(cacheKey, async () => this.Get(entity.abi, instance.chainId, instance.address).read[fieldMetadata.targetKey]());
+                          const address = await this.cache.wrap(cacheKey, async () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[fieldMetadata.targetKey]());
                           //@ts-ignore
                           resolve(this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId }));
                         });
                     } else {
                       call = () =>
                         //@ts-ignore
-                        this.Get(entity.abi, instance.chainId, instance.address)
+                        this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall })
                           //@ts-ignore
                           .read[fieldMetadata.targetKey]()
                           .then((address: any) => {
