@@ -82,7 +82,8 @@ class IERC20Entity extends ERC20Entity {
 
 const test = async () => {
   let user = null
-  const res = await AIem.Query(IUniswapV2LPEntity, {
+  const res = await Promise.all(["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "0x123"].map(i => AIem.Query(IUniswapV2LPEntity, {
+    address: true,
     totalSupply: true,
     balanceOf: user ? [user] : false,
     TokenMany: {
@@ -91,7 +92,7 @@ const test = async () => {
       approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
       foo: true
     }
-  })({ address: "0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", chainId: "4689", })
+  })({ address: i, chainId: "4689", })))
 
   console.log(res)
 
