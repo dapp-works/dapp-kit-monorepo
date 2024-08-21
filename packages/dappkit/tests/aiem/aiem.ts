@@ -29,13 +29,7 @@ export const aiem = AIem.Set({
 
 await aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").read.name().then(console.log)
 
-setTimeout(async () => {
-  console.time()
-
-  await Promise.all(new Array(100).fill(1).map(i => aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").read.name().then(console.log)))
-  console.timeEnd()
-
-}, 1000)
+await Promise.all(new Array(2).fill(1).map(i => aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f185").read.name().then(console.log)))
 
 aiem.contracts.UniswapV2LPToken.test.read.symbol().then(console.log)
 

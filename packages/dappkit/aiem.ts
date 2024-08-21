@@ -345,130 +345,140 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
   static Query<E, S extends QuerySelect<E>>(entity: ClassType<E>, select: S) {
     return async (entities: Partial<E>): Promise<QueryReturnType<E, S>> => {
-      const results: Array<QueryReturnType<E, S>> = [];
       const isArrayInput = Array.isArray(entities);
 
-      if (!isArrayInput) {
+      try {
+        const results: Array<QueryReturnType<E, S>> = [];
+
+
+        if (!isArrayInput) {
+          //@ts-ignore
+          entities = [entities];
+        }
         //@ts-ignore
-        entities = [entities];
-      }
-      //@ts-ignore
-      for (const entityData of entities) {
-        const instance = Object.assign(new entity(), entityData);
-        // const result: any = {};
+        for (const entityData of entities) {
+          const instance = Object.assign(new entity(), entityData);
+          // const result: any = {};
 
-        const fetchFields = async (obj: any, sel: any) => {
-          const promises = [];
-          for (const key in sel) {
+          const fetchFields = async (obj: any, sel: any) => {
+            const promises = [];
+            for (const key in sel) {
 
-            // return console.log(key, getFieldMetadata(obj, key))
-            // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
-            const fieldMetadata = getFieldMetadata(obj, key);
-            let call: any;
-            //@ts-ignore
-            const enableMulticall = entity.multicall == false ? false : true
-            // console.log(key, fieldMetadata, instance)
-            if (sel[key] == false) {
-              call = async () => null
-            } else if (fieldMetadata) {
-              switch (fieldMetadata.type) {
-                case "read":
-                  if (Array.isArray(sel[key])) {
-                    //@ts-ignore
-                    call = () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[key](sel[key]);
-                  } else {
-                    //@ts-ignore
-                    call = () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[key]();
-                  }
-                  break;
-                case "write":
-                  obj[key] = encodeFunctionData({
-                    //@ts-ignore
-                    abi: entity.abi,
-                    functionName: key,
-                    args: sel[key],
-                  });
-
-                  break;
-                case "custom":
-                  call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []));
-                  break;
-                case "contract":
-                  const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
-
-                  if (typeof fieldMetadata.targetKey == 'string') {
-
-                    if (targetMetadata?.options?.ttl) {
+              // return console.log(key, getFieldMetadata(obj, key))
+              // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
+              const fieldMetadata = getFieldMetadata(obj, key);
+              let call: any;
+              //@ts-ignore
+              const enableMulticall = entity.multicall == false ? false : true
+              // console.log(key, fieldMetadata, instance)
+              if (sel[key] == false) {
+                call = async () => null
+              } else if (fieldMetadata) {
+                switch (fieldMetadata.type) {
+                  case "read":
+                    if (Array.isArray(sel[key])) {
                       //@ts-ignore
-                      const cacheKey = `call ${instance.chainId}-${instance.address}-${fieldMetadata.targetKey}`;
-                      //@ts-ignore
-                      call = () =>
-                        new Promise(async (resolve) => {
-                          //@ts-ignore
-                          const address = await this.cache.wrap(cacheKey, async () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[fieldMetadata.targetKey]());
-                          //@ts-ignore
-                          resolve(this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId }));
-                        });
+                      call = () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[key](sel[key]);
                     } else {
-                      call = () =>
-                        //@ts-ignore
-                        this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall })
-                          //@ts-ignore
-                          .read[fieldMetadata.targetKey]()
-                          .then((address: any) => {
-                            // console.log({ address, sel: sel[key] })
-                            //@ts-ignore
-                            return this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId });
-                          });
+                      //@ts-ignore
+                      call = () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[key]();
                     }
-                  } else {
-                    //@ts-ignore
-                    call = () => fieldMetadata.targetKey(instance).then((args) => {
-                      // console.log(args)
-                      return Array.isArray(args) ? this.QueryMany(fieldMetadata.entity(), sel[key])(args) : this.Query(fieldMetadata.entity(), sel[key])(args)
-                    })
-                  }
-                  break;
-                default:
-                  break;
+                    break;
+                  case "write":
+                    obj[key] = encodeFunctionData({
+                      //@ts-ignore
+                      abi: entity.abi,
+                      functionName: key,
+                      args: sel[key],
+                    });
+
+                    break;
+                  case "custom":
+                    call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []));
+                    break;
+                  case "contract":
+                    const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
+
+                    if (typeof fieldMetadata.targetKey == 'string') {
+
+                      if (targetMetadata?.options?.ttl) {
+                        //@ts-ignore
+                        const cacheKey = `call ${instance.chainId}-${instance.address}-${fieldMetadata.targetKey}`;
+                        //@ts-ignore
+                        call = () =>
+                          new Promise(async (resolve) => {
+                            //@ts-ignore
+                            const address = await this.cache.wrap(cacheKey, async () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[fieldMetadata.targetKey]());
+                            //@ts-ignore
+                            resolve(this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId }));
+                          });
+                      } else {
+                        call = () =>
+                          //@ts-ignore
+                          this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall })
+                            //@ts-ignore
+                            .read[fieldMetadata.targetKey]()
+                            .then((address: any) => {
+                              // console.log({ address, sel: sel[key] })
+                              //@ts-ignore
+                              return this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId });
+                            });
+                      }
+                    } else {
+                      //@ts-ignore
+                      call = () => fieldMetadata.targetKey(instance).then((args) => {
+                        // console.log(args)
+                        return Array.isArray(args) ? this.QueryMany(fieldMetadata.entity(), sel[key])(args) : this.Query(fieldMetadata.entity(), sel[key])(args)
+                      })
+                    }
+                    break;
+                  default:
+                    break;
+                }
+              }
+
+              if (call) {
+                if (fieldMetadata?.options?.ttl) {
+                  //@ts-ignore
+                  const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`;
+                  promises.push(
+                    new Promise(async (resolve) => {
+                      const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options).catch(() => null)
+                      obj[key] = value;
+                      resolve(value);
+                    }),
+                  );
+                } else {
+                  promises.push(
+                    call().then((value) => {
+                      obj[key] = value;
+                    }).catch(i => obj[key] = null)
+                  );
+                }
               }
             }
 
-            if (call) {
-              if (fieldMetadata?.options?.ttl) {
-                //@ts-ignore
-                const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`;
-                promises.push(
-                  new Promise(async (resolve) => {
-                    const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options);
-                    obj[key] = value;
-                    resolve(value);
-                  }),
-                );
-              } else {
-                promises.push(
-                  call().then((value) => {
-                    obj[key] = value;
-                  }),
-                );
-              }
-            }
-          }
+            await Promise.all(promises);
+          };
 
-          await Promise.all(promises);
-        };
+          await fetchFields(instance, select);
+          //@ts-ignore
+          results.push(instance);
+        }
 
-        await fetchFields(instance, select);
-        //@ts-ignore
-        results.push(instance);
+        if (isArrayInput) {
+          return results as any
+        } else {
+          return results[0] as any
+        }
+      } catch (error) {
+        if (isArrayInput) {
+          return [] as any
+        } else {
+          return null as any
+        }
       }
-
-      if (isArrayInput) {
-        return results as any
-      } else {
-        return results[0] as any
-      }
-    };
+    }
   }
 }
 export type Item<T> = T extends (infer U)[] ? U : T;
