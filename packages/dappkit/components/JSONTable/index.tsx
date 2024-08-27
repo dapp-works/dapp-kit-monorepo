@@ -286,107 +286,109 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
   }
 
   return (
-    <div className={cn('relative w-full overflow-auto', className)} ref={tableBoxRef}>
-      <table className={cn('w-full h-auto table-auto', classNames.table)}>
-        <thead className={cn(classNames.thead, { 'sticky top-0 z-30 [&>tr]:first:shadow-small [&>tr]:first:rounded-lg': isHeaderSticky })}>
-          <tr className={classNames.tr}>
-            {columns.map((item) => (
-              <th
-                key={item.key}
-                className={cn('px-3 h-10 text-xs font-semibold bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', classNames.th)}
-              >
-                <div className="flex items-center">
-                  <span>{item.label}</span>
-                  {!!sortableColumnsMap[item.key] && (
-                    <SortingComponent
-                      sortingUIOptions={sortingUIOptions}
-                      columnOptions={columnOptions}
-                      sortableColumnsMap={sortableColumnsMap}
-                      item={item}
-                      onSort={({ type, key, sortKey }) => {
-                        const { sortableColumns, sortedData } = sortData({
-                          type,
-                          key,
-                          sortKey,
-                          sortableColumnsMap,
-                          dataSource,
-                        });
-                        setSortableColumnsMap(sortableColumns);
-                        setSortedData(sortedData);
-                      }}
-                    />
-                  )}
-                </div>
-              </th>
-            ))}
-          </tr>
-          <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
-        </thead>
-        {isLoading ? (
-          <tbody className={classNames.tbody}>
+    <>
+      <div className={cn('relative w-full', className)} ref={tableBoxRef}>
+        <table className={cn('w-full h-auto table-auto', classNames.table)}>
+          <thead className={cn(classNames.thead, { 'sticky top-0 z-30 [&>tr]:first:shadow-small [&>tr]:first:rounded-lg': isHeaderSticky })}>
             <tr className={classNames.tr}>
-              <td
-                className={classNames.td}
-                colSpan={columns.length}
-              >
-                {loadingContent || DefaultLoading({ loadingOptions })}
-              </td>
+              {columns.map((item) => (
+                <th
+                  key={item.key}
+                  className={cn('px-3 h-10 text-xs font-semibold whitespace-nowrap bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', classNames.th)}
+                >
+                  <div className="flex items-center">
+                    <span>{item.label}</span>
+                    {!!sortableColumnsMap[item.key] && (
+                      <SortingComponent
+                        sortingUIOptions={sortingUIOptions}
+                        columnOptions={columnOptions}
+                        sortableColumnsMap={sortableColumnsMap}
+                        item={item}
+                        onSort={({ type, key, sortKey }) => {
+                          const { sortableColumns, sortedData } = sortData({
+                            type,
+                            key,
+                            sortKey,
+                            sortableColumnsMap,
+                            dataSource,
+                          });
+                          setSortableColumnsMap(sortableColumns);
+                          setSortedData(sortedData);
+                        }}
+                      />
+                    )}
+                  </div>
+                </th>
+              ))}
             </tr>
-          </tbody>
-        ) : data.length > 0 ? (
-          <tbody className={classNames.tbody}>
-            {
-              showCollapsedTables ?
-                data.map(item => {
-                  return (
-                    <CollapseBodyRow
-                      classNames={classNames}
-                      item={item}
-                      columns={columns}
-                      rowCss={rowCss}
-                      onRowClick={onRowClick}
-                      collapsedTableConfig={collapsedTableConfig}
-                      collapsedTables={collapsedTables}
-                    />
-                  )
-                })
-                : data.map((item, index) => {
-                  return (
-                    <tr
-                      key={rowKey ? item[rowKey] || index : index}
-                      className={cn(classNames.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
-                      onClick={() => {
-                        onRowClick?.(item);
-                      }}
-                    >
-                      {columns.map((column) => {
-                        return (
-                          <td
-                            key={column.key}
-                            className={cn('py-2 px-3 text-xs', classNames.td)}
-                          >
-                            {column.render ? column.render(item) : renderFieldValue(item[column.key])}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  );
-                })
-            }
-          </tbody>
-        ) : (
-          <tbody className={classNames.tbody}>
-            <tr className={classNames.tr}>
-              <td
-                className={classNames.td}
-                colSpan={columns.length}
-              >
-                {emptyContent ?? <DefaultEmptyContent />}
-              </td>
-            </tr>
-          </tbody>
-        )}
-      </table>
+            <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
+          </thead>
+          {isLoading ? (
+            <tbody className={classNames.tbody}>
+              <tr className={classNames.tr}>
+                <td
+                  className={classNames.td}
+                  colSpan={columns.length}
+                >
+                  {loadingContent || DefaultLoading({ loadingOptions })}
+                </td>
+              </tr>
+            </tbody>
+          ) : data.length > 0 ? (
+            <tbody className={classNames.tbody}>
+              {
+                showCollapsedTables ?
+                  data.map(item => {
+                    return (
+                      <CollapseBodyRow
+                        classNames={classNames}
+                        item={item}
+                        columns={columns}
+                        rowCss={rowCss}
+                        onRowClick={onRowClick}
+                        collapsedTableConfig={collapsedTableConfig}
+                        collapsedTables={collapsedTables}
+                      />
+                    )
+                  })
+                  : data.map((item, index) => {
+                    return (
+                      <tr
+                        key={rowKey ? item[rowKey] || index : index}
+                        className={cn(classNames.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+                        onClick={() => {
+                          onRowClick?.(item);
+                        }}
+                      >
+                        {columns.map((column) => {
+                          return (
+                            <td
+                              key={column.key}
+                              className={cn('py-2 px-3 text-xs', classNames.td)}
+                            >
+                              {column.render ? column.render(item) : renderFieldValue(item[column.key])}
+                            </td>
+                          )
+                        })}
+                      </tr>
+                    );
+                  })
+              }
+            </tbody>
+          ) : (
+            <tbody className={classNames.tbody}>
+              <tr className={classNames.tr}>
+                <td
+                  className={classNames.td}
+                  colSpan={columns.length}
+                >
+                  {emptyContent ?? <DefaultEmptyContent />}
+                </td>
+              </tr>
+            </tbody>
+          )}
+        </table>
+      </div>
       {showPagination && pagination.total > pagination.limit && (
         <div className="flex justify-center">
           <NextuiPagination
@@ -411,7 +413,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           />
         </div>
       )}
-    </div>
+    </>
   );
 });
 

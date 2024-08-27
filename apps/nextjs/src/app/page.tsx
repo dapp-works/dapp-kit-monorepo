@@ -415,7 +415,7 @@ const HomePage = observer(() => {
         // emptyContent={<div className="h-[100px] flex justify-center items-center">No Data</div>}
         collapsedTableConfig={{
           classNames: {
-            th: 'text-[#64748B] dark:text-gray-300',
+            th: 'text-[#64748B] dark:text-gray-300 whitespace-nowrap',
             tr: 'border-t-1 border-[#E5E7EB] dark:border-[#23222d] first:border-t-0',
           },
           options: [
