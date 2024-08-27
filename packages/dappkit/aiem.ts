@@ -1,4 +1,17 @@
-import { type Chain, type GetContractReturnType, type Abi, type PublicClient, type HttpTransport, type WalletClient, type Transport, type Account, encodeFunctionData, http, getContract, createPublicClient } from "viem";
+import {
+  type Chain,
+  type GetContractReturnType,
+  type Abi,
+  type PublicClient,
+  type HttpTransport,
+  type WalletClient,
+  type Transport,
+  type Account,
+  encodeFunctionData,
+  http,
+  getContract,
+  createPublicClient,
+} from "viem";
 import { iotex, mainnet, bsc, polygon, iotexTestnet } from "viem/chains";
 import TTLCache from "@isaacs/ttlcache";
 import { ClassType } from "./lib/interface";
@@ -11,17 +24,14 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-
-iotexTestnet.contracts = {
+(iotexTestnet.contracts = {
   multicall3: {
-    address: '0xb5cecd6894c6f473ec726a176f1512399a2e355d',
+    address: "0xb5cecd6894c6f473ec726a176f1512399a2e355d",
     blockCreated: 24347592,
   },
-},
-
-
+}),
   //@ts-ignore
-  mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"];
+  (mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"]);
 //@ts-ignore
 mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"];
 
@@ -52,8 +62,8 @@ export class Cache {
 }
 
 export type GetOptions = {
-  multicall?: boolean
-}
+  multicall?: boolean;
+};
 
 export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<string, Chain>, Addrs extends { [K in keyof Contracts]?: { [key: string]: `${string}-0x${string}` } }> {
   static cache?: Cache = new Cache();
@@ -163,7 +173,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
   static PubClient(chainId: string): PublicClient<HttpTransport, Chain, any, any> {
     //@ts-ignore
-    return this.init().PubClient(chainId)
+    return this.init().PubClient(chainId);
   }
 
   PubClient<C extends keyof Chains>(chainId: C, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
@@ -174,15 +184,17 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         //@ts-ignore
         chain: this.chainMap[chainId],
 
-        ...(options?.multicall ? {
-          batch: {
-            multicall: true
-          },
-        } : {}),
+        ...(options?.multicall
+          ? {
+              batch: {
+                multicall: true,
+              },
+            }
+          : {}),
 
         //@ts-ignore
         transport: http(),
-      })
+      });
     });
   }
 
@@ -191,7 +203,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     contractName: K,
     chainId: C,
     address: Addr,
-    options: GetOptions = { multicall: true }
+    options: GetOptions = { multicall: true },
     //@ts-ignore
   ): GetContractReturnType<Contracts[K], PublicClient<HttpTransport, Chain, any, any>> & { encode: GetContractReturnType<Contracts[K], WalletClient<HttpTransport, Chain, Account, any>>["write"] } {
     const wallet = this.getWallet ? this.getWallet() : null;
@@ -231,18 +243,22 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }) {
     const handler = {
       get: (target: any, funcName: any) => {
-        if (funcName == 'encode') {
-          return new Proxy({}, {
-            get(t1, f1) {
-              return async (args: any) => {
-                return encodeFunctionData({
-                  abi,
-                  functionName: f1,
-                  args
-                })
-              }
-            }
-          });
+        if (funcName == "encode") {
+          return new Proxy(
+            {},
+            {
+              get(t1, f1) {
+                return async (args: any) => {
+                  // @ts-ignore
+                  return encodeFunctionData({
+                    abi,
+                    functionName: f1,
+                    args,
+                  });
+                };
+              },
+            },
+          );
         }
 
         if (typeof target[funcName] === "function") {
@@ -288,7 +304,15 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   //@ts-ignore
-  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(abi: TAbi, chainId: any, address: any, wallet?: WalletClient, options?: GetOptions = { multicall: true }): ReturnType & { encode: ReturnType["write"] } {
+  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(
+    abi: TAbi,
+    chainId: any,
+    address: any,
+    wallet?: WalletClient,
+    //@ts-ignore
+    options?: GetOptions = { multicall: true },
+    //@ts-ignore
+  ): ReturnType & { encode: ReturnType["write"] } {
     const aiem = this.init();
 
     const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
@@ -350,7 +374,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       try {
         const results: Array<QueryReturnType<E, S>> = [];
 
-
         if (!isArrayInput) {
           //@ts-ignore
           entities = [entities];
@@ -363,16 +386,15 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
           const fetchFields = async (obj: any, sel: any) => {
             const promises = [];
             for (const key in sel) {
-
               // return console.log(key, getFieldMetadata(obj, key))
               // Check if the property is annotated with @Fields.read(), @Fields.custom(), or @Fields.contract()
               const fieldMetadata = getFieldMetadata(obj, key);
               let call: any;
               //@ts-ignore
-              const enableMulticall = entity.multicall == false ? false : true
+              const enableMulticall = entity.multicall == false ? false : true;
               // console.log(key, fieldMetadata, instance)
               if (sel[key] == false) {
-                call = async () => null
+                call = async () => null;
               } else if (fieldMetadata) {
                 switch (fieldMetadata.type) {
                   case "read":
@@ -385,6 +407,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                     }
                     break;
                   case "write":
+                    // @ts-ignore
                     obj[key] = encodeFunctionData({
                       //@ts-ignore
                       abi: entity.abi,
@@ -399,8 +422,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   case "contract":
                     const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
 
-                    if (typeof fieldMetadata.targetKey == 'string') {
-
+                    if (typeof fieldMetadata.targetKey == "string") {
                       if (targetMetadata?.options?.ttl) {
                         //@ts-ignore
                         const cacheKey = `call ${instance.chainId}-${instance.address}-${fieldMetadata.targetKey}`;
@@ -408,7 +430,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                         call = () =>
                           new Promise(async (resolve) => {
                             //@ts-ignore
-                            const address = await this.cache.wrap(cacheKey, async () => this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[fieldMetadata.targetKey]());
+                            const address = await this.cache.wrap(cacheKey, async () =>
+                              //@ts-ignore
+                              this.Get(entity.abi, instance.chainId, instance.address, null, { multicall: enableMulticall }).read[fieldMetadata.targetKey](),
+                            );
                             //@ts-ignore
                             resolve(this.Query(fieldMetadata.entity(), sel[key])({ address, chainId: instance.chainId }));
                           });
@@ -426,10 +451,11 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                       }
                     } else {
                       //@ts-ignore
-                      call = () => fieldMetadata.targetKey(instance).then((args) => {
-                        // console.log(args)
-                        return Array.isArray(args) ? this.QueryMany(fieldMetadata.entity(), sel[key])(args) : this.Query(fieldMetadata.entity(), sel[key])(args)
-                      })
+                      call = () =>
+                        fieldMetadata.targetKey(instance).then((args) => {
+                          // console.log(args)
+                          return Array.isArray(args) ? this.QueryMany(fieldMetadata.entity(), sel[key])(args) : this.Query(fieldMetadata.entity(), sel[key])(args);
+                        });
                     }
                     break;
                   default:
@@ -443,16 +469,18 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`;
                   promises.push(
                     new Promise(async (resolve) => {
-                      const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options).catch(() => null)
+                      const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options).catch(() => null);
                       obj[key] = value;
                       resolve(value);
                     }),
                   );
                 } else {
                   promises.push(
-                    call().then((value) => {
-                      obj[key] = value;
-                    }).catch(i => obj[key] = null)
+                    call()
+                      .then((value) => {
+                        obj[key] = value;
+                      })
+                      .catch((i) => (obj[key] = null)),
                   );
                 }
               }
@@ -467,18 +495,18 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         }
 
         if (isArrayInput) {
-          return results as any
+          return results as any;
         } else {
-          return results[0] as any
+          return results[0] as any;
         }
       } catch (error) {
         if (isArrayInput) {
-          return [] as any
+          return [] as any;
         } else {
-          return null as any
+          return null as any;
         }
       }
-    }
+    };
   }
 }
 export type Item<T> = T extends (infer U)[] ? U : T;
@@ -497,12 +525,12 @@ type QuerySelect<E> = {
 
 export type QueryReturnType<E, S extends QuerySelect<E>> = {
   [K in keyof E]: K extends keyof S
-  ? E[K] extends (...args: any[]) => any
-  ? Awaited<ReturnType<E[K]>>
-  : E[K] extends object
-  ? S[K] extends object
-  ? QueryReturnType<E[K], S[K]>
-  : E[K]
-  : E[K]
-  : E[K];
+    ? E[K] extends (...args: any[]) => any
+      ? Awaited<ReturnType<E[K]>>
+      : E[K] extends object
+      ? S[K] extends object
+        ? QueryReturnType<E[K], S[K]>
+        : E[K]
+      : E[K]
+    : E[K];
 };
