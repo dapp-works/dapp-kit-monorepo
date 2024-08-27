@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.159",
+  "version": "0.4.160",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
