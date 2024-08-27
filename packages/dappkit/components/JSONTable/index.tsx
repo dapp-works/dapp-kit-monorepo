@@ -112,9 +112,9 @@ export type VirtualizedOptions = {
   vListHeight?: number;
   classNames?: {
     header?: string;
-    column?: string;
+    headerCell?: string;
     row?: string;
-    rowItem?: string;
+    rowCell?: string;
   },
   fetchData?: () => Promise<void>;
 }
@@ -661,7 +661,7 @@ function VirtualizedListUI<T>({
             return (
               <div
                 key={column.key}
-                className={cn('flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto', virtualizedOptions?.classNames?.rowItem)}
+                className={cn('flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto', virtualizedOptions?.classNames?.rowCell)}
                 style={{
                   minWidth: column.width
                 }}
@@ -684,7 +684,7 @@ function VirtualizedListUI<T>({
             return (
               <div
                 key={column.key}
-                className={cn("flex-grow py-2 px-4 flex items-center text-xs font-semibold whitespace-nowrap", virtualizedOptions?.classNames?.column)}
+                className={cn("flex-grow py-2 px-4 flex items-center text-xs font-semibold whitespace-nowrap", virtualizedOptions?.classNames?.headerCell)}
                 style={{
                   minWidth: column.width
                 }}
