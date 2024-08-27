@@ -128,7 +128,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   columnOptions?: ColumnOptions<T>;
   isServerPaging?: boolean;
   pagination?: PaginationState;
-  nextuiPaginationProps?: PaginationProps | {};
+  nextuiPaginationProps?: Partial<PaginationProps>;
   showPagination?: boolean;
   onRowClick?: (item: T) => void;
   rowCss?: string | ((item: T) => string | undefined);
@@ -145,31 +145,22 @@ export interface JSONTableProps<T extends Record<string, any>> {
   virtualizedOptions?: VirtualizedOptions;
 }
 
-export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps<T>) => {
+export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<T>) => {
   const {
     className,
-    classNames = {},
+    classNames,
     dataSource = [],
     columnOptions,
     headerKeys,
     isServerPaging,
-    pagination = new PaginationState({
-      page: 1,
-      limit: 8,
-    }),
-    nextuiPaginationProps = {},
+    pagination,
+    nextuiPaginationProps,
     showPagination = true,
     rowKey,
     onRowClick,
     rowCss,
     asCard = false,
-    cardOptions = {
-      boxClassName: '',
-      cardClassName: '',
-      itemClassName: '',
-      showDivider: true,
-      dividerClassName: '',
-    },
+    cardOptions,
     autoScrollToTop = false,
     emptyContent,
     isLoading = false,
@@ -281,21 +272,14 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
 
   useEffect(() => {
     setSortedData(dataSource);
-    if (!isServerPaging) {
-      pagination.setData({
-        total: dataSource.length,
-      });
-    }
   }, [dataSource]);
-
-  const data = (isServerPaging || !showPagination || virtualizedOptions?.isVirtualized || asCard) ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
   if (asCard) {
     return (
       <CardUI
         className={className}
         rowKey={rowKey}
-        data={data}
+        sortedData={sortedData}
         columns={columns}
         cardOptions={cardOptions}
         onRowClick={onRowClick}
@@ -314,7 +298,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       <VirtualizedListUI
         className={className}
         rowKey={rowKey}
-        data={data}
+        sortedData={sortedData}
         dataSource={dataSource}
         columns={columns}
         columnOptions={columnOptions}
@@ -337,14 +321,14 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       className={className}
       classNames={classNames}
       isHeaderSticky={isHeaderSticky}
+      sortedData={sortedData}
+      dataSource={dataSource}
       columns={columns}
       columnOptions={columnOptions}
       sortableColumnsMap={sortableColumnsMap}
       sortingUIOptions={sortingUIOptions}
       setSortableColumnsMap={setSortableColumnsMap}
       setSortedData={setSortedData}
-      data={data}
-      dataSource={dataSource}
       isLoading={isLoading}
       loadingContent={loadingContent}
       loadingOptions={loadingOptions}
@@ -355,6 +339,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       collapsedTableConfig={collapsedTableConfig}
       collapsedTables={collapsedTables}
       rowKey={rowKey}
+      isServerPaging={isServerPaging}
       showPagination={showPagination}
       pagination={pagination}
       nextuiPaginationProps={nextuiPaginationProps}
@@ -530,7 +515,7 @@ function SortingComponent<T>({
 
 function CardUI<T>({
   className,
-  data,
+  sortedData,
   columns,
   rowKey,
   cardOptions,
@@ -542,7 +527,7 @@ function CardUI<T>({
   virtualizedOptions,
 }: {
   className?: string;
-  data: T[];
+  sortedData: T[];
   columns: Column<T>[];
   rowKey?: string;
   cardOptions?: CardOptions;
@@ -556,7 +541,7 @@ function CardUI<T>({
 }) {
   const fetchedCountRef = useRef(-1);
   const elements = useMemo(
-    () => data.map((item, index) => {
+    () => sortedData.map((item, index) => {
       return (
         <Card
           key={rowKey ? item[rowKey] || index : index}
@@ -580,15 +565,15 @@ function CardUI<T>({
         </Card>
       );
     }),
-    [data]
+    [sortedData]
   );
   return (
     <div className={className}>
-      {data.length > 0 ? (
+      {sortedData.length > 0 ? (
         <VList
           style={{ height: virtualizedOptions?.vListHeight || 400 }}
           onRangeChange={async (_, endIndex) => {
-            const count = data.length;
+            const count = sortedData.length;
             if (endIndex + 1 >= count && fetchedCountRef.current < count) {
               fetchedCountRef.current = count;
               if (virtualizedOptions?.fetchData) {
@@ -609,7 +594,7 @@ function CardUI<T>({
 
 function VirtualizedListUI<T>({
   className,
-  data,
+  sortedData,
   dataSource,
   columns,
   columnOptions,
@@ -627,7 +612,7 @@ function VirtualizedListUI<T>({
   virtualizedOptions,
 }: {
   className: string;
-  data: T[];
+  sortedData: T[];
   dataSource: T[];
   columns: Column<T>[];
   columnOptions: ColumnOptions<T>;
@@ -648,7 +633,7 @@ function VirtualizedListUI<T>({
 }) {
   const fetchedCountRef = useRef(-1);
   const elements = useMemo(
-    () => data.map((item, index) => {
+    () => sortedData.map((item, index) => {
       return (
         <div
           key={rowKey ? item[rowKey] || index : index}
@@ -673,7 +658,7 @@ function VirtualizedListUI<T>({
         </div>
       );
     }),
-    [data]
+    [sortedData]
   );
 
   return (
@@ -713,11 +698,11 @@ function VirtualizedListUI<T>({
             )
           })}
         </div>
-        {data.length > 0 ? (
+        {sortedData.length > 0 ? (
           <VList
             style={{ height: virtualizedOptions?.vListHeight || 200 }}
             onRangeChange={async (_, endIndex) => {
-              const count = data.length;
+              const count = sortedData.length;
               if (endIndex + 1 >= count && fetchedCountRef.current < count) {
                 fetchedCountRef.current = count;
                 if (virtualizedOptions?.fetchData) {
@@ -737,18 +722,18 @@ function VirtualizedListUI<T>({
   )
 }
 
-function TableUI<T>({
+const TableUI = observer(<T,>({
   className,
-  classNames,
+  classNames = {},
   isHeaderSticky,
+  sortedData,
+  dataSource,
   columns,
   columnOptions,
   sortableColumnsMap,
   sortingUIOptions,
   setSortableColumnsMap,
   setSortedData,
-  data,
-  dataSource,
   isLoading,
   loadingContent,
   loadingOptions,
@@ -759,22 +744,26 @@ function TableUI<T>({
   collapsedTableConfig,
   collapsedTables,
   rowKey,
+  isServerPaging,
   showPagination,
-  pagination,
-  nextuiPaginationProps,
+  pagination = new PaginationState({
+    page: 1,
+    limit: 10,
+  }),
+  nextuiPaginationProps = {},
   autoScrollToTop
 }: {
   className: string;
-  classNames: TableClassNames;
+  classNames?: TableClassNames;
   isHeaderSticky: boolean;
+  sortedData: T[];
+  dataSource: T[];
   columns: Column<T>[];
   columnOptions?: ColumnOptions<T>;
   sortableColumnsMap: { [k: string]: 'asc' | 'desc' | 'none' };
   sortingUIOptions: SortingUIOptions;
   setSortableColumnsMap: (value: React.SetStateAction<{ [k: string]: 'asc' | 'desc' | 'none'; }>) => void;
   setSortedData: (value: React.SetStateAction<T[]>) => void;
-  data: T[];
-  dataSource: T[];
   isLoading: boolean;
   loadingContent?: React.ReactNode;
   loadingOptions?: LoadingOptions;
@@ -785,12 +774,24 @@ function TableUI<T>({
   collapsedTableConfig?: CollapsedTableConfig<T>;
   collapsedTables: CollapsedTable<any>[];
   rowKey?: string;
+  isServerPaging?: boolean;
   showPagination: boolean;
-  pagination: PaginationState;
-  nextuiPaginationProps: PaginationProps | {};
+  pagination?: PaginationState;
+  nextuiPaginationProps?: PaginationProps | {};
   autoScrollToTop: boolean;
-}) {
+}) => {
   const tableBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isServerPaging) {
+      pagination.setData({
+        total: dataSource.length,
+      });
+    }
+  }, [dataSource]);
+
+  const data = (isServerPaging || !showPagination) ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
+
   return (
     <>
       <div className={cn('relative w-full', className)} ref={tableBoxRef}>
@@ -927,7 +928,7 @@ function TableUI<T>({
       )}
     </>
   );
-}
+})
 
 function DefaultLoading({ loadingOptions }: { loadingOptions?: LoadingOptions }) {
   const type = loadingOptions?.type || 'skeleton';
