@@ -29,6 +29,7 @@ export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | '$action
 
 export type ColumnConfig<T> = {
   label?: React.ReactNode;
+  width?: number;
   hidden?: boolean;
   sortable?: boolean;
   sortKey?: string;
@@ -45,6 +46,7 @@ export type ColumnOptions<T> = {
 type Column<T> = {
   key: string;
   label: React.ReactNode;
+  width: number;
   render?: (item: T) => any;
 };
 
@@ -106,8 +108,8 @@ export type CollapsedTableConfig<T> = {
 }
 
 export type VirtualizedOptions = {
-  isVirtualized: boolean;
-  vListHeight: number;
+  isVirtualized?: boolean;
+  vListHeight?: number;
   classNames?: {
     header?: string;
     column?: string;
@@ -200,6 +202,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       return {
         key,
         label: columnOptions?.[key]?.label || (key === '$actions' ? '' : key),
+        width: columnOptions?.[key]?.width || 160,
         render: columnOptions?.[key]?.render,
       };
     });
@@ -235,6 +238,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
               return {
                 key: k,
                 label: option?.label || k,
+                width: option?.width || 160,
                 render: option?.render,
               };
             }),
@@ -249,9 +253,17 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
         columns.push({
           key: '$collapsedHandler',
           label: '',
+          width: 50,
         })
       } else {
-        columns = [{ key: '$collapsedHandler', label: '' }, ...columns];
+        columns = [
+          {
+            key: '$collapsedHandler',
+            label: '',
+            width: 50,
+          },
+          ...columns
+        ];
       }
     }
 
@@ -649,7 +661,10 @@ function VirtualizedListUI<T>({
             return (
               <div
                 key={column.key}
-                className={cn('w-full py-2 px-3 text-xs', virtualizedOptions?.classNames?.rowItem)}
+                className={cn('flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto', virtualizedOptions?.classNames?.rowItem)}
+                style={{
+                  minWidth: column.width
+                }}
               >
                 {column.render ? column.render(item) : renderFieldValue(item[column.key])}
               </div>
@@ -660,56 +675,64 @@ function VirtualizedListUI<T>({
     }),
     [data]
   );
+
   return (
-    <div className={className}>
-      <div className={cn("w-full flex items-center rounded-lg bg-default-100", virtualizedOptions?.classNames?.header)}>
-        {columns.map((column) => {
-          return (
-            <div key={column.key} className={cn("w-full h-10 px-3 flex items-center text-xs font-semibold whitespace-nowrap", virtualizedOptions?.classNames?.column)}>
-              <span>{column.label}</span>
-              {!!sortableColumnsMap[column.key] && (
-                <SortingComponent
-                  sortingUIOptions={sortingUIOptions}
-                  columnOptions={columnOptions}
-                  sortableColumnsMap={sortableColumnsMap}
-                  item={column}
-                  onSort={({ type, key, sortKey }) => {
-                    const { sortableColumns, sortedData } = sortData({
-                      type,
-                      key,
-                      sortKey,
-                      sortableColumnsMap,
-                      dataSource,
-                    });
-                    setSortableColumnsMap(sortableColumns);
-                    setSortedData(sortedData);
-                  }}
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
-      {data.length > 0 ? (
-        <VList
-          className='mt-2 w-full'
-          style={{ height: virtualizedOptions?.vListHeight || 200 }}
-          onRangeChange={async (_, endIndex) => {
-            const count = data.length;
-            if (endIndex + 1 >= count && fetchedCountRef.current < count) {
-              fetchedCountRef.current = count;
-              if (virtualizedOptions?.fetchData) {
-                await virtualizedOptions.fetchData()
+    <div className={cn("w-full overflow-auto", className)}>
+      <div className='inline-block'>
+        <div className={cn("flex items-center rounded-lg bg-default-100 mb-2", virtualizedOptions?.classNames?.header)}>
+          {columns.map((column) => {
+            return (
+              <div
+                key={column.key}
+                className={cn("flex-grow py-2 px-4 flex items-center text-xs font-semibold whitespace-nowrap", virtualizedOptions?.classNames?.column)}
+                style={{
+                  minWidth: column.width
+                }}
+              >
+                <span>{column.label}</span>
+                {!!sortableColumnsMap[column.key] && (
+                  <SortingComponent
+                    sortingUIOptions={sortingUIOptions}
+                    columnOptions={columnOptions}
+                    sortableColumnsMap={sortableColumnsMap}
+                    item={column}
+                    onSort={({ type, key, sortKey }) => {
+                      const { sortableColumns, sortedData } = sortData({
+                        type,
+                        key,
+                        sortKey,
+                        sortableColumnsMap,
+                        dataSource,
+                      });
+                      setSortableColumnsMap(sortableColumns);
+                      setSortedData(sortedData);
+                    }}
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
+        {data.length > 0 ? (
+          <VList
+            style={{ height: virtualizedOptions?.vListHeight || 200 }}
+            onRangeChange={async (_, endIndex) => {
+              const count = data.length;
+              if (endIndex + 1 >= count && fetchedCountRef.current < count) {
+                fetchedCountRef.current = count;
+                if (virtualizedOptions?.fetchData) {
+                  await virtualizedOptions.fetchData()
+                }
               }
-            }
-          }}
-        >
-          {elements}
-          {isLoading ? loadingContent || DefaultLoading({ loadingOptions }) : null}
-        </VList>
-      ) : (
-        emptyContent ?? <DefaultEmptyContent />
-      )}
+            }}
+          >
+            {elements}
+            {isLoading ? loadingContent || DefaultLoading({ loadingOptions }) : null}
+          </VList>
+        ) : (
+          emptyContent ?? <DefaultEmptyContent />
+        )}
+      </div>
     </div>
   )
 }
@@ -778,6 +801,9 @@ function TableUI<T>({
                 <th
                   key={item.key}
                   className={cn('px-3 h-10 text-xs font-semibold whitespace-nowrap bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', classNames.th)}
+                  style={{
+                    minWidth: item.width
+                  }}
                 >
                   <div className="flex items-center">
                     <span>{item.label}</span>
@@ -848,6 +874,9 @@ function TableUI<T>({
                             <td
                               key={column.key}
                               className={cn('py-2 px-3 text-xs', classNames.td)}
+                              style={{
+                                minWidth: column.width
+                              }}
                             >
                               {column.render ? column.render(item) : renderFieldValue(item[column.key])}
                             </td>
@@ -981,8 +1010,15 @@ function CollapseBodyRow<T>({
         {columns.map((column) => {
           if (column.key === '$collapsedHandler') {
             return (
-              <td className={classNames?.td}>
-                <div className={cn("w-6 h-6 flex items-center justify-center rounded-sm hover:bg-[#f3f3f4] dark:hover:bg-[#1e1e1e]", collapsedTableConfig?.collapsedHandlerBoxCss)}
+              <td
+                className={classNames?.td}
+                style={{
+                  minWidth: column.width
+                }}
+              >
+                <div
+                  className={cn("w-6 h-6 flex items-center justify-center rounded-sm hover:bg-[#f3f3f4] dark:hover:bg-[#1e1e1e]", collapsedTableConfig?.collapsedHandlerBoxCss)}
+
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsOpen((v) => !v);
@@ -994,7 +1030,13 @@ function CollapseBodyRow<T>({
             );
           }
           return (
-            <td key={column.key} className={cn("py-2 px-3 text-xs", classNames?.td)}>
+            <td
+              key={column.key}
+              className={cn("py-2 px-3 text-xs", classNames?.td)}
+              style={{
+                minWidth: column.width
+              }}
+            >
               {column.render ? column.render(item) : renderFieldValue(item[column.key])}
             </td>
           );
@@ -1014,6 +1056,9 @@ function CollapseBodyRow<T>({
                         <th
                           key={exC.key}
                           className={cn('px-3 h-10 text-xs text-left font-semibold bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', collapsedTableConfig?.classNames?.th)}
+                          style={{
+                            minWidth: exC.width
+                          }}
                         >
                           {exC.label}
                         </th>
@@ -1049,6 +1094,9 @@ function CollapseBodyRow<T>({
                               <td
                                 key={exC.key}
                                 className={cn('py-2 px-3 text-xs', collapsedTableConfig?.classNames?.td)}
+                                style={{
+                                  minWidth: exC.width
+                                }}
                               >
                                 {exC.render
                                   ? exC.render({

@@ -178,7 +178,7 @@ const HomePage = observer(() => {
         a: {
           b: 1,
         },
-        c: 2,
+        c: 2223,
         d: {
           e: 3,
         },
@@ -518,6 +518,7 @@ const HomePage = observer(() => {
           c: {
             label: 'C',
             sortable: true,
+            width: 250,
           },
           d: {
             label: 'D',
@@ -561,7 +562,7 @@ const HomePage = observer(() => {
         onRowClick={(item) => {
           console.log('Row Click:', item);
         }}
-        asCard={isMobile}
+        // asCard={isMobile}
         cardOptions={{
           showDivider: true,
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
@@ -581,7 +582,7 @@ const HomePage = observer(() => {
               headerKeys: ['aa', 'bb'],
               columnOptions: {
                 aa: {
-                  label: 'AA'
+                  label: 'AA',
                 },
                 bb: {
                   label: 'BB'
