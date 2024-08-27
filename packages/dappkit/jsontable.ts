@@ -1,1 +1,1 @@
-export { type HeaderKeys, type ColumnOptions, type Column, type ExtendedTable, type CardOptions, JSONTable } from "./components/JSONTable";
+export { type HeaderKeys, type ColumnOptions, type CardOptions, type LoadingOptions, type SortingUIOptions, type CollapsedTableConfig, JSONTable } from "./components/JSONTable";

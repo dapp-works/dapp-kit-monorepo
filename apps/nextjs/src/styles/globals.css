@@ -92,3 +92,23 @@ html {
     --radius: 0.5rem;
   }
 }
+
+.fixed-table-left-column {
+  @apply table-fixed;
+}
+.fixed-table-left-column th:first-child {
+  @apply sticky left-0 z-20;
+}
+.fixed-table-left-column td:first-child {
+  @apply sticky left-0 z-20;
+}
+.fixed-table-left-column tr,
+.fixed-table-left-column th {
+  @apply bg-[#f8f8f8] dark:bg-[#23222d];
+}
+.fixed-table-left-column td {
+  @apply bg-[#fff] dark:bg-[#131218];
+}
+.fixed-table-left-column tr:hover td {
+  @apply bg-[#fcfcfc] dark:bg-[#16151c] !important;
+}

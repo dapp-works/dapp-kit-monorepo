@@ -7,7 +7,7 @@ export class ToastPlugin implements Store {
   provider = () => (
     <Toaster
       toastOptions={{
-        className: '!bg-[#fff] !text-[#000] dark:!bg-[#333] dark:!text-[#fff] !rounded-md !shadow-md',
+        className: '!bg-[#fff] !text-[#000] dark:!bg-[#131218] dark:!text-[#fff] !rounded-md !shadow-md',
       }}
     />
   );

@@ -30,6 +30,7 @@
     "@trpc/server": "^10.36.0",
     "framer-motion": "^10.16.4",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.436.0",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "next": "14.1.0",

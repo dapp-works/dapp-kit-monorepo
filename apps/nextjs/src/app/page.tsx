@@ -14,6 +14,7 @@ import { PaginationState, PromiseState, RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import { ConfirmStore, DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
 import { useMemo, useState } from "react";
+import { ChevronRight } from "lucide-react";
 
 const inputValue = StoragePlugin.Get({
   key: "test.inputValue", value: "test", defaultValue: "defaultValue", engine: StoragePlugin.engines.memory, debounce: 500, onDebounce: (v) => {
@@ -293,11 +294,12 @@ const HomePage = observer(() => {
       <PromiseStateGroupTest />
 
       <JSONTable
-        className="my-4 h-auto"
+        // isHeaderSticky
+        // className="my-4 h-auto lg:h-[200px] p-2 fixed-table-left-column"
+        className="my-4"
         classNames={{
-          th: 'font-meidum text-xs text-[#64748B] dark:text-gray-300',
-          td: 'text-xs',
-          tr: 'hover:bg-[#f6f6f9] dark:hover:bg-[#19191c] border-t-1 border-[#E2E8F0] dark:border-[#121212] first:border-t-0',
+          th: 'text-[#64748B] dark:text-gray-300',
+          tr: 'border-t-1 border-[#E5E7EB] dark:border-[#23222d] first:border-t-0',
         }}
         // isLoading={true}
         // loadingOptions={{
@@ -343,7 +345,9 @@ const HomePage = observer(() => {
             ],
           },
         ]}
+        // dataSource={[]}
         headerKeys={['a', 'c', 'd', 'e']}
+        // headerKeys={['$actions', 'a', 'c', 'd', 'e']}
         columnOptions={{
           a: {
             label: 'A',
@@ -385,6 +389,7 @@ const HomePage = observer(() => {
             },
           },
         }}
+        // showPagination={false}
         // pagination={new PaginationState({
         //   limit: 1,
         //   onPageChange: (page) => {
@@ -395,9 +400,8 @@ const HomePage = observer(() => {
           color: 'secondary',
           size: 'sm',
           // radius: 'none',
-          isCompact: true
+          // isCompact: true
         }}
-        // showPagination={false}
         onRowClick={(item) => {
           console.log('Row Click:', item);
         }}
@@ -408,7 +412,51 @@ const HomePage = observer(() => {
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
           itemClassName: 'flex justify-between',
         }}
-        emptyContent="No Data"
+        // emptyContent={<div className="h-[100px] flex justify-center items-center">No Data</div>}
+        collapsedTableConfig={{
+          classNames: {
+            th: 'text-[#64748B] dark:text-gray-300',
+            tr: 'border-t-1 border-[#E5E7EB] dark:border-[#23222d] first:border-t-0',
+          },
+          options: [
+            {
+              key: 'e',
+              headerKeys: ['aa', 'bb'],
+              columnOptions: {
+                aa: {
+                  label: 'AA'
+                },
+                bb: {
+                  label: 'BB'
+                },
+                '$actions': {
+                  order: 100,
+                  label: ' ',
+                  render: (item) => {
+                    return (
+                      <Button
+                        className="w-full md:w-auto"
+                        size="sm"
+                        color="primary"
+                        onClick={() => {
+                          console.log('Edit:', item);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    );
+                  }
+                }
+              }
+            }
+          ],
+          rowCss: 'cursor-pointer',
+          onRowClick: (data) => {
+            console.log('data===>', data);
+          },
+          collapsedHandlerPosition: 'left',
+          closedIcon: <ChevronRight size={18} />,
+        }}
       />
 
       <JSONForm
