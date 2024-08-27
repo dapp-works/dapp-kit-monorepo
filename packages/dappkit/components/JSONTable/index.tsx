@@ -4,18 +4,10 @@ import {
   Divider,
   Pagination as NextuiPagination,
   PaginationProps,
-  SlotsToClasses,
   Spinner,
   SpinnerProps,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  TableSlots,
 } from '@nextui-org/react';
-import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { PaginationState } from "../../store/standard/PaginationState";
 import { SkeletonBox } from "../Common/SkeletonBox";
@@ -23,39 +15,41 @@ import { _ } from "../../lib/lodash";
 import { cn } from "../../lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
+export type TableClassNames = {
+  table?: string;
+  thead?: string;
+  tr?: string;
+  th?: string;
+  tbody?: string;
+  td?: string;
+}
+
 export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | '$actions'>;
 
+export type ColumnConfig<T> = {
+  label?: React.ReactNode;
+  hidden?: boolean;
+  sortable?: boolean;
+  sortKey?: string;
+  order?: number;
+  render?: (item: T) => any;
+  labelClassName?: string;
+  valueClassName?: string;
+}
+
 export type ColumnOptions<T> = {
-  [key in keyof T]?: {
-    label?: React.ReactNode;
-    hidden?: boolean;
-    sortable?: boolean;
-    sortKey?: string;
-    order?: number;
-    render?: (item: T) => any;
-    labelClassName?: string;
-    valueClassName?: string;
-  };
+  [key in keyof T]?: ColumnConfig<T>;
 } & {
-  $actions?: {
-    label?: React.ReactNode;
-    hidden?: boolean;
-    sortable?: boolean;
-    sortKey?: string;
-    order?: number;
-    render?: (item: T) => any;
-    labelClassName?: string;
-    valueClassName?: string;
-  };
+  $actions?: ColumnConfig<T>;
 };
 
-export type Column<T> = {
+type Column<T> = {
   key: string;
   label: React.ReactNode;
   render?: (item: T) => any;
 };
 
-export type ExtendedTable<U> = {
+type CollapsedTable<U> = {
   key: string;
   columns: Column<U>[];
 };
@@ -68,7 +62,7 @@ export type CardOptions = {
   dividerClassName?: string;
 };
 
-type LoadingOptions = {
+export type LoadingOptions = {
   type?: 'skeleton' | 'spinner';
   skeleton?: {
     boxClassName?: string;
@@ -83,7 +77,7 @@ type LoadingOptions = {
   };
 };
 
-type SortingUIOptions = {
+export type SortingUIOptions = {
   showDropdown?: boolean;
   dropdownTriggerBtnClassName?: string;
   dropdownContentClassName?: string;
@@ -95,9 +89,24 @@ type SortingUIOptions = {
   };
 };
 
+export type CollapsedTableConfig<T> = {
+  classNames?: TableClassNames;
+  options: {
+    key: keyof T;
+    headerKeys: string[];
+    columnOptions: ColumnOptions<any>;
+  }[];
+  collapsedHandlerPosition?: 'left' | 'right';
+  collapsedHandlerBoxCss?: string;
+  openedIcon?: React.ReactNode;
+  closedIcon?: React.ReactNode;
+  onRowClick?: (item: any) => void;
+  rowCss?: string | ((item: any) => string | undefined);
+}
+
 export interface JSONTableProps<T extends Record<string, any>> {
   className?: string;
-  classNames?: SlotsToClasses<TableSlots>;
+  classNames?: TableClassNames;
   rowKey?: string;
   dataSource: T[];
   headerKeys?: HeaderKeys<T>;
@@ -117,17 +126,14 @@ export interface JSONTableProps<T extends Record<string, any>> {
   loadingContent?: React.ReactNode;
   isHeaderSticky?: boolean;
   sortingUIOptions?: SortingUIOptions;
-  extendedTableOptions?: {
-    key: keyof T;
-    columnOptions: ColumnOptions<any>;
-  }[];
+  collapsedTableConfig?: CollapsedTableConfig<T>;
 }
 
 export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTableProps<T>) => {
   const {
     className,
     classNames = {},
-    dataSource,
+    dataSource = [],
     columnOptions,
     headerKeys,
     isServerPaging,
@@ -149,18 +155,18 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       dividerClassName: '',
     },
     autoScrollToTop = false,
-    emptyContent = 'No Data',
+    emptyContent,
     isLoading = false,
     loadingOptions,
     loadingContent,
     isHeaderSticky = false,
     sortingUIOptions,
-    extendedTableOptions = [],
+    collapsedTableConfig
   } = props;
-
-  const tableBoxRef = useRef<HTMLElement>(null);
-
-  const { columns, sortableColumnsDefaultValue } = useMemo(() => {
+  const [sortableColumnsMap, setSortableColumnsMap] = useState<{ [k: string]: 'asc' | 'desc' | 'none' }>({});
+  const [sortedData, setSortedData] = useState<T[]>(dataSource);
+  const tableBoxRef = useRef<HTMLDivElement>(null);
+  const { columns, sortableColumnsDefaultValue, showCollapsedTables, collapsedTables } = useMemo(() => {
     const firstData = dataSource[0];
 
     const allKeys = firstData ? Object.keys(firstData) : [];
@@ -171,8 +177,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
 
     const sortableColumnsDefaultValue: { [k: string]: 'asc' | 'desc' | 'none' } = {};
 
-    // @ts-ignore
-    const columns: Column<T>[] = keys.map((key: string) => {
+    let columns: Column<T>[] = keys.map((key: string) => {
       const sortable = columnOptions?.[key]?.sortable;
       if (sortable) {
         sortableColumnsDefaultValue[key] = 'none';
@@ -192,8 +197,10 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
       });
     }
 
-    const extendedTables = firstData
-      ? extendedTableOptions
+    let collapsedTables: CollapsedTable<any>[] = [];
+    if (firstData && collapsedTableConfig?.options) {
+      const collapsedTableOptions = collapsedTableConfig.options;
+      collapsedTables = collapsedTableOptions
         .filter((item) => {
           return Array.isArray(firstData[item.key]);
         })
@@ -202,7 +209,10 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           if (index > -1) {
             columns.splice(index, 1);
           }
-          const keys = Object.keys(item.columnOptions);
+          const keys = item.headerKeys || [];
+          if (!keys.includes('$actions') && item.columnOptions && item.columnOptions['$actions']) {
+            keys.push('$actions');
+          }
           return {
             key: item.key as string,
             columns: keys.map((k) => {
@@ -215,17 +225,28 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
             }),
           };
         })
-      : [];
+    }
+
+    const showCollapsedTables = collapsedTables.length > 0;
+    if (showCollapsedTables) {
+      const collapsedHandlerPosition = collapsedTableConfig?.collapsedHandlerPosition || 'right';
+      if (collapsedHandlerPosition === 'right') {
+        columns.push({
+          key: '$collapsedHandler',
+          label: '',
+        })
+      } else {
+        columns = [{ key: '$collapsedHandler', label: '' }, ...columns];
+      }
+    }
 
     return {
       columns,
-      extendedTables,
       sortableColumnsDefaultValue,
+      showCollapsedTables,
+      collapsedTables,
     };
   }, [dataSource, columnOptions]);
-
-  const [sortableColumnsMap, setSortableColumnsMap] = useState<{ [k: string]: 'asc' | 'desc' | 'none' }>({});
-  const [sortedData, setSortedData] = useState<T[]>(dataSource);
 
   useEffect(() => {
     setSortableColumnsMap(sortableColumnsDefaultValue);
@@ -265,66 +286,107 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
   }
 
   return (
-    <>
-      <Table
-        removeWrapper
-        isHeaderSticky={isHeaderSticky}
-        className={cn('relative w-full overflow-auto h-[400px]', className)}
-        classNames={classNames}
-        ref={tableBoxRef}
-      >
-        <TableHeader columns={columns}>
-          {columns.map((item) => (
-            <TableColumn key={item.key}>
-              <div className="flex items-center">
-                <span>{item.label}</span>
-                {!!sortableColumnsMap[item.key] && (
-                  <SortingComponent
-                    sortingUIOptions={sortingUIOptions}
-                    columnOptions={columnOptions}
-                    sortableColumnsMap={sortableColumnsMap}
-                    item={item}
-                    onSort={({ type, key, sortKey }) => {
-                      const { sortableColumns, sortedData } = sortData({
-                        type,
-                        key,
-                        sortKey,
-                        sortableColumnsMap,
-                        dataSource,
-                      });
-                      setSortableColumnsMap(sortableColumns);
-                      setSortedData(sortedData);
-                    }}
-                  />
-                )}
-              </div>
-            </TableColumn>
-          ))}
-        </TableHeader>
+    <div className={cn('relative w-full overflow-auto', className)} ref={tableBoxRef}>
+      <table className={cn('w-full h-auto table-auto', classNames.table)}>
+        <thead className={cn(classNames.thead, { 'sticky top-0 z-30 [&>tr]:first:shadow-small [&>tr]:first:rounded-lg': isHeaderSticky })}>
+          <tr className={classNames.tr}>
+            {columns.map((item) => (
+              <th
+                key={item.key}
+                className={cn('px-3 h-10 text-xs font-semibold bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', classNames.th)}
+              >
+                <div className="flex items-center">
+                  <span>{item.label}</span>
+                  {!!sortableColumnsMap[item.key] && (
+                    <SortingComponent
+                      sortingUIOptions={sortingUIOptions}
+                      columnOptions={columnOptions}
+                      sortableColumnsMap={sortableColumnsMap}
+                      item={item}
+                      onSort={({ type, key, sortKey }) => {
+                        const { sortableColumns, sortedData } = sortData({
+                          type,
+                          key,
+                          sortKey,
+                          sortableColumnsMap,
+                          dataSource,
+                        });
+                        setSortableColumnsMap(sortableColumns);
+                        setSortedData(sortedData);
+                      }}
+                    />
+                  )}
+                </div>
+              </th>
+            ))}
+          </tr>
+          <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
+        </thead>
         {isLoading ? (
-          <TableBody emptyContent={loadingContent || DefaultLoading({ loadingOptions })}>{[]}</TableBody>
+          <tbody className={classNames.tbody}>
+            <tr className={classNames.tr}>
+              <td
+                className={classNames.td}
+                colSpan={columns.length}
+              >
+                {loadingContent || DefaultLoading({ loadingOptions })}
+              </td>
+            </tr>
+          </tbody>
         ) : data.length > 0 ? (
-          <TableBody>
-            {data.map((item, index) => {
-              return (
-                <TableRow
-                  key={rowKey ? item[rowKey] || index : index}
-                  className={cn('', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
-                  onClick={() => {
-                    onRowClick?.(item);
-                  }}
-                >
-                  {columns.map((column) => {
-                    return <TableCell key={column.key}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</TableCell>;
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
+          <tbody className={classNames.tbody}>
+            {
+              showCollapsedTables ?
+                data.map(item => {
+                  return (
+                    <CollapseBodyRow
+                      classNames={classNames}
+                      item={item}
+                      columns={columns}
+                      rowCss={rowCss}
+                      onRowClick={onRowClick}
+                      collapsedTableConfig={collapsedTableConfig}
+                      collapsedTables={collapsedTables}
+                    />
+                  )
+                })
+                : data.map((item, index) => {
+                  return (
+                    <tr
+                      key={rowKey ? item[rowKey] || index : index}
+                      className={cn(classNames.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+                      onClick={() => {
+                        onRowClick?.(item);
+                      }}
+                    >
+                      {columns.map((column) => {
+                        return (
+                          <td
+                            key={column.key}
+                            className={cn('py-2 px-3 text-xs', classNames.td)}
+                          >
+                            {column.render ? column.render(item) : renderFieldValue(item[column.key])}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  );
+                })
+            }
+          </tbody>
         ) : (
-          <TableBody emptyContent={emptyContent}>{[]}</TableBody>
+          <tbody className={classNames.tbody}>
+            <tr className={classNames.tr}>
+              <td
+                className={classNames.td}
+                colSpan={columns.length}
+              >
+                {emptyContent ?? <DefaultEmptyContent />}
+              </td>
+            </tr>
+          </tbody>
         )}
-      </Table>
+      </table>
       {showPagination && pagination.total > pagination.limit && (
         <div className="flex justify-center">
           <NextuiPagination
@@ -349,7 +411,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
           />
         </div>
       )}
-    </>
+    </div>
   );
 });
 
@@ -557,7 +619,7 @@ function CardUI<T>({
       <div className={cn('space-y-2', cardOptions?.boxClassName)}>
         {isLoading ? (
           loadingContent ? (
-            <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400', cardOptions?.cardClassName)}>{loadingContent}</Card>
+            <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400 rounded-lg', cardOptions?.cardClassName)}>{loadingContent}</Card>
           ) : (
             <DefaultLoading loadingOptions={loadingOptions} />
           )
@@ -566,7 +628,7 @@ function CardUI<T>({
             return (
               <Card
                 key={rowKey ? item[rowKey] || index : index}
-                className={cn('w-full shadow-sm p-4', cardOptions?.cardClassName)}
+                className={cn('w-full shadow-sm p-4 rounded-lg', cardOptions?.cardClassName)}
                 isPressable={!!onRowClick}
                 onPress={() => {
                   onRowClick?.(item);
@@ -588,7 +650,7 @@ function CardUI<T>({
             );
           })
         ) : (
-          <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400', cardOptions?.cardClassName)}>{emptyContent}</Card>
+          <Card className={cn('w-full h-40 flex flex-col justify-center items-center p-4 shadow-sm text-foreground-400 rounded-lg', cardOptions?.cardClassName)}>{emptyContent}</Card>
         )}
       </div>
       {showPagination && pagination.total > pagination.limit && (
@@ -637,6 +699,10 @@ function DefaultLoading({ loadingOptions }: { loadingOptions?: LoadingOptions })
   );
 }
 
+function DefaultEmptyContent() {
+  return <div className="w-full h-[100px] flex justify-center items-center text-xs text-[#64748B] dark:text-[#cacaca]">No Data</div>;
+}
+
 function scrollIntoTop(target: HTMLElement) {
   if (target) {
     const { top } = target.getBoundingClientRect();
@@ -647,88 +713,138 @@ function scrollIntoTop(target: HTMLElement) {
   }
 }
 
-function CollapseBody<T>({
-  data,
-  rowKey,
+function CollapseBodyRow<T>({
+  classNames,
+  item,
   columns,
-  extendedTables,
   rowCss,
+  onRowClick,
+  collapsedTableConfig,
+  collapsedTables,
 }: {
-  data: T[];
-  rowKey?: string;
+  classNames?: TableClassNames;
+  item: T;
   columns: Column<T>[];
-  extendedTables: ExtendedTable<any>[];
-  rowCss?: string | ((item: T) => string | undefined);
+  rowCss?: string | ((item: T) => string | undefined),
+  onRowClick?: (item: T) => void;
+  collapsedTableConfig?: {
+    classNames?: TableClassNames;
+    collapsedHandlerPosition?: 'left' | 'right';
+    collapsedHandlerBoxCss?: string;
+    openedIcon?: React.ReactNode;
+    closedIcon?: React.ReactNode;
+    onRowClick?: (item: any) => void;
+    rowCss?: string | ((item: any) => string | undefined);
+  };
+  collapsedTables: CollapsedTable<any>[];
 }) {
-  return (
-    <TableBody>
-      {data.map((item, index) => {
-        return <CollapseBodyRow key={rowKey ? item[rowKey] || index : index} item={item} columns={columns} extendedTables={extendedTables} rowCss={rowCss} />;
-      })}
-    </TableBody>
-  );
-}
-
-function CollapseBodyRow<T>({ item, columns, extendedTables, rowCss }: { item: T; columns: Column<T>[]; extendedTables: ExtendedTable<any>[]; rowCss?: string | ((item: T) => string | undefined) }) {
   const [isOpen, setIsOpen] = useState(false);
+  const collapsedHandlerPosition = collapsedTableConfig?.collapsedHandlerPosition || 'right';
+
+  const { OpenedIcon, ClosedIcon } = useMemo(() => {
+    const defaultOpenedIcon = <ChevronDown size={18} />;
+    const defaultClosedIcon = collapsedHandlerPosition === 'left' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />;
+    return {
+      OpenedIcon: collapsedTableConfig?.openedIcon || defaultOpenedIcon,
+      ClosedIcon: collapsedTableConfig?.closedIcon || defaultClosedIcon,
+    };
+  }, []);
+
   return (
     <>
-      <TableRow
-        className={cn('text-xs cursor-pointer hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]', typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+      <tr
+        className={cn('text-xs cursor-pointer', classNames?.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
         onClick={(e: any) => {
-          const { nodeName } = e.target;
-          if (nodeName === 'TD' || nodeName === 'svg') {
-            setIsOpen((v) => !v);
-          }
+          onRowClick?.(item);
         }}
       >
         {columns.map((column) => {
+          if (column.key === '$collapsedHandler') {
+            return (
+              <td className={classNames?.td}>
+                <div className={cn("w-6 h-6 flex items-center justify-center rounded-sm hover:bg-[#f3f3f4] dark:hover:bg-[#1e1e1e]", collapsedTableConfig?.collapsedHandlerBoxCss)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen((v) => !v);
+                  }}
+                >
+                  {isOpen ? OpenedIcon : ClosedIcon}
+                </div>
+              </td>
+            );
+          }
           return (
-            <TableCell key={column.key} className="max-w-[200px] overflow-auto">
+            <td key={column.key} className={cn("py-2 px-3 text-xs", classNames?.td)}>
               {column.render ? column.render(item) : renderFieldValue(item[column.key])}
-            </TableCell>
+            </td>
           );
         })}
-      </TableRow>
-      <TableRow className={cn(isOpen ? 'table-row' : 'hidden')}>
-        <TableCell colSpan={columns.length}>
-          {extendedTables.map((ex) => {
+      </tr>
+      <tr className={cn(classNames?.tr, isOpen ? 'table-row' : 'hidden')}>
+        <td colSpan={columns.length + 1} className={cn("py-2 px-3 text-xs", classNames?.td)}>
+          {collapsedTables.map((ex) => {
             const exColumns = ex.columns;
-            const exRow = item[ex.key];
+            const exData = item[ex.key];
             return (
-              <Table className="mt-[10px]" key={ex.key}>
-                <TableHeader>
-                  {exColumns.map((exC) => {
-                    return (
-                      <TableColumn key={exC.key} className="text-xs text-[#64748B] dark:text-gray-300">
-                        {exC.label}
-                      </TableColumn>
-                    );
-                  })}
-                </TableHeader>
-                <TableBody>
-                  {exRow.map((exItem) => (
-                    <TableRow className="text-xs hover:bg-[#f6f6f9] dark:hover:bg-[#19191c]" key={exItem.key}>
-                      {exColumns.map((exC) => {
+              <table className={cn("w-full h-auto table-auto", collapsedTableConfig?.classNames?.table)} key={ex.key}>
+                <thead className={collapsedTableConfig?.classNames?.thead}>
+                  <tr className={collapsedTableConfig?.classNames?.tr}>
+                    {exColumns?.map((exC) => {
+                      return (
+                        <th
+                          key={exC.key}
+                          className={cn('px-3 h-10 text-xs text-left font-semibold bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', collapsedTableConfig?.classNames?.th)}
+                        >
+                          {exC.label}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                  <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
+                </thead>
+                <tbody className={collapsedTableConfig?.classNames?.tbody}>
+                  {exData?.map((exItem) => (
+                    <tr
+                      key={exItem.key}
+                      className={cn('text-xs',
+                        collapsedTableConfig?.classNames?.tr,
+                        typeof collapsedTableConfig?.rowCss === 'function'
+                          ? collapsedTableConfig?.rowCss({
+                            ...exItem,
+                            $parent: item,
+                          })
+                          : collapsedTableConfig?.rowCss
+                      )}
+                      onClick={(e: any) => {
+                        collapsedTableConfig?.onRowClick?.({
+                          ...exItem,
+                          $parent: item,
+                        });
+                      }}
+                    >
+                      {exColumns?.map((exC) => {
                         return (
-                          <TableCell key={exC.key} className="max-w-[200px] overflow-auto">
+                          <td
+                            key={exC.key}
+                            className={cn('py-2 px-3 text-xs', collapsedTableConfig?.classNames?.td)}
+                          >
                             {exC.render
                               ? exC.render({
                                 ...exItem,
                                 $parent: item,
                               })
                               : renderFieldValue(exItem[exC.key])}
-                          </TableCell>
+                          </td>
                         );
                       })}
-                    </TableRow>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             );
           })}
-        </TableCell>
-      </TableRow>
+        </td>
+      </tr>
     </>
   )
 }
