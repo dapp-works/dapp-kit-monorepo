@@ -94,8 +94,9 @@ html {
 }
 
 .fixed-table-left-column {
-  @apply table-fixed;
+  @apply overflow-x-auto;
 }
+
 .fixed-table-left-column th:first-child {
   @apply sticky left-0 z-20;
 }
