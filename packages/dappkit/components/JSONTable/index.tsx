@@ -102,6 +102,7 @@ export type CollapsedTableConfig<T> = {
   closedIcon?: React.ReactNode;
   onRowClick?: (item: any) => void;
   rowCss?: string | ((item: any) => string | undefined);
+  emptyContent?: React.ReactNode;
 }
 
 export interface JSONTableProps<T extends Record<string, any>> {
@@ -737,6 +738,7 @@ function CollapseBodyRow<T>({
     closedIcon?: React.ReactNode;
     onRowClick?: (item: any) => void;
     rowCss?: string | ((item: any) => string | undefined);
+    emptyContent?: React.ReactNode;
   };
   collapsedTables: CollapsedTable<any>[];
 }) {
@@ -786,7 +788,7 @@ function CollapseBodyRow<T>({
         <td colSpan={columns.length + 1} className={cn("py-2 px-3 text-xs", classNames?.td)}>
           {collapsedTables.map((ex) => {
             const exColumns = ex.columns;
-            const exData = item[ex.key];
+            const exData = item[ex.key] || [];
             return (
               <table className={cn("w-full h-auto table-auto", collapsedTableConfig?.classNames?.table)} key={ex.key}>
                 <thead className={collapsedTableConfig?.classNames?.thead}>
@@ -804,44 +806,59 @@ function CollapseBodyRow<T>({
                   </tr>
                   <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
                 </thead>
-                <tbody className={collapsedTableConfig?.classNames?.tbody}>
-                  {exData?.map((exItem) => (
-                    <tr
-                      key={exItem.key}
-                      className={cn('text-xs',
-                        collapsedTableConfig?.classNames?.tr,
-                        typeof collapsedTableConfig?.rowCss === 'function'
-                          ? collapsedTableConfig?.rowCss({
-                            ...exItem,
-                            $parent: item,
-                          })
-                          : collapsedTableConfig?.rowCss
-                      )}
-                      onClick={(e: any) => {
-                        collapsedTableConfig?.onRowClick?.({
-                          ...exItem,
-                          $parent: item,
-                        });
-                      }}
-                    >
-                      {exColumns?.map((exC) => {
-                        return (
-                          <td
-                            key={exC.key}
-                            className={cn('py-2 px-3 text-xs', collapsedTableConfig?.classNames?.td)}
-                          >
-                            {exC.render
-                              ? exC.render({
+                {exData.length > 0 ? (
+                  <tbody className={collapsedTableConfig?.classNames?.tbody}>
+                    {
+                      exData.map((exItem) => (
+                        <tr
+                          key={exItem.key}
+                          className={cn('text-xs',
+                            collapsedTableConfig?.classNames?.tr,
+                            typeof collapsedTableConfig?.rowCss === 'function'
+                              ? collapsedTableConfig?.rowCss({
                                 ...exItem,
                                 $parent: item,
                               })
-                              : renderFieldValue(exItem[exC.key])}
-                          </td>
-                        );
-                      })}
+                              : collapsedTableConfig?.rowCss
+                          )}
+                          onClick={(e: any) => {
+                            collapsedTableConfig?.onRowClick?.({
+                              ...exItem,
+                              $parent: item,
+                            });
+                          }}
+                        >
+                          {exColumns?.map((exC) => {
+                            return (
+                              <td
+                                key={exC.key}
+                                className={cn('py-2 px-3 text-xs', collapsedTableConfig?.classNames?.td)}
+                              >
+                                {exC.render
+                                  ? exC.render({
+                                    ...exItem,
+                                    $parent: item,
+                                  })
+                                  : renderFieldValue(exItem[exC.key])}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                ) : (
+                  <tbody className={classNames.tbody}>
+                    <tr className={classNames.tr}>
+                      <td
+                        className={classNames.td}
+                        colSpan={columns.length}
+                      >
+                        {collapsedTableConfig?.emptyContent ?? <DefaultEmptyContent />}
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
+                  </tbody>
+                )}
               </table>
             );
           })}
