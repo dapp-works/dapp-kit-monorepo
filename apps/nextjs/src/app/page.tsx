@@ -318,12 +318,7 @@ const HomePage = observer(() => {
             d: {
               e: 3,
             },
-            e: [
-              {
-                aa: 1,
-                bb: 2,
-              },
-            ],
+            e: [],
           },
           {
             a: {
