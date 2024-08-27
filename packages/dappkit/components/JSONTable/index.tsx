@@ -848,10 +848,10 @@ function CollapseBodyRow<T>({
                     }
                   </tbody>
                 ) : (
-                  <tbody className={classNames.tbody}>
-                    <tr className={classNames.tr}>
+                  <tbody className={collapsedTableConfig?.classNames?.tbody}>
+                    <tr className={collapsedTableConfig?.classNames?.tr}>
                       <td
-                        className={classNames.td}
+                        className={collapsedTableConfig?.classNames?.td}
                         colSpan={columns.length}
                       >
                         {collapsedTableConfig?.emptyContent ?? <DefaultEmptyContent />}
