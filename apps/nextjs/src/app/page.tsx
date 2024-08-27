@@ -562,7 +562,7 @@ const HomePage = observer(() => {
         onRowClick={(item) => {
           console.log('Row Click:', item);
         }}
-        // asCard={isMobile}
+        asCard={isMobile}
         cardOptions={{
           showDivider: true,
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
