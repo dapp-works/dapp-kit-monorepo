@@ -297,7 +297,7 @@ export const JSONTable = observer(<T extends Record<string, any>>(props: JSONTab
     );
   }
 
-  if (virtualizedOptions.isVirtualized) {
+  if (virtualizedOptions?.isVirtualized) {
     return (
       <VirtualizedListUI
         className={className}
