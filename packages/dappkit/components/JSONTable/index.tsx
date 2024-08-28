@@ -193,7 +193,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
       return {
         key,
         label: columnOptions?.[key]?.label ?? (key === '$actions' ? '' : key),
-        width: columnOptions?.[key]?.width ?? virtualizedOptions?.isVirtualized ? 180 : 60,
+        width: columnOptions?.[key]?.width ?? (virtualizedOptions?.isVirtualized ? 180 : 60),
         render: columnOptions?.[key]?.render,
       };
     });
@@ -229,7 +229,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
               return {
                 key: k,
                 label: option?.label ?? k,
-                width: option?.width ?? virtualizedOptions?.isVirtualized ? 180 : 60,
+                width: option?.width ?? (virtualizedOptions?.isVirtualized ? 180 : 60),
                 render: option?.render,
               };
             }),
