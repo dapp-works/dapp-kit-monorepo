@@ -193,7 +193,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
       return {
         key,
         label: columnOptions?.[key]?.label || (key === '$actions' ? '' : key),
-        width: columnOptions?.[key]?.width || 160,
+        width: columnOptions?.[key]?.width || 60,
         render: columnOptions?.[key]?.render,
       };
     });
@@ -229,7 +229,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
               return {
                 key: k,
                 label: option?.label || k,
-                width: option?.width || 160,
+                width: option?.width || 60,
                 render: option?.render,
               };
             }),
@@ -244,14 +244,14 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
         columns.push({
           key: '$collapsedHandler',
           label: '',
-          width: 50,
+          width: 60,
         })
       } else {
         columns = [
           {
             key: '$collapsedHandler',
             label: '',
-            width: 50,
+            width: 60,
           },
           ...columns
         ];
