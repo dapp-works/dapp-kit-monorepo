@@ -192,16 +192,16 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
       }
       return {
         key,
-        label: columnOptions?.[key]?.label || (key === '$actions' ? '' : key),
-        width: columnOptions?.[key]?.width || 60,
+        label: columnOptions?.[key]?.label ?? (key === '$actions' ? '' : key),
+        width: columnOptions?.[key]?.width ?? virtualizedOptions?.isVirtualized ? 180 : 60,
         render: columnOptions?.[key]?.render,
       };
     });
 
     if (!headerKeys && columnOptions) {
       columns.sort((a, b) => {
-        const aOrder = columnOptions[a.key]?.order || 0;
-        const bOrder = columnOptions[b.key]?.order || 0;
+        const aOrder = columnOptions[a.key]?.order ?? 0;
+        const bOrder = columnOptions[b.key]?.order ?? 0;
         return bOrder - aOrder;
       });
     }
@@ -228,8 +228,8 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
               const option = item.columnOptions[k];
               return {
                 key: k,
-                label: option?.label || k,
-                width: option?.width || 60,
+                label: option?.label ?? k,
+                width: option?.width ?? virtualizedOptions?.isVirtualized ? 180 : 60,
                 render: option?.render,
               };
             }),
@@ -662,7 +662,7 @@ function VirtualizedListUI<T>({
   );
 
   return (
-    <div className={cn("w-full overflow-auto", className)}>
+    <div className={cn("w-full overflow-x-auto", className)}>
       <div className='inline-block'>
         <div className={cn("flex items-center rounded-lg bg-default-100 mb-2", virtualizedOptions?.classNames?.header)}>
           {columns.map((column) => {
@@ -941,7 +941,7 @@ function DefaultLoading({ loadingOptions }: { loadingOptions?: LoadingOptions })
   }
 
   return (
-    <div className={cn('w-full h-[100px] flex justify-center items-center', spinnerOptions?.boxClassName)}>
+    <div className={cn('w-full h-[60px] flex justify-center items-center', spinnerOptions?.boxClassName)}>
       <Spinner size="sm" color="primary" {...spinnerProps} />
       <div className={cn('ml-2 text-[#64748B] text-sm', spinnerOptions?.textClassName)}>{spinnerOptions?.text || 'Loading...'}</div>
     </div>
@@ -949,7 +949,7 @@ function DefaultLoading({ loadingOptions }: { loadingOptions?: LoadingOptions })
 }
 
 function DefaultEmptyContent() {
-  return <div className="w-full h-[100px] flex justify-center items-center text-xs text-[#64748B] dark:text-[#cacaca]">No Data</div>;
+  return <div className="w-full h-[60px] flex justify-center items-center text-xs text-[#64748B] dark:text-[#cacaca]">No Data</div>;
 }
 
 function scrollIntoTop(target: HTMLElement) {
