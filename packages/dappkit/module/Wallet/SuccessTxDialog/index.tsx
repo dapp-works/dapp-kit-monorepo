@@ -1,9 +1,9 @@
-import { RootStore } from "@dappworks/kit";
-import { DialogStore } from "@dappworks/kit/plugins";
 import { Icon } from "@iconify/react";
 import { Card } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
-
+import React from "react";
+import { RootStore } from "../../../store";
+import { DialogStore } from "../../../module/Dialog";
 interface IProps {
   msg: string,
   hash: string,

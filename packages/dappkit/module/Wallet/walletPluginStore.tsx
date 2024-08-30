@@ -5,13 +5,13 @@ import { WalletTransactionHistoryType } from "./type";
 
 export class WalletRpcStore implements Store {
   sid = 'WalletPluginStore';
-
+  autoObservable = true
   curRpc = new StorageState({ default: 'https://babel-api.mainnet.iotex.one', key: 'curRPC-v2', value: 'https://babel-api.mainnet.iotex.one' });
 }
 
 export class WalletHistoryStore implements Store {
-  sid = 'WalletPluginStore';
-
+  sid = 'WalletHistoryStore';
+  autoObservable = true
   history = new StorageState<WalletTransactionHistoryType[] | null>({ value: [], key: 'history' });
 
   recordHistory(item: WalletTransactionHistoryType) {

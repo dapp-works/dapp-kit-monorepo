@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
 import { WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
 import { SwitchChainMutate } from "wagmi/query";
-import { Config, useAccount, useConnect, useSwitchChain, useWalletClient } from "wagmi";
+import { Config, useAccount, useConnect, useSwitchChain, useWalletClient, } from "wagmi";
 import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet } from '@rainbow-me/rainbowkit/wallets';
 import { Chain, Wallet, useConnectModal, getDefaultConfig, WalletDetailsParams } from '@rainbow-me/rainbowkit';
 import { RootStore } from "../../store";
@@ -18,7 +18,9 @@ import { ToastPlugin } from "../Toast/Toast";
 import { createClient, createPublicClient, createWalletClient, http } from 'viem';
 import { iotex } from "./chain";
 import { Chain as ViemChain } from "viem";
-import { WalletRpcStore } from './walletPluginStore';
+import { WalletHistoryStore, WalletRpcStore } from './walletPluginStore';
+import SafeAppsSDK, { TransactionStatus } from '@safe-global/safe-apps-sdk';
+import { ShowSuccessTxDialog } from './SuccessTxDialog'
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -35,9 +37,9 @@ export class WalletStore implements Store {
   switchChain: SwitchChainMutate<Config, unknown> | undefined;
   updateTicker = 0;
   defaultChainId = 4689;
-  chain: Chain & ViemChain | undefined;
-  supportedChains: Chain & ViemChain[] = [iotex];
-
+  chain: (Chain & ViemChain) | undefined;
+  supportedChains: (Chain & ViemChain)[] = [iotex];
+  openConnectModal: any;
   balance = PromiseHook.wrap({
     func: async () => {
       if (!this.publicClient || !this.account) return new BigNumberState({ value: new BigNumber(0) });
@@ -86,6 +88,7 @@ export class WalletStore implements Store {
   }
 
   use() {
+    console.log('use wallet')
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
     const { switchChain } = useSwitchChain();
@@ -94,16 +97,17 @@ export class WalletStore implements Store {
 
     this.set({
       connect,
+      // @ts-ignore 
       walletClient,
       openConnectModal,
       switchChain,
-      disconnect
     })
 
     useEffect(() => {
       this.set({
         isConnect: isConnected,
         account: address,
+        // @ts-ignore 
         chain,
       })
       if (this.account) {
@@ -240,13 +244,14 @@ export class WalletStore implements Store {
   }) {
     const toast = RootStore.Get(ToastPlugin);
     let hash;
+    const historyStore = RootStore.Get(WalletHistoryStore)
     try {
       if (loadingText) toast.loading(loadingText);
       if (!chainId) throw new Error('chainId, address, data is required');
       await RootStore.Get(WalletStore).prepare(Number(chainId));
       hash = await tx();
       if (historyItem) {
-        this.recordHistory({ ...historyItem, tx: hash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
+        historyStore.recordHistory({ ...historyItem, tx: hash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
       }
       const receipt = await this.waitForTransactionReceipt({ hash });
       if (receipt.status == 'success') {
@@ -256,12 +261,12 @@ export class WalletStore implements Store {
           if (showSuccessDialog) {
             ShowSuccessTxDialog({ msg: historyItem.msg, hash: hash });
           }
-          this.updateHistoryStatusByTx(hash, 'success');
+          historyStore.updateHistoryStatusByTx(hash, 'success');
         }
       } else {
         toast.dismiss();
         toast.error('The transaction failed');
-        this.updateHistoryStatusByTx(hash, 'fail');
+        historyStore.updateHistoryStatusByTx(hash, 'fail');
       }
       if (successText) toast.success(successText);
       this.updateTicker++;
@@ -279,7 +284,7 @@ export class WalletStore implements Store {
         }
         if (error?.message?.includes('The Transaction may not be processed on a block yet') || error?.message?.includes('could not be found')) {
           if (historyItem) {
-            this.updateHistoryStatusByTx(hash, 'success');
+            historyStore.updateHistoryStatusByTx(hash, 'success');
           }
           toast.success('The transaction was successful');
           return;
@@ -337,8 +342,10 @@ export class WalletStore implements Store {
     const toast = RootStore.Get(ToastPlugin);
     try {
       if (!chainId || !address) throw new Error('chainId, address, is required');
-      const wallet = await RootStore.Get(WalletStore).prepare(chainId);
+      await RootStore.Get(WalletStore).prepare(chainId);
       if (loadingText) toast.loading(loadingText);
+      const historyStore = RootStore.Get(WalletHistoryStore)
+      //@ts-ignore 
       const hash = await this.walletClient.sendTransaction({
         account: this.account,
         to: address as `0x${string}`,
@@ -349,7 +356,7 @@ export class WalletStore implements Store {
       let receipt = await this.waitForTransactionReceipt({ hash });
       console.log(receipt);
       if (historyItem) {
-        this.recordHistory({ ...historyItem, tx: receipt.transactionHash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
+        historyStore.recordHistory({ ...historyItem, tx: receipt.transactionHash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
       }
       onSended ? onSended({ res: receipt }) : null;
       if (receipt.status == 'success') {
@@ -357,14 +364,14 @@ export class WalletStore implements Store {
           if (showSuccessDialog) {
             ShowSuccessTxDialog({ msg: historyItem.msg, hash: hash });
           }
-          this.updateHistoryStatusByTx(receipt.transactionHash, 'success');
+          historyStore.updateHistoryStatusByTx(receipt.transactionHash, 'success');
         }
         onSuccess && onSuccess({ res: receipt });
         toast.dismiss();
         toast.success('The transaction was successful');
       } else {
         if (historyItem) {
-          this.updateHistoryStatusByTx(receipt.transactionHash, 'fail');
+          historyStore.updateHistoryStatusByTx(receipt.transactionHash, 'fail');
         }
         onError && onError({ res: receipt });
         toast.dismiss();
