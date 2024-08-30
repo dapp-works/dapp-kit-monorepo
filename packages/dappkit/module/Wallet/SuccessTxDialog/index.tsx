@@ -1,5 +1,4 @@
 import { Icon } from "@iconify/react";
-import { Card } from "@nextui-org/react";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { RootStore } from "../../../store";
