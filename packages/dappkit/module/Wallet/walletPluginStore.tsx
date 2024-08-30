@@ -1,12 +1,154 @@
+import { Icon } from "@iconify/react";
+import { RootStore } from "../../store";
 import { Store } from "../../store/standard/base";
 import { StorageState } from '../../store/standard/StorageState';
+import { ToastPlugin } from "../Toast/Toast";
 import { WalletTransactionHistoryType } from "./type";
+import { WalletStore } from ".";
+import { helper } from "../../lib/helper";
 
-
+const defaultRPCList = [
+  { name: 'https://babel-api.fastblocks.io', latency: 0, height: 0, custom: false },
+  { name: 'https://babel-api.mainnet.iotex.one', latency: 0, height: 0, },
+  { name: 'https://babel-api.mainnet.iotex.io', latency: 0, height: 0, },
+  { name: 'https://iotex-network.rpc.thirdweb.com', latency: 0, height: 0, },
+  { name: 'https://iotexrpc.com', latency: 0, height: 0, },
+  { name: 'https://iotex.api.onfinality.io/public', latency: 0, height: 0, },
+  { name: 'https://rpc.ankr.com/iotex', latency: 0, height: 0, },
+]
 export class WalletRpcStore implements Store {
   sid = 'WalletPluginStore';
   autoObservable = true
   curRpc = new StorageState({ default: 'https://babel-api.mainnet.iotex.one', key: 'curRPC-v2', value: 'https://babel-api.mainnet.iotex.one' });
+  isAutoSelectRpc = new StorageState({ key: 'isAutoSelectRpc', default: true });
+  customRpc = '';
+  rpcList = new StorageState({ key: 'customRpcList-v2', default: defaultRPCList, value: [] })
+  showCustomRpc = false;
+  get currentRpc() {
+    console.log(this.rpcList.value?.find(i => i.name == this.curRpc))
+    return this.rpcList.value?.find(i => i.name == this.curRpc.value) || null
+  }
+  addCustomRpc() {
+    const item = { name: this.customRpc, latency: 0, height: 0, custom: true }
+    if (defaultRPCList.find(i => i.name === item.name)) {
+      return RootStore.Get(ToastPlugin).error('Rpc already exists')
+    }
+    if (this.rpcList.value) {
+      this.rpcList.save([...this.rpcList.value, item])
+      this.refresh()
+      return
+    }
+    this.rpcList.save([...defaultRPCList, item])
+    this.refresh()
+  }
+  async addToMetamask(url) {
+    try {
+      await window.ethereum?.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: `0x${(4689).toString(16)}`,
+          chainName: 'IoTeX Mainnet',
+          nativeCurrency: {
+            name: 'IoTeX',
+            symbol: 'IOTX',
+            decimals: 18,
+          },
+          rpcUrls: [url],
+          blockExplorerUrls: ['https://iotexscan.io'],
+        }]
+      });
+      RootStore.Get(ToastPlugin).success('Network added');
+      console.log('Network added');
+    } catch (error) {
+      console.error('Failed to add network', error);
+    }
+  }
+  refresh() {
+    this.showCustomRpc = false
+    this.customRpc = ''
+    setTimeout(() => {
+      this.testRpc()
+    }, 500)
+  }
+  latencyColor(latency: number) {
+    if (latency < 0) {
+      return 'text-red-500'
+    }
+    if (latency < 1) {
+      return 'text-green-500'
+    }
+    if (latency < 2) {
+      return 'text-yellow-500'
+    }
+    return 'text-red-500'
+  }
+  async testRpcFunction(url: string): Promise<{ url: string, lentency: number, height: number }> {
+    const start = performance.now();
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'eth_getBlockByNumber',
+          params: ["latest", false],
+          id: 1,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error from server: ${response.status}`);
+      }
+      const res = await response.json();
+      console.log(res)
+      const end = performance.now();
+      return { url, lentency: Number(helper.number.numberFormat(((end - start) / 1000), '0.000', { fallback: '-1' })), height: parseInt(res.result.number, 16) };
+    } catch (error) {
+      console.error('RPC Latency Test Failed:', error);
+      return { url, lentency: -1, height: -1 }; // 在发生错误时返回 -1
+    }
+  }
+  testRpc() {
+    this.rpcList?.value.forEach(i => {
+      this.testRpcFunction(i.name).then(res => {
+        i.latency = res.lentency
+        i.height = res.height
+      })
+    })
+    this.rpcList.save(this.rpcList.value)
+  }
+  removeRpc(name: string) {
+    this.rpcList.save(this.rpcList.value.filter(i => i.name !== name))
+  }
+  scoreIcon(score: number) {
+    if (score < 0) {
+      return <Icon icon="codicon:error" width="18" height="18" style={{ color: "#FF0000" }} />
+    }
+    if (score < 1) {
+      return <Icon icon="icon-park-solid:check-one" width="18" height="18" style={{ color: "#289726" }} />
+    }
+    if (score < 2) {
+      return <Icon icon="bxs:error" width="18" height="18" style={{ color: "#FFA500" }} />
+    }
+    return <Icon icon="codicon:error" width="18" height="18" style={{ color: "#FF0000" }} />
+  }
+  get wallet() {
+    return RootStore.Get(WalletStore)
+  }
+  // debounceAutoSelectRpc = pDebounce(this.autoSelectRpc, 3000)
+  async autoSelectRpc() {
+    console.log('autoSelectRpc')
+    for (let i = 0; i < this.rpcList.value.length; i++) {
+      const item = this.rpcList.value[i]
+      const res = await this.testRpcFunction(item.name)
+      if (res.lentency != -1 || res.height > 0) {
+        this.curRpc.save(item.name)
+        break;
+      }
+    }
+  }
 }
 
 export class WalletHistoryStore implements Store {
