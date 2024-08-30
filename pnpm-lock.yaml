@@ -300,6 +300,9 @@ importers:
 
   packages/dappkit:
     dependencies:
+      '@iconify/react':
+        specifier: ^4.1.1
+        version: 4.1.1(react@18.2.0)
       '@internationalized/date':
         specifier: ^3.5.4
         version: 3.5.4
@@ -322,7 +325,7 @@ importers:
         specifier: ^2.0.5
         version: 2.0.6(react-dom@18.2.0)(react@18.2.0)
       '@rainbow-me/rainbowkit':
-        specifier: ^2.1.5
+        specifier: '>=2.1.5'
         version: 2.1.5(@tanstack/react-query@5.45.1)(react-dom@18.2.0)(react@18.2.0)(viem@2.20.1)(wagmi@2.12.7)
       '@rjsf/core':
         specifier: '>=5.19.4'
@@ -333,8 +336,11 @@ importers:
       '@rjsf/validator-ajv8':
         specifier: '>=5.19.4'
         version: 5.19.4(@rjsf/utils@5.19.4)
+      '@safe-global/safe-apps-sdk':
+        specifier: ^9.0.0
+        version: 9.1.0(typescript@5.5.2)
       '@tanstack/react-query':
-        specifier: ^5.45.1
+        specifier: '>=5.45.1'
         version: 5.45.1(react@18.2.0)
       '@tremor/react':
         specifier: '>=3.0.0'
@@ -406,13 +412,13 @@ importers:
         specifier: '>=2.0.0'
         version: 2.1.0
       viem:
-        specifier: ^2.20.1
+        specifier: '>=2.20.1'
         version: 2.20.1(typescript@5.5.2)
       virtua:
         specifier: 0.33.7
         version: 0.33.7(react-dom@18.2.0)(react@18.2.0)
       wagmi:
-        specifier: ^2.12.7
+        specifier: '>=2.12.7'
         version: 2.12.7(@tanstack/react-query@5.45.1)(react-dom@18.2.0)(react-native@0.75.2)(react@18.2.0)(typescript@5.5.2)(viem@2.20.1)
     devDependencies:
       currency.js:
@@ -2617,6 +2623,19 @@ packages:
       semver: 7.5.4
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /@iconify/react@4.1.1(react@18.2.0):
+    resolution: {integrity: sha512-jed14EjvKjee8mc0eoscGxlg7mSQRkwQG3iX3cPBCO7UlOjz0DtlvTqxqEcHUJGh+z1VJ31Yhu5B9PxfO0zbdg==}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      '@iconify/types': 2.0.0
+      react: 18.2.0
+    dev: false
+
+  /@iconify/types@2.0.0:
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
     dev: false
 
   /@internationalized/date@3.5.4:
@@ -6241,6 +6260,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -16101,6 +16121,10 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+    dev: false
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
     dev: false
 
   /natural-compare@1.4.0:
