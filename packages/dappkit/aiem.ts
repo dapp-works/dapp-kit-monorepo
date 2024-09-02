@@ -422,7 +422,11 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                     });
 
                     break;
-                  case "contract":
+                  case "custom":
+                    const func = fieldMetadata.func
+                    call = () => func(instance)
+                    break;
+                  case "entity":
                     const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
 
                     if (typeof fieldMetadata.targetKey == "string") {

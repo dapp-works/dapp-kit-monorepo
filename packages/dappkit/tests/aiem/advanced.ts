@@ -110,21 +110,40 @@ const main = async () => {
 // console.log(resArr[0])
 
 
-class Test {
-  foo = 1
-  async bar(val: any) {
-    return val
-  }
-  async bar1() {
-    return console.log("call bar1")
+class Foo {
+  @Fields.custom(async (e: SumTest) => new Promise(res => setTimeout(() => res(10), 1000)))
+  foo: number = 1
+
+  bar: number = 1
+
+  get sum() {
+    return this.foo + this.bar
   }
 }
 
-const test = await AIem.Query(Test, {
-  foo: true,
-  bar: [234],
-})({ foo: 123, })
+class SumTest {
+  @Fields.custom(async (e: SumTest) => new Promise(res => setTimeout(() => res(10), 1000)))
+  a: number = 1
+  @Fields.custom(async (e: SumTest) => new Promise(res => setTimeout(() => res(20), 1000)))
+  b: number = 1
 
-console.log(test)
-test.bar1()
+  get sum() {
+    return this.a + this.b
+  }
+
+  @Fields.entity(() => Foo, async (e: SumTest) => ({ bar: 20 }))
+  entity: Foo
+}
+
+const test = await AIem.Query(SumTest, {
+  a: true,
+  b: true,
+  entity: {
+    foo: true
+  }
+})({})
+
+console.log(new SumTest().sum, new Foo().sum)
+
+console.log(test.sum, test.entity.sum)
 
