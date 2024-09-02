@@ -6,7 +6,6 @@ export default defineConfig({
   clean: true,
   // cjsInterop: true,
   treeshake: true,
-
   external: [
     "framer-motion",
     "@nextui-org/react",

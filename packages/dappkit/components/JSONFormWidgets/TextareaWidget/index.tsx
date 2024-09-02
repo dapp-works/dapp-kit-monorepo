@@ -19,7 +19,7 @@ type Options = {
   endContent?: ReactNode;
   description?: string;
 };
-
+// @ts-ignore 
 export interface TextareaWidgetProps extends WidgetProps {
   options: Options;
 }

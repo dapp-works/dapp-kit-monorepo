@@ -184,7 +184,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       return createPublicClient({
         //@ts-ignore
         chain: this.chainMap[chainId],
-
         ...(options?.multicall
           ? {
             batch: {

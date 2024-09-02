@@ -1,4 +1,4 @@
-import { RainbowKitProvider, Wallet, connectorsForWallets, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
+import { Chain, RainbowKitProvider, Wallet, connectorsForWallets, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -6,26 +6,41 @@ import { observer } from 'mobx-react-lite';
 import { WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
 import { WalletStore } from '.';
+import { WalletConfigStore } from './walletConfigStore'
 
-// const queryClient = new QueryClient();
-export const WalletProvider = observer(({ children, theme }: { children: React.ReactNode, theme?: 'dark' | 'light' }) => {
-  const wallet = RootStore.Get(WalletStore);
+const queryClient = new QueryClient();
+export const WalletProvider = observer(({
+  children,
+  theme,
+  appName,
+  supportedChains
+}: {
+  children: React.ReactNode,
+  theme?: 'dark' | 'light',
+  appName?: string,
+  supportedChains?: Chain[]
+}) => {
+  const walletConfig = RootStore.Get(WalletConfigStore);
+
   useEffect(() => {
-    console.log(123)
-    // console.log(queryClient)
-  }, [])
+    if (supportedChains) {
+      walletConfig.supportedChains = supportedChains
+    }
+    if (appName) {
+      walletConfig.appName = appName
+    }
+  }, [supportedChains, appName])
   return (
-    <div>
-      {/* <WagmiProvider config={wallet.rainbowKitConfig} reconnectOnMount={true}>
-        <QueryClientProvider client={queryClient} >
-          <RainbowKitProvider locale="en" theme={theme == 'dark' ?darkTheme() : lightTheme()}> */}
-      {children}
-      <WalletConnect />
-      {/* </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider> */}
-    </div>
-
+    //@ts-ignore
+    <WagmiProvider config={walletConfig.rainbowKitConfig} reconnectOnMount={true}>
+      <QueryClientProvider client={queryClient} >
+        <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
+          {/* @ts-ignore */}
+          {children}
+          <WalletConnect />
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 });
 

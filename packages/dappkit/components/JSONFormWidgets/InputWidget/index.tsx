@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { ReactNode, useMemo, useRef } from "react";
 import { Input, InputProps, InputSlots, SlotsToClasses } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
@@ -20,7 +21,7 @@ type Options = {
   min?: number;
   max?: number;
 };
-
+//@ts-ignore 
 export interface InputWidgetProps extends WidgetProps {
   options: Options;
 }
