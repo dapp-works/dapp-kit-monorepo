@@ -30,15 +30,21 @@ export class Fields {
     };
   }
 
-  static custom(options: any = {}) {
+  static custom(func: any = {}) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Fields.setMetadata(target, propertyKey, { type: "custom", options });
+      Fields.setMetadata(target, propertyKey, { type: "custom", func });
     };
   }
 
-  static contract<T = any, R = any>(entity: () => ClassType<R>, options: ((e: T) => any) | string) {
+  static entity<T = any, R = any>(entity: () => ClassType<R>, options: ((e: T) => Promise<Partial<R> | Partial<R>[]>) | string) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
-      Fields.setMetadata(target, propertyKey, { type: "contract", entity, targetKey: options });
+      Fields.setMetadata(target, propertyKey, { type: "entity", entity, targetKey: options });
+    };
+  }
+
+  static contract<T = any, R = any>(entity: () => ClassType<R>, options: ((e: T) => Promise<Partial<R> | Partial<R>[]>) | string) {
+    return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
+      Fields.setMetadata(target, propertyKey, { type: "entity", entity, targetKey: options });
     };
   }
   private static setMetadata(target: any, propertyKey: any, metadata: any) {
