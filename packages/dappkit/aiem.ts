@@ -63,6 +63,7 @@ export class Cache {
 
 export type GetOptions = {
   multicall?: boolean;
+  rpcUrls?: Chain["rpcUrls"]
 };
 
 export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<string, Chain>, Addrs extends { [K in keyof Contracts]?: { [key: string]: `${string}-0x${string}` } }> {
@@ -177,12 +178,16 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   PubClient<C extends keyof Chains>(chainId: C, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
+    const chain = this.chainMap[chainId]
+    if (options.rpcUrls) {
+      chain.rpcUrls = options.rpcUrls
+    }
     //@ts-ignore
-    return this._cache.wrap(`publicClient-${String(chainId)}-${options?.multicall}`, () => {
+    return this._cache.wrap(`publicClient-${String(chainId)}-${chain.rpcUrls.default.http}-${options?.multicall}`, () => {
       //@ts-ignore
       return createPublicClient({
         //@ts-ignore
-        chain: this.chainMap[chainId],
+        chain,
 
         ...(options?.multicall
           ? {
