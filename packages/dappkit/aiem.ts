@@ -172,9 +172,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   //     })
   // }
 
-  static PubClient(chainId: string): PublicClient<HttpTransport, Chain, any, any> {
+  static PubClient(chainId: string, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
     //@ts-ignore
-    return this.init().PubClient(chainId);
+    return this.init().PubClient(chainId, options);
   }
 
   PubClient<C extends keyof Chains>(chainId: C, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
