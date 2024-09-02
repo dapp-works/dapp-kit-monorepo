@@ -180,7 +180,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
   PubClient<C extends keyof Chains>(chainId: C, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
     const chain = this.chainMap[chainId]
-    console.log(options.rpcUrls, 'options.rpcUrls')
     if (options.rpcUrls) {
       chain.rpcUrls = options.rpcUrls
     }
