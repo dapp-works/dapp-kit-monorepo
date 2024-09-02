@@ -401,8 +401,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
               // console.log(key, fieldMetadata, instance)
               if (sel[key] == false) {
                 call = async () => null;
-              } else if (fieldMetadata) {
-                switch (fieldMetadata.type) {
+              } else {
+                switch (fieldMetadata?.type) {
                   case "read":
                     if (Array.isArray(sel[key])) {
                       //@ts-ignore
@@ -421,9 +421,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                       args: sel[key],
                     });
 
-                    break;
-                  case "custom":
-                    call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []));
                     break;
                   case "contract":
                     const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
@@ -465,6 +462,9 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                     }
                     break;
                   default:
+                    if (typeof obj[key] == "function") {
+                      call = () => obj[key](...(Array.isArray(sel[key]) ? sel[key] : []));
+                    }
                     break;
                 }
               }
