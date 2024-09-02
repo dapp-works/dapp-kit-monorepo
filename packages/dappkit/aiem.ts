@@ -469,10 +469,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`;
                   promises.push(
                     new Promise(async (resolve) => {
-                      const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options).catch(() => null);
+                      const value = await this.cache.wrap(cacheKey, async () => call().catch(i => null), fieldMetadata.options)
                       obj[key] = value;
                       resolve(value);
-                    }),
+                    })
                   );
                 } else {
                   promises.push(
