@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Store } from "../../store/standard/base";
-import { WalletProvider } from "./provider";
-import { Account, PublicClient, Transport, WalletClient, TransactionReceipt } from "viem";
+import { Account, PublicClient, type HttpTransport, WalletClient, TransactionReceipt } from "viem";
 import { PromiseHook } from '../../store/standard/PromiseHook';
 import { StorageState } from '../../store/standard/StorageState';
 import { BigNumberState } from '../../store/standard/BigNumberState';
@@ -11,24 +10,22 @@ import { WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
 import { SwitchChainMutate } from "wagmi/query";
 import { Config, useAccount, useConnect, useSwitchChain, useWalletClient, } from "wagmi";
-import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet } from '@rainbow-me/rainbowkit/wallets';
-import { Chain, Wallet, useConnectModal, getDefaultConfig, WalletDetailsParams } from '@rainbow-me/rainbowkit';
+import { Chain, useConnectModal, WalletDetailsParams } from '@rainbow-me/rainbowkit';
 import { RootStore } from "../../store";
 import { ToastPlugin } from "../Toast/Toast";
-import { createClient, createPublicClient, createWalletClient, http } from 'viem';
-import { iotex } from "./chain";
-import { Chain as ViemChain } from "viem";
+import { http, createPublicClient } from 'viem';
 import { WalletHistoryStore, WalletRpcStore } from './walletPluginStore';
 import SafeAppsSDK, { TransactionStatus } from '@safe-global/safe-apps-sdk';
 import { ShowSuccessTxDialog } from './SuccessTxDialog'
+import { WalletConfigStore } from "./walletConfigStore";
+import { iotex } from "viem/chains";
+import { AIem } from "../../aiem";
 
 export class WalletStore implements Store {
   sid = 'wallet';
-  appName = 'Dappkit';
-  projectId = '043229b9b9d784a5cfe40fe5f0107811'
+
   autoObservable = true;
   account: `0x${string}` = '0x...';
-
   isSuccessDialogOpen = false;
   isInSafeApp = false;
   isConnect = false;
@@ -36,9 +33,11 @@ export class WalletStore implements Store {
   event = new EventEmitter();
   switchChain: SwitchChainMutate<Config, unknown> | undefined;
   updateTicker = 0;
-  defaultChainId = 4689;
-  chain: (Chain & ViemChain) | undefined;
-  supportedChains: (Chain & ViemChain)[] = [iotex];
+
+  chain: Chain | undefined;
+  get supportedChains() {
+    return RootStore.Get(WalletConfigStore).supportedChains
+  }
   openConnectModal: any;
   balance = PromiseHook.wrap({
     func: async () => {
@@ -68,24 +67,6 @@ export class WalletStore implements Store {
     }
   }
 
-  get rainbowKitConfig() {
-    return ObjectPool.get(`rainbowKitConfig-${this.supportedChains.map(i => i.id).join('-')}`, () => {
-      return getDefaultConfig({
-        appName: this.appName,
-        projectId: 'b69e844f38265667350efd78e3e1a5fb',
-        //@ts-ignore
-        chains: this.supportedChains,
-        wallets: [{
-          groupName: 'Recommended',
-          wallets: [iopayWallet, metaMaskWallet],
-        },
-        {
-          groupName: 'Others',
-          wallets: [metaMaskWallet, walletConnectWallet, iopayWallet, okxWallet, binanceWallet],
-        }]
-      });
-    });
-  }
 
   use() {
     console.log('use wallet')
@@ -108,7 +89,6 @@ export class WalletStore implements Store {
       this.set({
         isConnect: isConnected,
         account: address,
-        // @ts-ignore 
         chain,
       })
       if (this.account) {
@@ -119,17 +99,7 @@ export class WalletStore implements Store {
   }
 
   //always return or return default chain
-  get publicClient() {
-    const config = {
-      transport: http(),
-      cacheTime: 10_000,
-      batch: {
-        multicall: {
-          batchSize: 8_192,
-          wait: 500,
-        },
-      },
-    }
+  get publicClient(): PublicClient<HttpTransport, Chain, any, any> {
     if (this.chain && this.supportedChains.some(i => i.id === this.chain.id)) {
       return ObjectPool.get(`publicClient-${this.chain?.id}`, () => {
         if (this.chain.id == 4689) {
@@ -137,14 +107,14 @@ export class WalletStore implements Store {
         }
         return createPublicClient({
           chain: this.chain,
-          ...config
-        });;
+          transport: http(),
+          batch: {
+            multicall: true,
+          },
+        });
       });
     } else {
-      return createPublicClient({
-        chain: iotex,
-        ...config
-      });
+      return AIem.PubClient('4689')
     }
   }
 
@@ -316,7 +286,7 @@ export class WalletStore implements Store {
     chainId,
     address,
     data,
-    value = 0,
+    value = '0',
     autoAlert = true,
     onSended,
     onSuccess,
@@ -329,7 +299,7 @@ export class WalletStore implements Store {
     chainId: number | string;
     address: string;
     data: string | null;
-    value?: string | number;
+    value?: string;
     autoRefresh?: boolean;
     autoAlert?: boolean;
     historyItem?: Pick<WalletTransactionHistoryType, 'msg' | 'type'>;
@@ -346,7 +316,7 @@ export class WalletStore implements Store {
       await RootStore.Get(WalletStore).prepare(chainId);
       if (loadingText) toast.loading(loadingText);
       const historyStore = RootStore.Get(WalletHistoryStore)
-      //@ts-ignore 
+      // @ts-ignore
       const hash = await this.walletClient.sendTransaction({
         account: this.account,
         to: address as `0x${string}`,
