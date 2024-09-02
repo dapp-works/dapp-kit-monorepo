@@ -36,7 +36,7 @@ export class Fields {
     };
   }
 
-  static entity<T = any, R = any>(entity: () => ClassType<R>, options: ((e: T) => Promise<Partial<R> | Partial<R>[]>) | string) {
+  static relation<T = any, R = any>(entity: () => ClassType<R>, options: ((e: T) => Promise<Partial<R> | Partial<R>[]>) | string) {
     return function (target: any, propertyKey: any, descriptor?: PropertyDescriptor) {
       Fields.setMetadata(target, propertyKey, { type: "entity", entity, targetKey: options });
     };

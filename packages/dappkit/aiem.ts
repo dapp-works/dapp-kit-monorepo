@@ -527,7 +527,7 @@ export type Item<T> = T extends (infer U)[] ? U : T;
 //   never;
 
 type QuerySelect<E> = {
-  [K in keyof E]?: E[K] extends (...args: any[]) => any ? Parameters<E[K]> | boolean : E[K] extends object ? QuerySelect<Item<E[K]>> : boolean;
+  [K in keyof E]?: E[K] extends (...args: any[]) => any ? Parameters<E[K]> | boolean : E[K] extends object ? QuerySelect<Item<E[K]>> | boolean : boolean;
 };
 
 // type FunctionReturn<T> = T extends (...args: any[]) => any ? Awaited<ReturnType<T>> : T;
