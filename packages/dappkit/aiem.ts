@@ -26,6 +26,7 @@ BigInt.prototype.toJSON = function () {
 
 (iotexTestnet.contracts = {
   multicall3: {
+    //@ts-ignore
     address: "0xb5cecd6894c6f473ec726a176f1512399a2e355d",
     blockCreated: 24347592,
   },
@@ -186,10 +187,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
         ...(options?.multicall
           ? {
-              batch: {
-                multicall: true,
-              },
-            }
+            batch: {
+              multicall: true,
+            },
+          }
           : {}),
 
         //@ts-ignore
@@ -525,12 +526,12 @@ type QuerySelect<E> = {
 
 export type QueryReturnType<E, S extends QuerySelect<E>> = {
   [K in keyof E]: K extends keyof S
-    ? E[K] extends (...args: any[]) => any
-      ? Awaited<ReturnType<E[K]>>
-      : E[K] extends object
-      ? S[K] extends object
-        ? QueryReturnType<E[K], S[K]>
-        : E[K]
-      : E[K]
-    : E[K];
+  ? E[K] extends (...args: any[]) => any
+  ? Awaited<ReturnType<E[K]>>
+  : E[K] extends object
+  ? S[K] extends object
+  ? QueryReturnType<E[K], S[K]>
+  : E[K]
+  : E[K]
+  : E[K];
 };

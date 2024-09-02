@@ -16,6 +16,10 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./wallet": {
+      "import": "./dist/wallet.mjs",
+      "require": "./dist/wallet.js"
+    },
     "./metrics": {
       "import": "./dist/metrics.mjs",
       "require": "./dist/metrics.js"
@@ -61,6 +65,9 @@
     "*": {
       ".": [
         "./dist/index.d.mts"
+      ],
+      "wallet": [
+        "./dist/wallet.d.mts"
       ],
       "metrics": [
         "./dist/metrics.d.mts"
