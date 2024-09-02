@@ -38,13 +38,7 @@ export default async function Layout(props: { children: React.ReactNode }) {
         <ClientLayout>
           {props.children}
         </ClientLayout>
-        {/* <TRPCReactProvider headers={headers()}>{props.children}</TRPCReactProvider> */}
       </body>
-      {/* {
-        project?.script && <Script>
-          {`${project.script} `}
-        </Script>
-      } */}
     </html>
   );
 }

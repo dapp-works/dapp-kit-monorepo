@@ -7,25 +7,30 @@ import { WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
 import { WalletStore } from '.';
 
-const queryClient = new QueryClient();
-
-export const WalletProvider = observer(({ children, theme }: { children: React.ReactNode, theme: 'dark' | 'light' }) => {
+// const queryClient = new QueryClient();
+export const WalletProvider = observer(({ children, theme }: { children: React.ReactNode, theme?: 'dark' | 'light' }) => {
   const wallet = RootStore.Get(WalletStore);
+  useEffect(() => {
+    console.log(123)
+    // console.log(queryClient)
+  }, [])
   return (
-    <WagmiProvider config={wallet.rainbowKitConfig} reconnectOnMount={true}>
-      <QueryClientProvider client={queryClient} >
-        <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
-          {/* @ts-ignore  */}
-          {children}
-        </RainbowKitProvider>
-        <WalletConnect />
-      </QueryClientProvider>
-    </WagmiProvider>
+    <div>
+      {/* <WagmiProvider config={wallet.rainbowKitConfig} reconnectOnMount={true}>
+        <QueryClientProvider client={queryClient} >
+          <RainbowKitProvider locale="en" theme={theme == 'dark' ?darkTheme() : lightTheme()}> */}
+      {children}
+      <WalletConnect />
+      {/* </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider> */}
+    </div>
+
   );
 });
 
 export const WalletConnect = () => {
   const wallet = RootStore.Get(WalletStore);
-  wallet.use();
+  // wallet.use();
   return <></>;
 };

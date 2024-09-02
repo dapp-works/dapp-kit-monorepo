@@ -69,7 +69,7 @@ export class WalletStore implements Store {
   }
 
   get rainbowKitConfig() {
-    return ObjectPool.get(`wagmiConfig-${this.supportedChains.map(i => i.id).join('-')}`, () => {
+    return ObjectPool.get(`rainbowKitConfig-${this.supportedChains.map(i => i.id).join('-')}`, () => {
       return getDefaultConfig({
         appName: this.appName,
         projectId: 'b69e844f38265667350efd78e3e1a5fb',
@@ -96,6 +96,7 @@ export class WalletStore implements Store {
     const { connect } = useConnect();
 
     this.set({
+      //@ts-ignore
       connect,
       // @ts-ignore 
       walletClient,
