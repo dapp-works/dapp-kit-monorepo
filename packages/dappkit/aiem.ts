@@ -186,10 +186,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
         ...(options?.multicall
           ? {
-              batch: {
-                multicall: true,
-              },
-            }
+            batch: {
+              multicall: true,
+            },
+          }
           : {}),
 
         //@ts-ignore
@@ -469,10 +469,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`;
                   promises.push(
                     new Promise(async (resolve) => {
-                      const value = await this.cache.wrap(cacheKey, async () => call(), fieldMetadata.options).catch(() => null);
+                      const value = await this.cache.wrap(cacheKey, async () => call().catch(i => null), fieldMetadata.options)
                       obj[key] = value;
                       resolve(value);
-                    }),
+                    })
                   );
                 } else {
                   promises.push(
@@ -525,12 +525,12 @@ type QuerySelect<E> = {
 
 export type QueryReturnType<E, S extends QuerySelect<E>> = {
   [K in keyof E]: K extends keyof S
-    ? E[K] extends (...args: any[]) => any
-      ? Awaited<ReturnType<E[K]>>
-      : E[K] extends object
-      ? S[K] extends object
-        ? QueryReturnType<E[K], S[K]>
-        : E[K]
-      : E[K]
-    : E[K];
+  ? E[K] extends (...args: any[]) => any
+  ? Awaited<ReturnType<E[K]>>
+  : E[K] extends object
+  ? S[K] extends object
+  ? QueryReturnType<E[K], S[K]>
+  : E[K]
+  : E[K]
+  : E[K];
 };
