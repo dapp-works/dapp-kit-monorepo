@@ -306,7 +306,6 @@ export class WalletStore implements Store {
       await RootStore.Get(WalletStore).prepare(chainId);
       if (loadingText) toast.loading(loadingText);
       const historyStore = RootStore.Get(WalletHistoryStore)
-      console.log(this.walletClient)
       // @ts-ignore
       const hash = await this.walletClient.sendTransaction({
         account: this.account,
