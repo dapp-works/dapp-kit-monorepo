@@ -43,6 +43,7 @@ export class WalletRpcStore implements Store {
   }
   async addToMetamask(url) {
     try {
+      if (typeof window == 'undefined') return;
       await window?.ethereum?.request({
         method: 'wallet_addEthereumChain',
         params: [{
