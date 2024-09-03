@@ -2,7 +2,7 @@ import { RootStore } from "@dappworks/kit";
 import { WalletConfigStore, WalletHistoryStore, WalletStore, WalletTransactionHistoryType } from "@dappworks/kit/wallet";
 import { AIem } from '@dappworks/kit/aiem'
 import { Button } from "@nextui-org/react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { bsc, iotex, iotexTestnet, mainnet } from "viem/chains";
 import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
@@ -55,7 +55,7 @@ const Test = observer(() => {
     <div suppressHydrationWarning>
       History List :
       {
-        history.historyList.map((i: WalletTransactionHistoryType) => {
+        history.historyList?.map((i: WalletTransactionHistoryType) => {
           return <div suppressHydrationWarning>{i.chainId} - {i.msg} - {i.type} - {i.timestamp} - [{i.status}]</div>
         })
       }
@@ -66,6 +66,10 @@ const Test = observer(() => {
     <Button onClick={e => { store.sendTx() }}>Send Tx</Button>
 
     <Button onClick={e => { store.changeChain() }}>Change Chain</Button>
+
+    <Button onClick={e => { wallet.disconnect() }}>DisConnect</Button>
+
+    <Button disabled={wallet.isConnect} onClick={e => { wallet.prepare() }}>Open Connect Modal</Button>
   </>
 })
 

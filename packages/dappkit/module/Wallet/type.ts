@@ -17,3 +17,5 @@ export type WalletTransactionHistoryType = {
   type: 'Approve' | 'Swap' | 'Liquidity' | 'Transfer';
   status: 'loading' | 'success' | 'fail';
 };
+
+export type AddressMode = 'io' | '0x';
