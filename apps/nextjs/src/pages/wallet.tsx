@@ -1,11 +1,12 @@
 import { RootStore } from "@dappworks/kit";
-import { WalletConfigStore, WalletHistoryStore, WalletStore, WalletTransactionHistoryType } from "@dappworks/kit/wallet";
+import { RpcList, WalletConfigStore, WalletHistoryStore, WalletStore, WalletTransactionHistoryType } from "@dappworks/kit/wallet";
 import { AIem } from '@dappworks/kit/aiem'
 import { Button } from "@nextui-org/react";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { bsc, iotex, iotexTestnet, mainnet } from "viem/chains";
 import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
+import { DialogStore } from "@dappworks/kit/plugins";
 const Test = observer(() => {
   const wallet = RootStore.Get(WalletStore)
   const config = RootStore.Get(WalletConfigStore)
@@ -70,6 +71,14 @@ const Test = observer(() => {
     <Button onClick={e => { wallet.disconnect() }}>DisConnect</Button>
 
     <Button disabled={wallet.isConnect} onClick={e => { wallet.prepare() }}>Open Connect Modal</Button>
+
+    <Button disabled={wallet.isConnect} onClick={e => {
+      RootStore.Get(DialogStore).setData({
+        isOpen: true,
+        content: <RpcList />,
+        size: '2xl'
+      })
+    }}>RPC Modal</Button>
   </>
 })
 
