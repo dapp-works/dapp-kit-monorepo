@@ -2,9 +2,7 @@ import React, { useEffect } from "react";
 import { Store } from "../../store/standard/base";
 import { Account, PublicClient, type HttpTransport, WalletClient, TransactionReceipt } from "viem";
 import { PromiseHook } from '../../store/standard/PromiseHook';
-import { StorageState } from '../../store/standard/StorageState';
 import { BigNumberState } from '../../store/standard/BigNumberState';
-import { ObjectPool } from '../../store/standard/ObjectPool';
 import BigNumber from 'bignumber.js';
 import { WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
@@ -18,7 +16,6 @@ import { WalletHistoryStore, WalletRpcStore } from './walletPluginStore';
 import SafeAppsSDK, { TransactionStatus } from '@safe-global/safe-apps-sdk';
 import { ShowSuccessTxDialog } from './SuccessTxDialog'
 import { WalletConfigStore } from "./walletConfigStore";
-import { iotex } from "viem/chains";
 import { AIem } from "../../aiem";
 
 export class WalletStore implements Store {
@@ -86,6 +83,7 @@ export class WalletStore implements Store {
     })
 
     useEffect(() => {
+      RootStore.Get(WalletHistoryStore).set({ isRender: true })
       this.set({
         isConnect: isConnected,
         account: address,
@@ -102,7 +100,7 @@ export class WalletStore implements Store {
   get publicClient(): PublicClient<HttpTransport, Chain, any, any> {
     if (this.chain && this.supportedChains.some(i => i.id === this.chain.id)) {
       if (this.chain.id == 4689) {
-        return AIem.PubClient('4689', { rpcUrls: { default: { http: [RootStore.Get(WalletRpcStore).curRpc.value] } } })
+        return AIem.PubClient('4689', { rpcUrls: { default: { http: [RootStore.Get(WalletRpcStore).curRpc.value] } }, multicall: true })
       }
       return AIem.PubClient(this.chain.id.toString())
     } else {
@@ -308,6 +306,7 @@ export class WalletStore implements Store {
       await RootStore.Get(WalletStore).prepare(chainId);
       if (loadingText) toast.loading(loadingText);
       const historyStore = RootStore.Get(WalletHistoryStore)
+      console.log(this.walletClient)
       // @ts-ignore
       const hash = await this.walletClient.sendTransaction({
         account: this.account,
