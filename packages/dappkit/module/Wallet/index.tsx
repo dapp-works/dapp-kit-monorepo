@@ -58,12 +58,12 @@ export class WalletStore implements Store {
   disconnect: any;
   balance = PromiseHook.wrap({
     func: async () => {
-      if (!this.publicClient || !this.account) return new BigNumberState({ value: new BigNumber(0) });
+      if (!this.publicClient || !this.account) return helper.number.warpBigNumber('0');
       const balance = await this.publicClient.getBalance({
         address: this.account,
       });
       if (balance) {
-        return new BigNumberState({ value: new BigNumber(balance?.toString() ?? '0') });
+        return helper.number.warpBigNumber(balance?.toString() ?? '0');
       }
     },
   });
