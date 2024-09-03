@@ -1,24 +1,27 @@
-import { Chain, RainbowKitProvider, Wallet, connectorsForWallets, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
 import { WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
 import { WalletStore } from '.';
 import { WalletConfigStore } from './walletConfigStore'
 import { reaction } from 'mobx';
+import { type Chain } from "viem/chains";
+import { iotex } from './type';
 
 const queryClient = new QueryClient();
 export const WalletProvider = (({
   children,
   theme,
-  appName
+  appName,
+  supportedChains
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
+  supportedChains?: Chain[]
 }) => {
-  const walletConfig = RootStore.Get(WalletConfigStore);
+  const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
 
   const [config, setConfig] = useState(walletConfig.rainbowKitConfig)
 
@@ -35,6 +38,7 @@ export const WalletProvider = (({
     }
   }, [appName])
   return (
+    //@ts-ignore
     <WagmiProvider config={config} reconnectOnMount={true}>
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>

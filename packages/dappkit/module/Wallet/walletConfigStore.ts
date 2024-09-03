@@ -10,9 +10,13 @@ export class WalletConfigStore implements Store {
   appName = 'Dappkit';
   projectId = 'b69e844f38265667350efd78e3e1a5fb'
   // @ts-ignore
-  supportedChains: Chain[] = [iotex];
+  supportedChains: Chain[];
   defaultChainId = 4689;
   updateTicker = 1
+
+  constructor(args: Partial<WalletConfigStore>) {
+    Object.assign(this, args);
+  }
 
   set(params: Partial<WalletConfigStore>) {
     Object.assign(this, params);
@@ -20,8 +24,8 @@ export class WalletConfigStore implements Store {
   }
 
   get rainbowKitConfig() {
-    console.log(`rainbowKitConfig-${this.supportedChains?.map(i => i.id).join('-')}`)
     return ObjectPool.get(`rainbowKitConfig-${this.supportedChains?.map(i => i.id).join('-')}`, () => {
+      console.log(`rainbowKitConfig-${this.supportedChains?.map(i => i.id).join('-')}`)
       return getDefaultConfig({
         appName: this.appName,
         projectId: this.projectId,

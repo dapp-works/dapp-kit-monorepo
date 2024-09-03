@@ -162,7 +162,6 @@ export class WalletHistoryStore implements Store {
   }
   private history = new StorageState<WalletTransactionHistoryType[] | null>({ value: [], key: 'history' });
   get historyList(): WalletTransactionHistoryType[] {
-    console.log(this.isRender, 'this.isRender')
     if (this.isRender) {
       return this.history.value
     }
