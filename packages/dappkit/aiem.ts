@@ -26,6 +26,7 @@ BigInt.prototype.toJSON = function () {
 
 (iotexTestnet.contracts = {
   multicall3: {
+    //@ts-ignore
     address: "0xb5cecd6894c6f473ec726a176f1512399a2e355d",
     blockCreated: 24347592,
   },
@@ -188,7 +189,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       return createPublicClient({
         //@ts-ignore
         chain,
-
         ...(options?.multicall
           ? {
             batch: {

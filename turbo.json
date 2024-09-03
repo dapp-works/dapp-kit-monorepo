@@ -1,13 +1,20 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalDependencies": ["**/.env", "tsconfig.json"],
-  "pipeline": {
+  "globalDependencies": [
+    "**/.env",
+    "tsconfig.json"
+  ],
+  "tasks": {
     "db:generate": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
       "cache": false
     },
     "db:push": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
       "cache": false
     },
     "dev": {
@@ -15,8 +22,13 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "dist/**"
+      ]
     },
     "lint": {},
     "lint:fix": {},
@@ -27,7 +39,9 @@
       "cache": false
     },
     "type-check": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": [
+        "^db:generate"
+      ],
       "cache": false
     }
   },

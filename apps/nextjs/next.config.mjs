@@ -12,7 +12,7 @@ const config = {
   reactStrictMode: false,
   // swcMinify: true,
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: ["@acme/api", "@acme/auth", "@acme/db", "@dappworks/kit"],
+  transpilePackages: [ "@dappworks/kit"],
   experimental: {
     optimizePackageImports: ["@dappworks/kit"],
   },

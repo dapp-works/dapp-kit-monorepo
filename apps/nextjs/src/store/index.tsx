@@ -1,4 +1,3 @@
-"use client";
 import { rootStore, Store } from "@dappworks/kit";
 import { signIn } from "next-auth/react";
 import { helper } from "@dappworks/kit/utils";
@@ -13,24 +12,12 @@ export const init = () => {
   rootStore.isInited = true
   if (process.env.NODE_ENV == "development") {
     rootStore.addStores([
-      //@ts-ignore
-      // new DevTool(),
-      // new WalletStore(),
-      // new StoragePlugin(),
-      // new AsyncStorage(),
       new DevInspectorPlugin(),
-      // new ThemePlugin(),
-      // new Project(),
     ]);
   }
 
   rootStore.addStores([
-    // new WalletStore(),
-    // new StoragePlugin(),
-    // new AsyncStorage(),
     new DevInspectorPlugin({ disabled: process.env.NODE_ENV != "development" }),
-    // new ThemePlugin(),
-    // new Project(),
   ]);
 
   // mobx.spy((change) => {
