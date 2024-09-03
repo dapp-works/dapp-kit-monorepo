@@ -6,13 +6,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { bsc, iotex, iotexTestnet, mainnet } from "viem/chains";
 import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
-// import { observer } from "mobx-react-lite";
-// AIem.Set({
-//   getWallet: () => {
-//     console.log(RootStore.Get(WalletStore).walletClient)
-//     return RootStore.Get(WalletStore).walletClient
-//   }
-// })
 const Test = observer(() => {
   const wallet = RootStore.Get(WalletStore)
   const config = RootStore.Get(WalletConfigStore)
@@ -29,7 +22,8 @@ const Test = observer(() => {
           historyItem: {
             msg: 'Swap Test Msg',
             type: "Swap"
-          }
+          },
+          showSuccessDialog: true
         })
       },
       sendTx() {
