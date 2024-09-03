@@ -54,6 +54,7 @@ export class Fields {
       metadataCache.set(target, targetMetadata);
     }
     targetMetadata.set(propertyKey, metadata);
+    // @ts-ignore 
     Reflect.defineMetadata(FIELD_KEY, metadata, target, propertyKey);
   }
 }
@@ -63,5 +64,6 @@ export function getFieldMetadata(target: any, propertyKey: string) {
   if (targetMetadata) {
     return targetMetadata.get(propertyKey);
   }
+  // @ts-ignore 
   return Reflect.getMetadata(FIELD_KEY, target, propertyKey);
 }
