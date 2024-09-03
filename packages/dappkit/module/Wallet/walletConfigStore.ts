@@ -8,16 +8,21 @@ export class WalletConfigStore implements Store {
   autoObservable = true
 
   appName = 'Dappkit';
-  projectId = '043229b9b9d784a5cfe40fe5f0107811'
+  projectId = 'b69e844f38265667350efd78e3e1a5fb'
   // @ts-ignore
-  supportedChains: (Chain)[] = [iotex];
+  supportedChains: Chain[] = [iotex];
   defaultChainId = 4689;
 
+  set(params: Partial<WalletConfigStore>) {
+    Object.assign(this, params);
+  }
+
   get rainbowKitConfig() {
+    console.log(`rainbowKitConfig-${this.supportedChains?.map(i => i.id).join('-')}`)
     return ObjectPool.get(`rainbowKitConfig-${this.supportedChains?.map(i => i.id).join('-')}`, () => {
       return getDefaultConfig({
         appName: this.appName,
-        projectId: 'b69e844f38265667350efd78e3e1a5fb',
+        projectId: this.projectId,
         //@ts-ignore
         chains: this.supportedChains,
         wallets: [{

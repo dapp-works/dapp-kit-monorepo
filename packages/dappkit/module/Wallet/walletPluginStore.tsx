@@ -153,9 +153,19 @@ export class WalletRpcStore implements Store {
 
 export class WalletHistoryStore implements Store {
   sid = 'WalletHistoryStore';
+  isRender = false
   autoObservable = true
-  history = new StorageState<WalletTransactionHistoryType[] | null>({ value: [], key: 'history' });
-
+  set(params: Partial<WalletHistoryStore>) {
+    Object.assign(this, params);
+  }
+  private history = new StorageState<WalletTransactionHistoryType[] | null>({ value: [], key: 'history' });
+  get historyList(): WalletTransactionHistoryType[] {
+    console.log(this.isRender, 'this.isRender')
+    if (this.isRender) {
+      return this.history.value
+    }
+    return []
+  }
   recordHistory(item: WalletTransactionHistoryType) {
     let value: WalletTransactionHistoryType[] | null = this.history.load();
     if (!value) {

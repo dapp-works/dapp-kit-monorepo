@@ -28,6 +28,7 @@ export const aiem = AIem.Set({
 
 
 await aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", { rpcUrls: { default: { http: ["https://rpc.ankr.com/eth"] } } }).read.name().then(console.log)
+await aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").write.approve(['0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852', BigInt(1e18.toString())], { account: "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852" }).then(console.log)
 
 // await Promise.all(new Array(2).fill(1).map(i => aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f185").read.name().then(console.log)))
 

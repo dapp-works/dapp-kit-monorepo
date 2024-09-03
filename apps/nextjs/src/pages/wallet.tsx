@@ -1,23 +1,77 @@
 import { RootStore } from "@dappworks/kit";
-import { WalletProvider, WalletStore } from "@dappworks/kit/wallet";
+import { WalletConfigStore, WalletHistoryStore, WalletStore, WalletTransactionHistoryType } from "@dappworks/kit/wallet";
+import { AIem } from '@dappworks/kit/aiem'
 import { Button } from "@nextui-org/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { bsc, iotex, iotexTestnet, mainnet } from "viem/chains";
+import { ERC20Abi } from "~/lib/abi";
+import { observer } from "mobx-react-lite";
 // import { observer } from "mobx-react-lite";
-const Test = (() => {
+// AIem.Set({
+//   getWallet: () => {
+//     console.log(RootStore.Get(WalletStore).walletClient)
+//     return RootStore.Get(WalletStore).walletClient
+//   }
+// })
+const Test = observer(() => {
   const wallet = RootStore.Get(WalletStore)
-  return <>
-    <ConnectButton />
-    <Button
-      onClick={e => {
+  const config = RootStore.Get(WalletConfigStore)
+  const history = RootStore.Get(WalletHistoryStore)
+  const store = RootStore.Local(() => {
+    return {
+      changed: false,
+      sendRawTx() {
         wallet.sendRawTx({
           chainId: 4689,
           address: "0x610CBDa6f0037B4141A5B949f56479106BeCb1E9",
           data: "0x",
           value: 1e17.toString(),
+          historyItem: {
+            msg: 'Swap Test Msg',
+            type: "Swap"
+          }
         })
-      }}>Send Raw Tx</Button>
-    <Button>Send Tx</Button>
-    <Button>Wrong chain & send tx</Button>
+      },
+      sendTx() {
+        wallet.sendTx({
+          chainId: 4689,
+          tx: async () => await AIem.Get(ERC20Abi, '4689', "0xa00744882684c3e4747faefd68d283ea44099d03", RootStore.Get(WalletStore).walletClient).write.approve(["0xa00744882684c3e4747faefd68d283ea44099d03", BigInt(1e18.toString())]),
+          historyItem: {
+            msg: 'Approve',
+            type: "Swap"
+          }
+        })
+      },
+      changeChain() {
+        if (!this.changed) {
+          config.set({
+            supportedChains: [iotex, iotexTestnet]
+          })
+          this.changed = true
+        } else {
+          config.set({
+            supportedChains: [bsc, mainnet]
+          })
+          this.changed = false
+        }
+      },
+    }
+  })
+  return <>
+    <div suppressHydrationWarning>
+      History List :
+      {
+        history.historyList.map((i: WalletTransactionHistoryType) => {
+          return <div suppressHydrationWarning>{i.chainId} - {i.msg} - {i.type} - {i.timestamp} - [{i.status}]</div>
+        })
+      }
+    </div>
+    <ConnectButton showBalance={true} chainStatus={'full'} accountStatus={'full'} />
+    <Button onClick={e => { store.sendRawTx() }}>Send Raw Tx</Button>
+
+    <Button onClick={e => { store.sendTx() }}>Send Tx</Button>
+
+    <Button onClick={e => { store.changeChain() }}>Change Chain</Button>
   </>
 })
 
