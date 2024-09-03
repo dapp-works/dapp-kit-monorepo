@@ -86,7 +86,6 @@ export class WalletStore implements Store {
 
 
   use() {
-    console.log('use wallet')
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
     const { switchChain } = useSwitchChain();
