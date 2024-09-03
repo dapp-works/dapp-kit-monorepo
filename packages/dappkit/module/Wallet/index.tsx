@@ -22,7 +22,7 @@ import { helper } from "../../lib/helper";
 export class WalletStore implements Store {
   sid = 'wallet';
   autoObservable = true;
-  account: `0x${string}` = '0x...';
+  account: `0x${string}` = null;
   isSuccessDialogOpen = false;
   isInSafeApp = false;
   isConnect = false;
