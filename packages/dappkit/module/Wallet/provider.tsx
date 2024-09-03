@@ -40,6 +40,6 @@ export const WalletProvider = observer(({
 
 export const WalletConnect = () => {
   const wallet = RootStore.Get(WalletStore);
-  // wallet.use();
+  wallet.use();
   return <></>;
 };
