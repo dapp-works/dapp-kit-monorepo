@@ -1,7 +1,6 @@
 import { Chain, RainbowKitProvider, Wallet, connectorsForWallets, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { observer } from 'mobx-react-lite';
 import { WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
@@ -12,24 +11,19 @@ const queryClient = new QueryClient();
 export const WalletProvider = observer(({
   children,
   theme,
-  appName,
-  supportedChains
+  appName
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
-  supportedChains?: Chain[]
 }) => {
   const walletConfig = RootStore.Get(WalletConfigStore);
 
   useEffect(() => {
-    if (supportedChains) {
-      walletConfig.supportedChains = supportedChains
-    }
     if (appName) {
       walletConfig.appName = appName
     }
-  }, [supportedChains, appName])
+  }, [appName])
   return (
     //@ts-ignore
     <WagmiProvider config={walletConfig.rainbowKitConfig} reconnectOnMount={true}>
@@ -46,6 +40,6 @@ export const WalletProvider = observer(({
 
 export const WalletConnect = () => {
   const wallet = RootStore.Get(WalletStore);
-  // wallet.use();
+  wallet.use();
   return <></>;
 };
