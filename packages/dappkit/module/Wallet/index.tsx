@@ -101,18 +101,10 @@ export class WalletStore implements Store {
   //always return or return default chain
   get publicClient(): PublicClient<HttpTransport, Chain, any, any> {
     if (this.chain && this.supportedChains.some(i => i.id === this.chain.id)) {
-      return ObjectPool.get(`publicClient-${this.chain?.id}`, () => {
-        if (this.chain.id == 4689) {
-          this.chain.rpcUrls.default.http = [RootStore.Get(WalletRpcStore).curRpc.value];
-        }
-        return createPublicClient({
-          chain: this.chain,
-          transport: http(),
-          batch: {
-            multicall: true,
-          },
-        });
-      });
+      if (this.chain.id == 4689) {
+        return AIem.PubClient('4689', { rpcUrls: { default: { http: [RootStore.Get(WalletRpcStore).curRpc.value] } } })
+      }
+      return AIem.PubClient(this.chain.id.toString())
     } else {
       return AIem.PubClient('4689')
     }
