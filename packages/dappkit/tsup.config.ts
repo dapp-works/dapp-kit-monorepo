@@ -6,7 +6,6 @@ export default defineConfig({
   clean: true,
   // cjsInterop: true,
   treeshake: true,
-
   external: [
     "framer-motion",
     "@nextui-org/react",
@@ -43,5 +42,6 @@ export default defineConfig({
     experimental: "experimental.ts",
     aiem: "aiem.ts",
     utils: "utils.ts",
+    wallet: "wallet.ts"
   },
 });
