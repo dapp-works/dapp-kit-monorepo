@@ -106,4 +106,4 @@ const RpcList = observer(() => {
   );
 });
 
-export default RpcList;
+export { RpcList };

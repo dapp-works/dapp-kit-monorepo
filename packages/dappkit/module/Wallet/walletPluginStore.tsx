@@ -1,3 +1,4 @@
+import React from 'react';
 import { Icon } from "@iconify/react";
 import { RootStore } from "../../store";
 import { Store } from "../../store/standard/base";
@@ -108,7 +109,7 @@ export class WalletRpcStore implements Store {
       return { url, lentency: Number(helper.number.numberFormat(((end - start) / 1000), '0.000', { fallback: '-1' })), height: parseInt(res.result.number, 16) };
     } catch (error) {
       console.error('RPC Latency Test Failed:', error);
-      return { url, lentency: -1, height: -1 }; // 在发生错误时返回 -1
+      return { url, lentency: -1, height: -1 };
     }
   }
   testRpc() {

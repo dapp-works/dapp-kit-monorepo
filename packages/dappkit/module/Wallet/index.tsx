@@ -141,7 +141,6 @@ export class WalletStore implements Store {
   async prepare(chainId?: number): Promise<WalletStore> {
     const promise = new Promise<void>(async (res, rej) => {
       try {
-        if (typeof window == 'undefined') return;
         if (this.account) {
           if (Number(this.chain?.id) == Number(chainId)) {
             res();
