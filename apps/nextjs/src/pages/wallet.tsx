@@ -7,10 +7,15 @@ import { bsc, iotex, iotexTestnet, mainnet, polygon } from "viem/chains";
 import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
 import { DialogStore } from "@dappworks/kit/plugins";
+import { useEffect } from "react";
+
 const Test = observer(() => {
   const wallet = RootStore.Get(WalletStore)
   const config = RootStore.Get(WalletConfigStore)
   const history = RootStore.Get(WalletHistoryStore)
+  useEffect(() => {
+    store.changeChain(true)
+  }, [])
   const store = RootStore.Local(() => {
     return {
       sendRawTx() {
