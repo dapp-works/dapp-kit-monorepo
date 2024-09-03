@@ -4,10 +4,10 @@ import { Account, PublicClient, type HttpTransport, WalletClient, TransactionRec
 import { PromiseHook } from '../../store/standard/PromiseHook';
 import { BigNumberState } from '../../store/standard/BigNumberState';
 import BigNumber from 'bignumber.js';
-import { WalletTransactionHistoryType } from "./type";
+import { AddressMode, WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
 import { SwitchChainMutate } from "wagmi/query";
-import { Config, useAccount, useConnect, useSwitchChain, useWalletClient, } from "wagmi";
+import { Config, useAccount, useConnect, useDisconnect, useSwitchChain, useWalletClient, } from "wagmi";
 import { Chain, useConnectModal, WalletDetailsParams } from '@rainbow-me/rainbowkit';
 import { RootStore } from "../../store";
 import { ToastPlugin } from "../Toast/Toast";
@@ -17,10 +17,10 @@ import SafeAppsSDK, { TransactionStatus } from '@safe-global/safe-apps-sdk';
 import { ShowSuccessTxDialog } from './SuccessTxDialog'
 import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
+import { helper } from "../../lib/helper";
 
 export class WalletStore implements Store {
   sid = 'wallet';
-
   autoObservable = true;
   account: `0x${string}` = '0x...';
   isSuccessDialogOpen = false;
@@ -30,12 +30,32 @@ export class WalletStore implements Store {
   event = new EventEmitter();
   switchChain: SwitchChainMutate<Config, unknown> | undefined;
   updateTicker = 0;
-
-  chain: Chain | undefined;
+  addressMode: AddressMode = '0x';
+  get isIoTeXChain(): boolean {
+    if (this.chain && this.chain.id == 4689) {
+      return true
+    }
+    return false
+  }
+  setAddressMode(mode: AddressMode) {
+    this.addressMode = mode;
+    localStorage.setItem('addressMode', mode);
+  }
+  get accountFormat() {
+    return this.account ? helper.address.convertAddress(this.addressMode, this.account) : '-';
+  }
+  get connectAccountEllipsisFormat() {
+    return this.account ? helper.string.truncate(helper.address.convertAddress(this.addressMode, this.account), 11, '...') : '-';
+  }
+  get accountEllipsisFormat() {
+    return this.account ? helper.string.truncate(helper.address.convertAddress(this.addressMode, this.account), 16, '...') : '-';
+  }
   get supportedChains() {
     return RootStore.Get(WalletConfigStore).supportedChains
   }
+  chain: Chain | undefined;
   openConnectModal: any;
+  disconnect: any;
   balance = PromiseHook.wrap({
     func: async () => {
       if (!this.publicClient || !this.account) return new BigNumberState({ value: new BigNumber(0) });
@@ -72,7 +92,7 @@ export class WalletStore implements Store {
     const { switchChain } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
-
+    const { disconnect } = useDisconnect();
     this.set({
       //@ts-ignore
       connect,
@@ -80,6 +100,7 @@ export class WalletStore implements Store {
       walletClient,
       openConnectModal,
       switchChain,
+      disconnect
     })
 
     useEffect(() => {
@@ -163,7 +184,7 @@ export class WalletStore implements Store {
   async waitForTransactionReceipt({ hash }) {
     // https://github.com/wevm/wagmi/discussions/3463#discussioncomment-8139187
     if (this.isInSafeApp) {
-      console.log('isInSafeApp', this.isInSafeApp);
+      // console.log('isInSafeApp', this.isInSafeApp);
       const sdk = new SafeAppsSDK();
       while (true) {
         const queued = await sdk.txs.getBySafeTxHash(hash);
