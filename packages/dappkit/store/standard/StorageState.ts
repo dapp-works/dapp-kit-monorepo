@@ -53,7 +53,7 @@ export class StorageState<T> {
   clear() {
     try {
       if (typeof window == 'undefined') return
-      localStorage.removeItem(this.key);
+      window?.localStorage.removeItem(this.key);
     } catch (error) {
       return null;
     }
