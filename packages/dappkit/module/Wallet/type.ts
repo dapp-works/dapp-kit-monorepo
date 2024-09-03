@@ -1,3 +1,5 @@
+import { iotex as _iotex, iotexTestnet as _iotexTestnet, type Chain } from "viem/chains";
+
 export type NetworkObject = {
   name: string;
   chainId: number;
@@ -14,8 +16,17 @@ export type WalletTransactionHistoryType = {
   tx?: string;
   msg: string;
   timestamp: number;
-  type: 'Approve' | 'Swap' | 'Liquidity' | 'Transfer';
+  type: string;
   status: 'loading' | 'success' | 'fail';
 };
 
 export type AddressMode = 'io' | '0x';
+
+export const iotex = {
+  iconUrl: 'https://icons.llamao.fi/icons/chains/rsz_iotex.jpg',
+  ..._iotex,
+} as Chain;
+export const iotexTestnet = {
+  iconUrl: 'https://icons.llamao.fi/icons/chains/rsz_iotex.jpg',
+  ..._iotexTestnet,
+} as Chain;;
