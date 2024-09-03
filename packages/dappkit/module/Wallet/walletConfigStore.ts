@@ -12,9 +12,11 @@ export class WalletConfigStore implements Store {
   // @ts-ignore
   supportedChains: Chain[] = [iotex];
   defaultChainId = 4689;
+  updateTicker = 1
 
   set(params: Partial<WalletConfigStore>) {
     Object.assign(this, params);
+    this.updateTicker += 1
   }
 
   get rainbowKitConfig() {

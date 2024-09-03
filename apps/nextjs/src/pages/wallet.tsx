@@ -3,7 +3,7 @@ import { RpcList, WalletConfigStore, WalletHistoryStore, WalletStore, WalletTran
 import { AIem } from '@dappworks/kit/aiem'
 import { Button } from "@nextui-org/react";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { bsc, iotex, iotexTestnet, mainnet } from "viem/chains";
+import { bsc, iotex, iotexTestnet, mainnet, polygon } from "viem/chains";
 import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
 import { DialogStore } from "@dappworks/kit/plugins";
@@ -13,7 +13,6 @@ const Test = observer(() => {
   const history = RootStore.Get(WalletHistoryStore)
   const store = RootStore.Local(() => {
     return {
-      changed: false,
       sendRawTx() {
         wallet.sendRawTx({
           chainId: 4689,
@@ -37,17 +36,15 @@ const Test = observer(() => {
           }
         })
       },
-      changeChain() {
-        if (!this.changed) {
+      changeChain(isIotex: boolean) {
+        if (isIotex) {
           config.set({
             supportedChains: [iotex, iotexTestnet]
           })
-          this.changed = true
         } else {
           config.set({
-            supportedChains: [bsc, mainnet]
+            supportedChains: [bsc, mainnet, polygon]
           })
-          this.changed = false
         }
       },
     }
@@ -66,7 +63,8 @@ const Test = observer(() => {
 
     <Button onClick={e => { store.sendTx() }}>Send Tx</Button>
 
-    <Button onClick={e => { store.changeChain() }}>Change Chain</Button>
+    <Button onClick={e => { store.changeChain(true) }}>Change Iotex Chain</Button>
+    <Button onClick={e => { store.changeChain(false) }}>Change Other Chain</Button>
 
     <Button onClick={e => { wallet.disconnect() }}>DisConnect</Button>
 
