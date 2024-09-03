@@ -117,7 +117,9 @@ export class WalletStore implements Store {
     }, [address, isConnected, chain])
 
     useEffect(() => {
-      this.balance.call()
+      setTimeout(() => {
+        this.balance.call()
+      }, 1500)
     }, [this.updateTicker])
   }
 
