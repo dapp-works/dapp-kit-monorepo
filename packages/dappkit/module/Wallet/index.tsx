@@ -140,28 +140,28 @@ export class WalletStore implements Store {
 
   async prepare(chainId?: number): Promise<WalletStore> {
     const promise = new Promise<void>(async (res, rej) => {
-      if (!window) return;
-      if (this.account) {
-        if (Number(this.chain?.id) == Number(chainId)) {
-          res();
-          return;
-        }
-        this.switchChain?.({ chainId: chainId ?? 4689 });
-        const interval = setInterval(() => {
-          if (this.switchChain) {
-            if (this.chain?.id == chainId) {
-              try {
-                // //@ts-ignore
-                // const provider = new ethers.providers.Web3Provider(window?.ethereum);
-                // this.signer = provider.getSigner();
-              } catch (error) { }
-              clearInterval(interval);
-              res();
-            }
+      try {
+        if (!window) return;
+        if (this.account) {
+          if (Number(this.chain?.id) == Number(chainId)) {
+            res();
+            return;
           }
-        }, 1000);
-      } else {
-        try {
+          this.switchChain?.({ chainId: chainId ?? 4689 });
+          const interval = setInterval(() => {
+            if (this.switchChain) {
+              if (this.chain?.id == chainId) {
+                try {
+                  // //@ts-ignore
+                  // const provider = new ethers.providers.Web3Provider(window?.ethereum);
+                  // this.signer = provider.getSigner();
+                } catch (error) { }
+                clearInterval(interval);
+                res();
+              }
+            }
+          }, 1000);
+        } else {
           this.openConnectModal();
           // this.connect?.({ chainId, connector: this.rainbowkitParams.connectors()[0] }) connect success but ui not change so
           const interval = setInterval(() => {
@@ -170,9 +170,10 @@ export class WalletStore implements Store {
               res();
             }
           }, 1000);
-        } catch (error) {
-          rej(error);
+
         }
+      } catch (error) {
+        rej(error);
       }
     });
 

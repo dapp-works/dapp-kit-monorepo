@@ -20,6 +20,7 @@ export class StorageState<T> {
 
   load() {
     try {
+      if (typeof window == 'undefined') return
       const value = window?.localStorage?.getItem(this.key);
       this.value = StorageState.safeParse(value);
       if (this.value == null) {
@@ -34,6 +35,7 @@ export class StorageState<T> {
 
   save(value?: T) {
     try {
+      if (typeof window == 'undefined') return
       if (value !== null || value !== undefined) {
         this.value = value;
       }
@@ -50,6 +52,7 @@ export class StorageState<T> {
 
   clear() {
     try {
+      if (typeof window == 'undefined') return
       localStorage.removeItem(this.key);
     } catch (error) {
       return null;
