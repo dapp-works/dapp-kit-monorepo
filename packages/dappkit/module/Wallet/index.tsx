@@ -115,6 +115,10 @@ export class WalletStore implements Store {
         this.event.emit('walletAccount:ready');
       }
     }, [address, isConnected, chain])
+
+    useEffect(() => {
+      this.balance.call()
+    }, [this.updateTicker])
   }
 
   //always return or return default chain
