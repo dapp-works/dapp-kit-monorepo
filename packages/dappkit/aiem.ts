@@ -204,6 +204,40 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   //@ts-ignore
+  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(
+    abi: TAbi,
+    chainId: any,
+    address: any,
+    wallet?: WalletClient,
+    //@ts-ignore
+    options?: GetOptions = { multicall: true },
+    //@ts-ignore
+  ): ReturnType & { encode: ReturnType["write"] } {
+    const aiem = this.init();
+    if (!wallet) {
+      wallet = aiem.getWallet ? aiem.getWallet() : null;
+    }
+
+    const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
+    return aiem._cache.wrap(cacheKey, () => {
+      //@ts-ignore
+      const pubClient = aiem.PubClient(chainId, options);
+
+      //@ts-ignore
+      return aiem.getContract({
+        client: {
+          //@ts-ignore
+          public: pubClient,
+          //@ts-ignore
+          wallet,
+        },
+        address,
+        abi,
+      });
+    }) as any;
+  }
+
+  //@ts-ignore
   Get<K extends keyof Contracts, C extends keyof Chains, Addr extends `0x${string}`>(
     contractName: K,
     chainId: C,
@@ -306,37 +340,6 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     }
 
     return globalThis.aiem;
-  }
-
-  //@ts-ignore
-  static Get<TAbi extends Abi = any, ReturnType extends GetContractReturnType<TAbi, WalletClient<Transport, Chain, Account>>>(
-    abi: TAbi,
-    chainId: any,
-    address: any,
-    wallet?: WalletClient,
-    //@ts-ignore
-    options?: GetOptions = { multicall: true },
-    //@ts-ignore
-  ): ReturnType & { encode: ReturnType["write"] } {
-    const aiem = this.init();
-
-    const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
-    return aiem._cache.wrap(cacheKey, () => {
-      //@ts-ignore
-      const pubClient = aiem.PubClient(chainId, options);
-
-      //@ts-ignore
-      return aiem.getContract({
-        client: {
-          //@ts-ignore
-          public: pubClient,
-          //@ts-ignore
-          wallet,
-        },
-        address,
-        abi,
-      });
-    }) as any;
   }
 
   static async getPrice({ chainId = "4689", address }: { chainId?: string; address: string }) {

@@ -21,7 +21,7 @@ export const aiem = AIem.Set({
     name: {
       ttl: 1000
     }
-  }
+  },
 })
 
 
