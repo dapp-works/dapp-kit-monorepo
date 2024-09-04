@@ -372,7 +372,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       const wrap = helper.number.warpBigNumber(value, decimals, { format: "0,0.000000", fallback: "" });
       const price = await this.getPrice({ chainId, address: address.toLowerCase() });
       const usd = new BigNumber(wrap.originFormat).multipliedBy(price || 0).toFixed(2);
-      return { ...wrap, usd };
+      return { ...wrap, usd, price };
     },
   };
 
