@@ -91,7 +91,7 @@ const main = async () => {
     }
   })({ address: i, chainId: "4689", })))
 
-  // console.log(JSON.stringify(res, null, 2))
+  console.log(JSON.stringify(res, null, 2))
 }
 
 // setInterval(() => {
