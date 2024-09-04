@@ -17,8 +17,8 @@ const RpcList = observer(() => {
   }, [])
 
   return (
-    <div className='mb-3 mt-2'>
-      <div className='w-full flex mb-2'>
+    <div className='mb-3 mt-4'>
+      <div className='w-full flex mb-2 mt-2'>
         <div className='flex items-center justify-center gap-2'>
           <Checkbox size='sm' isSelected={rpcStore.isAutoSelectRpc.value} onValueChange={e => rpcStore.isAutoSelectRpc.save(e)}>Auto select rpc</Checkbox>
           <Tooltip content={<div className='w-[300px]'>Once selected, if the current RPC cannot send a request, an available RPC will be automatically chosen.</div>}>
