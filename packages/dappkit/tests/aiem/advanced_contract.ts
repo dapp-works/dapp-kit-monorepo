@@ -64,12 +64,12 @@ class IUniswapV2LPEntity extends UniswapV2LPEntity {
 class IERC20Entity extends ERC20Entity {
 
   async _totalSupply(a: string) {
-    const [value, decimals] = await Promise.all([this.contract.read.totalSupply(), this.contract.read.decimals()])
-    return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
+    const [value] = await Promise.all([this.contract.read.totalSupply(), this.contract.read.decimals()])
+    return AIem.utils.autoFormat({ value: value.toString(), chainId: this.chainId, address: this.address })
   }
   async _balanceOf(address: any) {
-    const [value, decimals] = await Promise.all([this.contract.read.balanceOf([address]), this.contract.read.decimals()])
-    return AIem.utils.autoFormat({ value: value.toString(), decimals, chainId: this.chainId, address: this.address })
+    const [value] = await Promise.all([this.contract.read.balanceOf([address]), this.contract.read.decimals()])
+    return AIem.utils.autoFormat({ value: value.toString(), chainId: this.chainId, address: this.address })
   }
   async foo() {
     return 123
@@ -84,14 +84,14 @@ const main = async () => {
     totalSupply: true,
     balanceOf: user ? [user] : false,
     TokenMany: {
-      _totalSupply: ["test"],
+      _totalSupply: true,
       _balanceOf: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa"],
       approve: ["0xa41412dafd1f1c0ae90f9fe7f137ea10a1bb5daa", "1000000000000000000000000"],
       foo: true
     }
   })({ address: i, chainId: "4689", })))
 
-  console.log(JSON.stringify(res, null, 2))
+  // console.log(JSON.stringify(res, null, 2))
 }
 
 // setInterval(() => {

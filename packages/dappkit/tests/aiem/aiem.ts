@@ -35,7 +35,7 @@ await aiem.Get("UniswapV2LPToken", "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1
 
 
 // // simple usage
-// AIem.Get(UniswapV2LPToken, "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").read.totalSupply().then(console.log)
+AIem.Get(UniswapV2LPToken, "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").read.totalSupply().then(console.log)
 
 // // encode 
 // AIem.Get(ERC20, "1", "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852").encode.approve(["0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852", BigInt(100000)]).then(console.log)
