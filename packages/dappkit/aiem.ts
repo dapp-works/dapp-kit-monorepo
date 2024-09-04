@@ -18,6 +18,7 @@ import { ClassType } from "./lib/interface";
 import { getFieldMetadata } from "./lib/decorators";
 import { helper } from "./utils";
 import BigNumber from "bignumber.js";
+import { ERC20ABI } from "./constants/abi";
 
 //@ts-ignore
 BigInt.prototype.toJSON = function () {
@@ -360,7 +361,14 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   static utils = {
-    autoFormat: async ({ value, decimals, chainId, address }: { value: string; decimals: number; chainId: string; address: string }) => {
+    autoFormat: async ({ value, decimals, chainId, address }: { value: string; decimals?: number; chainId: string; address: string }) => {
+      if (!decimals) {
+        //@ts-ignore
+        decimals = await this.cache.wrap(`${chainId}-${address}-decimals`, async () => {
+          //@ts-ignore
+          return this.Get(ERC20ABI, chainId, address).read.decimals()
+        })
+      }
       const wrap = helper.number.warpBigNumber(value, decimals, { format: "0,0.000000", fallback: "" });
       const price = await this.getPrice({ chainId, address: address.toLowerCase() });
       const usd = new BigNumber(wrap.originFormat).multipliedBy(price || 1).toFixed(2);
@@ -545,4 +553,6 @@ export type QueryReturnType<E, S extends QuerySelect<E>> = {
   : E[K]
   : E[K]
   : E[K];
+
 };
+
