@@ -246,7 +246,7 @@ export const helper = {
           format: "...",
           originFormat: "...",
           decimals: "0",
-          isZero: true,
+          // isZero: true,
         };
       }
       const BigNumberResponse = { value: new BigNumber(value), decimals };
@@ -255,7 +255,7 @@ export const helper = {
         originFormat: BigNumberResponse.value.div(10 ** decimals).toFixed(),
         format: helper.number.numberFormat(BigNumberResponse.value.div(10 ** decimals).toFixed(), format, { fallback, min }),
         decimals: String(BigNumberResponse.decimals),
-        isZero: BigNumberResponse.value.isZero(),
+        // isZero: BigNumberResponse.value.isZero(),
       };
     },
     //http://numeraljs.com/ format params does not need to deal with decimal places
@@ -314,7 +314,7 @@ export const helper = {
         if (addressMode == "io" && helper.address.validateEthAddress(address)) {
           return from(address).string();
         }
-      } catch (error) {}
+      } catch (error) { }
       return address;
     },
     validateEthAddress: (address: string) => /^0x[a-fA-F0-9]{40}$/.test(address),
