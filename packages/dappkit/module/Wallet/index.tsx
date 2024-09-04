@@ -144,12 +144,15 @@ export class WalletStore implements Store {
   }
 
   async prepare(chainId?: number): Promise<WalletStore> {
-    const promise = new Promise<void>(async (res, rej) => {
+    return new Promise<WalletStore>(async (res, rej) => {
       try {
         if (this.account) {
+          if (!chainId) {
+            res(this);
+          }
           if (Number(this.chain?.id) == Number(chainId)) {
-            res();
-            return;
+            console.log('has and return ')
+            res(this);
           }
           this.switchChain?.({ chainId: chainId ?? 4689 });
           const interval = setInterval(() => {
@@ -159,9 +162,10 @@ export class WalletStore implements Store {
                   // //@ts-ignore
                   // const provider = new ethers.providers.Web3Provider(window?.ethereum);
                   // this.signer = provider.getSigner();
-                } catch (error) { }
+                  res(this);
+                } catch (error) {
+                }
                 clearInterval(interval);
-                res();
               }
             }
           }, 1000);
@@ -171,18 +175,14 @@ export class WalletStore implements Store {
           const interval = setInterval(() => {
             if (this.account) {
               clearInterval(interval);
-              res();
+              res(this);
             }
           }, 1000);
-
         }
       } catch (error) {
         rej(error);
       }
     });
-
-    await promise;
-    return this;
   }
 
 
