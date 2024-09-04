@@ -23,10 +23,10 @@ export type WalletTransactionHistoryType = {
 export type AddressMode = 'io' | '0x';
 
 export const iotex = {
-  iconUrl: 'https://icons.llamao.fi/icons/chains/rsz_iotex.jpg',
+  iconUrl: 'https://cdn-dapp-works.s3.us-east-1.amazonaws.com/1dd84d927ae959c508392be62e6eb549.png',
   ..._iotex,
 } as Chain;
 export const iotexTestnet = {
-  iconUrl: 'https://icons.llamao.fi/icons/chains/rsz_iotex.jpg',
+  iconUrl: 'https://cdn-dapp-works.s3.us-east-1.amazonaws.com/1dd84d927ae959c508392be62e6eb549.png',
   ..._iotexTestnet,
 } as Chain;;

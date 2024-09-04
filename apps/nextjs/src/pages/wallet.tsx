@@ -64,24 +64,26 @@ const Test = observer(() => {
       }
     </div>
     <ConnectButton showBalance={true} chainStatus={'full'} accountStatus={'full'} />
-    <Button onClick={e => { store.sendRawTx() }}>Send Raw Tx</Button>
+    <div className="flex flex-col gap-2">
+      <Button onClick={e => { store.sendRawTx() }}>Send Raw Tx</Button>
 
-    <Button onClick={e => { store.sendTx() }}>Send Tx</Button>
+      <Button onClick={e => { store.sendTx() }}>Send Tx</Button>
 
-    <Button onClick={e => { store.changeChain(true) }}>Change Iotex Chain</Button>
-    <Button onClick={e => { store.changeChain(false) }}>Change Other Chain</Button>
+      <Button onClick={e => { store.changeChain(true) }}>Change Iotex Chain</Button>
+      <Button onClick={e => { store.changeChain(false) }}>Change Other Chain</Button>
 
-    <Button onClick={e => { wallet.disconnect() }}>DisConnect</Button>
+      <Button onClick={e => { wallet.disconnect() }}>DisConnect</Button>
 
-    <Button disabled={wallet.isConnect} onClick={e => { wallet.prepare() }}>Open Connect Modal</Button>
+      <Button disabled={wallet.isConnect} onClick={e => { wallet.prepare() }}>Open Connect Modal</Button>
 
-    <Button disabled={wallet.isConnect} onClick={e => {
-      RootStore.Get(DialogStore).setData({
-        isOpen: true,
-        content: <RpcList />,
-        size: '2xl'
-      })
-    }}>RPC Modal</Button>
+      <Button onClick={e => {
+        RootStore.Get(DialogStore).setData({
+          isOpen: true,
+          content: <RpcList />,
+          size: '2xl'
+        })
+      }}>RPC Modal</Button>
+    </div>
   </>
 })
 
