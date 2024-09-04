@@ -74,6 +74,13 @@ const Test = observer(() => {
 
       <Button onClick={e => { wallet.disconnect() }}>DisConnect</Button>
 
+      <Button onClick={async e => {
+        console.log('prepare start')
+        const res = await wallet.prepare()
+        console.log(res)
+        console.log('prepare end')
+      }}>Prepare</Button>
+
       <Button disabled={wallet.isConnect} onClick={e => { wallet.prepare() }}>Open Connect Modal</Button>
 
       <Button onClick={e => {
