@@ -30,6 +30,7 @@ export class WalletConfigStore implements Store {
   get reconnectOnMount() {
     if (!this.compatibleMode)
       return true
+
     if (!this.isConnect && this.walletUpdateTick == 0) {
       return true
     }

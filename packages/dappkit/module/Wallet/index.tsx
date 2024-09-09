@@ -81,6 +81,7 @@ export class WalletStore implements Store {
     const { connect } = useConnect();
     const { disconnect } = useDisconnect();
     const walletConfigStore = RootStore.Get(WalletConfigStore);
+    console.log('use wallet', RootStore.Get(WalletConfigStore).reconnectOnMount, RootStore.Get(WalletConfigStore).updateTicker)
     this.set({
       //@ts-ignore
       connect,
@@ -111,20 +112,20 @@ export class WalletStore implements Store {
       }
     }, [address, isConnected, chain])
 
-    useEffect(() => {
-      if (!address) {
-        // console.log({ address })
-        if (walletConfigStore.compatibleMode) {
-          console.log('%c[walletStore]: walletStore plugin is running in compatible mode', 'color: yellow; font-weight: bold;');
-          // try {
-          //   //@ts-ignore
-          //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
-          // } catch (error) {
-          //   console.log(error)
-          // }
-        }
-      }
-    }, [])
+    // useEffect(() => {
+    //   if (!address) {
+    //     // console.log({ address })
+    //     if (walletConfigStore.compatibleMode) {
+    //       console.log('%c[walletStore]: walletStore plugin is running in compatible mode', 'color: yellow; font-weight: bold;');
+    //       // try {
+    //       //   //@ts-ignore
+    //       //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
+    //       // } catch (error) {
+    //       //   console.log(error)
+    //       // }
+    //     }
+    //   }
+    // }, [])
 
     useEffect(() => {
       setTimeout(() => {
