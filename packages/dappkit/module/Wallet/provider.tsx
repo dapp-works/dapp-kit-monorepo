@@ -17,12 +17,14 @@ export const WalletProvider = (({
   appName,
   supportedChains,
   compatibleMode = true,
+  router
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
   supportedChains?: Chain[],
   compatibleMode?: boolean,
+  router?: any
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
@@ -51,20 +53,19 @@ export const WalletProvider = (({
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
           {/* @ts-ignore */}
           {children}
-          <WalletConnect compatibleMode={compatibleMode} />
+          <WalletConnect compatibleMode={compatibleMode} router={router} />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 });
 
-export const WalletConnect = ({ compatibleMode = true }) => {
+export const WalletConnect = ({ compatibleMode = true, router }) => {
   const { reconnect } = useReconnect()
   const wallet = RootStore.Get(WalletStore);
-  const router = useRouter()
   wallet.use();
 
-  if (compatibleMode) {
+  if (router && compatibleMode) {
     useEffect(() => {
       if (!wallet.account) {
         reconnect()
