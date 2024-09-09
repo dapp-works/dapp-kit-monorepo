@@ -15,13 +15,13 @@ export const WalletProvider = (({
   theme,
   appName,
   supportedChains,
-  compatibleMode = true
+  compatibleMode = true,
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
   supportedChains?: Chain[],
-  compatibleMode?: boolean
+  compatibleMode?: boolean,
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
