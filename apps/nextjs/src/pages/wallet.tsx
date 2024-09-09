@@ -8,6 +8,8 @@ import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
 import { DialogStore } from "@dappworks/kit/plugins";
 import { useEffect } from "react";
+import Link from "next/link";
+import MyButton from "~/components/MyButton";
 
 const Test = observer(() => {
   const wallet = RootStore.Get(WalletStore)
@@ -63,7 +65,8 @@ const Test = observer(() => {
         })
       }
     </div>
-    <ConnectButton showBalance={true} chainStatus={'full'} accountStatus={'full'} />
+    <Link href='/wallet2' >Wallet page2</Link>
+    <MyButton />
     <div className="flex flex-col gap-2">
       <Button onClick={e => { store.sendRawTx() }}>Send Raw Tx</Button>
 
