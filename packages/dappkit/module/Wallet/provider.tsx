@@ -1,13 +1,14 @@
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { WagmiProvider } from 'wagmi';
+import { useReconnect, WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
 import { WalletStore } from '.';
 import { WalletConfigStore } from './walletConfigStore'
 import { reaction } from 'mobx';
 import { type Chain } from "viem/chains";
 import { iotex } from './type';
+import { useRouter } from 'next/router';
 
 const queryClient = new QueryClient();
 export const WalletProvider = (({
@@ -50,15 +51,26 @@ export const WalletProvider = (({
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
           {/* @ts-ignore */}
           {children}
-          <WalletConnect />
+          <WalletConnect compatibleMode={compatibleMode} />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 });
 
-export const WalletConnect = () => {
+export const WalletConnect = ({ compatibleMode = true }) => {
+  const { reconnect } = useReconnect()
   const wallet = RootStore.Get(WalletStore);
+  const router = useRouter()
   wallet.use();
+
+  if (compatibleMode) {
+    useEffect(() => {
+      if (!wallet.account) {
+        reconnect()
+      }
+    }, [router])
+  }
+
   return <></>;
 };

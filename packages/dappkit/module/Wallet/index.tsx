@@ -75,7 +75,7 @@ export class WalletStore implements Store {
   use(router?: any) {
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
-    const { reconnect } = useReconnect()
+
     const { switchChain } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
@@ -111,15 +111,7 @@ export class WalletStore implements Store {
       }
     }, [address, isConnected, chain])
 
-    if (router) {
-      useEffect(() => {
-        if (walletConfigStore.compatibleMode) {
-          if (!address) {
-            reconnect()
-          }
-        }
-      }, [router])
-    }
+
 
     useEffect(() => {
       setTimeout(() => {
