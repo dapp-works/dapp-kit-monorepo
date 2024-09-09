@@ -23,6 +23,7 @@ export const WalletProvider = (({
   supportedChains?: Chain[],
   compatibleMode?: boolean
 }) => {
+  //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
 
   const [config, setConfig] = useState(walletConfig.rainbowKitConfig)

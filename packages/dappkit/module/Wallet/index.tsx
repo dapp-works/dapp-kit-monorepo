@@ -96,6 +96,7 @@ export class WalletStore implements Store {
       this.set({
         isConnect: isConnected,
         account: address,
+        // @ts-ignore 
         chain,
       })
       walletConfigStore.set({
@@ -115,8 +116,12 @@ export class WalletStore implements Store {
         // console.log({ address })
         if (walletConfigStore.compatibleMode) {
           console.log('%c[walletStore]: walletStore plugin is running in compatible mode', 'color: yellow; font-weight: bold;');
-          //@ts-ignore
-          connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
+          // try {
+          //   //@ts-ignore
+          //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
+          // } catch (error) {
+          //   console.log(error)
+          // }
         }
       }
     }, [])
