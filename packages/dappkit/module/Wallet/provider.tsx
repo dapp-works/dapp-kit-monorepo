@@ -45,7 +45,7 @@ export const WalletProvider = (({
   }, [appName, compatibleMode])
   return (
     //@ts-ignore
-    <WagmiProvider config={config} reconnectOnMount={walletConfig.reconnectOnMount}>
+    <WagmiProvider config={config} reconnectOnMount={true}>
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
           {/* @ts-ignore */}
