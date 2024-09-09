@@ -77,8 +77,8 @@ export class WalletStore implements Store {
   use() {
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
-    const { reconnect } = useReconnect()
-    const router = useRouter()
+    // const { reconnect } = useReconnect()
+    // const router = useRouter()
     const { switchChain } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
@@ -114,20 +114,20 @@ export class WalletStore implements Store {
       }
     }, [address, isConnected, chain])
 
-    useEffect(() => {
-      if (!address) {
-        reconnect()
-        // console.log({ address })
-        if (walletConfigStore.compatibleMode) {
-          // try {
-          //   //@ts-ignore
-          //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
-          // } catch (error) {
-          //   console.log(error)
-          // }
-        }
-      }
-    }, [router])
+    // useEffect(() => {
+    //   if (!address) {
+    //     // reconnect()
+    //     // console.log({ address })
+    //     if (walletConfigStore.compatibleMode) {
+    //       // try {
+    //       //   //@ts-ignore
+    //       //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
+    //       // } catch (error) {
+    //       //   console.log(error)
+    //       // }
+    //     }
+    //   }
+    // }, [router])
 
     useEffect(() => {
       setTimeout(() => {
