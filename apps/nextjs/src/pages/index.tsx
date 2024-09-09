@@ -103,27 +103,38 @@ const PromiseStateGroupTest = observer(() => {
                 return new Promise((resolve) => {
                   setTimeout(() => {
                     resolve(1);
-                  }, 2000);
+                  }, 1000);
                 });
               }
             });
             const ps2 = new PromiseState({
               function: async () => {
                 return new Promise((resolve, reject) => {
+                  reject('My error')
+                });
+              }
+            });
+
+            const ps3 = new PromiseState({
+              function: async () => {
+                return new Promise((resolve, reject) => {
                   setTimeout(() => {
-                    resolve(3);
-                  }, 2000);
+                    resolve(2);
+                  }, 1000);
                 });
               }
             });
             const promiseStateGroup = new PromiseStateGroup({
-              group: [ps1, ps2],
+              group: [ps1, ps2, ps3],
               groupOptions: [
                 {
                   title: '====P1===='
                 },
                 {
                   title: '====P2===='
+                },
+                {
+                  title: '====P3===='
                 },
               ]
             });
@@ -152,6 +163,74 @@ const PromiseStateGroupTest = observer(() => {
           }}
         >
           Show Dialog
+        </Button>
+
+        <Button
+          color="primary"
+          size="sm"
+          onClick={async () => {
+            const ps1 = new PromiseState({
+              function: async () => {
+                return new Promise((resolve) => {
+                  setTimeout(() => {
+                    resolve(1);
+                  }, 500);
+                });
+              }
+            });
+            const ps2 = new PromiseState({
+              function: async () => {
+                return 1
+              }
+            });
+
+            const ps3 = new PromiseState({
+              function: async () => {
+                return new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    resolve(2);
+                  }, 1000);
+                });
+              }
+            });
+            const promiseStateGroup = new PromiseStateGroup({
+              group: [ps1, ps2, ps3],
+              groupOptions: [
+                {
+                  title: '====P1===='
+                },
+                {
+                  title: '====P2===='
+                },
+                {
+                  title: '====P3===='
+                },
+              ]
+            });
+            const res = await promiseStateGroup
+              .callWithDialog(
+                {
+                  title: 'PromiseStateGroup Dialog',
+                  size: 'sm',
+                  // classNames: {
+                  //   base: 'bg-[#000] text-white border border-[#f9f9f9]',
+                  // }
+                },
+                {
+                  className: 'pb-4',
+                  spinnerProps: {
+                    size: 'sm',
+                    color: 'success'
+                  },
+                  // SuccessIcon: <Check size={20} color="#fff" />,
+                  // FailureIcon: <X size={20} color="#fff" />
+                }
+              )
+
+            console.log('PromiseStateGroup Call:', res);
+          }}
+        >
+          Auto Call with Dialog
         </Button>
       </div>
     </Card>

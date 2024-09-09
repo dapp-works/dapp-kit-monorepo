@@ -3,6 +3,8 @@ import { PromiseState } from '../../store/standard/PromiseState';
 import { DialogStore } from '../Dialog';
 import { DialogContentUI, DialogContentUIProps, GroupOptions, StepUI, StepUIProps } from './ui';
 import { makeObservable } from 'mobx';
+import { ToastPlugin } from '../Toast/Toast';
+import { RootStore } from '../../store';
 
 export class PromiseStateGroup {
   group: PromiseState<any, any>[] = [];
@@ -54,6 +56,28 @@ export class PromiseStateGroup {
     };
   }
 
+  async callWithDialog(
+    dialogOptions?: Partial<DialogStore>,
+    dialogContentOptions?: DialogContentUIProps,
+    successMsg?: string) {
+    this.showDialog(dialogOptions, dialogContentOptions);
+    const {
+      result,
+      errMsg,
+    } = await this.call()
+    if (errMsg) {
+      RootStore.Get(ToastPlugin).error(errMsg)
+    }
+    if (successMsg) {
+      RootStore.Get(ToastPlugin).success(successMsg)
+    }
+    this.closeDialog()
+    return {
+      result,
+      errMsg,
+    }
+  }
+
   showDialog(
     dialogOptions?: Partial<DialogStore>,
     dialogContentOptions?: DialogContentUIProps) {
@@ -71,6 +95,8 @@ export class PromiseStateGroup {
     });
     return this;
   }
+
+
 
   closeDialog() {
     DialogStore.close();
