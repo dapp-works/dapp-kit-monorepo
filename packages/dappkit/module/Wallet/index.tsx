@@ -18,8 +18,6 @@ import { ShowSuccessTxDialog } from './SuccessTxDialog'
 import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
 import { helper } from "../../lib/helper";
-import { injected } from "wagmi/connectors";
-import { useRouter } from "next/router";
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -78,7 +76,6 @@ export class WalletStore implements Store {
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
     // const { reconnect } = useReconnect()
-    // const router = useRouter()
     const { switchChain } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
