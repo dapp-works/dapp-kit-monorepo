@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import { AddressMode, WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
 import { SwitchChainMutate } from "wagmi/query";
-import { Config, useAccount, useConnect, useDisconnect, useSwitchChain, useWalletClient, } from "wagmi";
+import { Config, useAccount, useConnect, useDisconnect, useReconnect, useSwitchChain, useWalletClient, } from "wagmi";
 import { Chain, useConnectModal, WalletDetailsParams } from '@rainbow-me/rainbowkit';
 import { RootStore } from "../../store";
 import { ToastPlugin } from "../Toast/Toast";
@@ -19,6 +19,7 @@ import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
 import { helper } from "../../lib/helper";
 import { injected } from "wagmi/connectors";
+import { useRouter } from "next/router";
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -76,6 +77,8 @@ export class WalletStore implements Store {
   use() {
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
+    const { reconnect } = useReconnect()
+    const router = useRouter()
     const { switchChain } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
@@ -111,20 +114,20 @@ export class WalletStore implements Store {
       }
     }, [address, isConnected, chain])
 
-    // useEffect(() => {
-    //   if (!address) {
-    //     // console.log({ address })
-    //     if (walletConfigStore.compatibleMode) {
-    //       console.log('%c[walletStore]: walletStore plugin is running in compatible mode', 'color: yellow; font-weight: bold;');
-    //       // try {
-    //       //   //@ts-ignore
-    //       //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
-    //       // } catch (error) {
-    //       //   console.log(error)
-    //       // }
-    //     }
-    //   }
-    // }, [])
+    useEffect(() => {
+      if (!address) {
+        reconnect()
+        // console.log({ address })
+        if (walletConfigStore.compatibleMode) {
+          // try {
+          //   //@ts-ignore
+          //   connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
+          // } catch (error) {
+          //   console.log(error)
+          // }
+        }
+      }
+    }, [router])
 
     useEffect(() => {
       setTimeout(() => {
