@@ -14,12 +14,14 @@ export const WalletProvider = (({
   children,
   theme,
   appName,
-  supportedChains
+  supportedChains,
+  compatibleMode = true
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
-  supportedChains?: Chain[]
+  supportedChains?: Chain[],
+  compatibleMode?: boolean
 }) => {
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
 
@@ -36,10 +38,13 @@ export const WalletProvider = (({
     if (appName) {
       walletConfig.appName = appName
     }
-  }, [appName])
+    if (compatibleMode != undefined) {
+      walletConfig.compatibleMode = compatibleMode
+    }
+  }, [appName, compatibleMode])
   return (
     //@ts-ignore
-    <WagmiProvider config={config} reconnectOnMount={true}>
+    <WagmiProvider config={config} reconnectOnMount={walletConfig.reconnectOnMount}>
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
           {/* @ts-ignore */}

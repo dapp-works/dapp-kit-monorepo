@@ -18,6 +18,7 @@ import { ShowSuccessTxDialog } from './SuccessTxDialog'
 import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
 import { helper } from "../../lib/helper";
+import { injected } from "wagmi/connectors";
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -72,19 +73,6 @@ export class WalletStore implements Store {
     Object.assign(this, args);
   }
 
-  get reconnectOnMount() {
-    if (!this.isConnect && this.updateTicker == 0) {
-      return true
-    }
-    if (!this.isConnect && this.updateTicker != 0) {
-      return false
-    }
-    if (this.isConnect) {
-      return true
-    }
-  }
-
-
   use() {
     const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
@@ -92,6 +80,7 @@ export class WalletStore implements Store {
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
     const { disconnect } = useDisconnect();
+    const walletConfigStore = RootStore.Get(WalletConfigStore);
     this.set({
       //@ts-ignore
       connect,
@@ -109,11 +98,28 @@ export class WalletStore implements Store {
         account: address,
         chain,
       })
+      walletConfigStore.set({
+        isConnect: isConnected,
+      })
       if (this.account) {
         this.updateTicker++;
+        walletConfigStore.set({
+          walletUpdateTick: this.updateTicker,
+        })
         this.event.emit('walletAccount:ready');
       }
     }, [address, isConnected, chain])
+
+    useEffect(() => {
+      if (!address) {
+        // console.log({ address })
+        if (walletConfigStore.compatibleMode) {
+          console.log('%c[walletStore]: walletStore plugin is running in compatible mode', 'color: yellow; font-weight: bold;');
+          //@ts-ignore
+          connect(walletConfigStore.rainbowKitConfig, { connector: injected() });
+        }
+      }
+    }, [])
 
     useEffect(() => {
       setTimeout(() => {

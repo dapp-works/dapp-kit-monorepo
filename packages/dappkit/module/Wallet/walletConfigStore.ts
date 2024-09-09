@@ -13,6 +13,10 @@ export class WalletConfigStore implements Store {
   supportedChains: Chain[];
   defaultChainId = 4689;
   updateTicker = 1
+  walletUpdateTick = 0;
+  isConnect = false;
+  // This mode to resolve and walletClient and nextui in some extreme cases cause page infinite redraw bugs
+  compatibleMode = true;
 
   constructor(args: Partial<WalletConfigStore>) {
     Object.assign(this, args);
@@ -21,6 +25,20 @@ export class WalletConfigStore implements Store {
   set(params: Partial<WalletConfigStore>) {
     Object.assign(this, params);
     this.updateTicker += 1
+  }
+
+  get reconnectOnMount() {
+    if (!this.compatibleMode)
+      return true
+    if (!this.isConnect && this.walletUpdateTick == 0) {
+      return true
+    }
+    if (!this.isConnect && this.walletUpdateTick != 0) {
+      return false
+    }
+    if (this.isConnect) {
+      return true
+    }
   }
 
   get rainbowKitConfig() {
