@@ -81,7 +81,6 @@ export class WalletStore implements Store {
     const { connect } = useConnect();
     const { disconnect } = useDisconnect();
     const walletConfigStore = RootStore.Get(WalletConfigStore);
-    console.log('use wallet', RootStore.Get(WalletConfigStore).reconnectOnMount, RootStore.Get(WalletConfigStore).updateTicker)
     this.set({
       //@ts-ignore
       connect,
