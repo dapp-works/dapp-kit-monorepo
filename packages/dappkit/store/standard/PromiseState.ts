@@ -25,9 +25,9 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
 
   autoAlert = true;
-  autoUpdate = true
+  autoUpdate = true;
   autoInit = true;
-  autoClean = true
+  autoClean = true;
   context: any = undefined;
 
   successMsg: string = "";
