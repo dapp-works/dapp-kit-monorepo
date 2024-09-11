@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Store } from "../../store/standard/base";
-import { Account, PublicClient, type HttpTransport, WalletClient, TransactionReceipt } from "viem";
+import { Account, PublicClient, type HttpTransport, WalletClient, TransactionReceipt, createWalletClient, custom, publicActions } from "viem";
 import { PromiseHook } from '../../store/standard/PromiseHook';
 import { BigNumberState } from '../../store/standard/BigNumberState';
 import BigNumber from 'bignumber.js';
@@ -18,6 +18,7 @@ import { ShowSuccessTxDialog } from './SuccessTxDialog'
 import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
 import { helper } from "../../lib/helper";
+import { iotex } from "viem/chains";
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -76,7 +77,7 @@ export class WalletStore implements Store {
   }
 
   use(router?: any) {
-    const { data: walletClient, isSuccess } = useWalletClient();
+    // const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
 
     const { switchChain } = useSwitchChain();
@@ -88,13 +89,22 @@ export class WalletStore implements Store {
       //@ts-ignore
       connect,
       // @ts-ignore 
-      walletClient,
+      // walletClient,
       openConnectModal,
       switchChain,
       disconnect
     })
 
     useEffect(() => {
+      if (address) {
+        this.walletClient = createWalletClient({
+          account: address,
+          chain: this.chain,
+          transport: custom(window.ethereum!)
+        }).extend(publicActions)
+      } else {
+        this.walletClient = null
+      }
       RootStore.Get(WalletHistoryStore).set({ isRender: true })
       this.set({
         isConnect: isConnected,
