@@ -24,7 +24,10 @@ export class WalletStore implements Store {
   autoObservable = true;
   account: `0x${string}` = null;
   isSuccessDialogOpen = false;
-  isInSafeApp = false;
+  // isInSafeApp = false;
+  get isInSafeApp() {
+    return RootStore.Get(WalletConfigStore).isInSafeApp
+  }
   isConnect = false;
   walletClient: WalletClient;
   event = new EventEmitter();
