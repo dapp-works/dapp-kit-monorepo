@@ -1,9 +1,9 @@
 import { RootStore } from "@dappworks/kit";
-import { RpcList, WalletConfigStore, WalletHistoryStore, WalletStore, WalletTransactionHistoryType } from "@dappworks/kit/wallet";
+import { iotex, RpcList, WalletConfigStore, WalletHistoryStore, WalletStore, WalletTransactionHistoryType } from "@dappworks/kit/wallet";
 import { AIem } from '@dappworks/kit/aiem'
 import { Button } from "@nextui-org/react";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { bsc, iotex, iotexTestnet, mainnet, polygon } from "viem/chains";
+import { bsc, iotexTestnet, mainnet, polygon } from "viem/chains";
 import { ERC20Abi } from "~/lib/abi";
 import { observer } from "mobx-react-lite";
 import { DialogStore } from "@dappworks/kit/plugins";
@@ -50,7 +50,7 @@ const Test = observer(() => {
           })
         } else {
           config.set({
-            supportedChains: [bsc, mainnet, polygon]
+            supportedChains: [iotex, bsc, mainnet, polygon]
           })
         }
       },

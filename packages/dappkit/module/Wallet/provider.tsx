@@ -8,8 +8,7 @@ import { WalletConfigStore } from './walletConfigStore'
 import { reaction } from 'mobx';
 import { type Chain } from "viem/chains";
 import { iotex } from './type';
-import { useRouter } from 'next/router';
-
+import SafeAppsSDK from '@safe-global/safe-apps-sdk';
 const queryClient = new QueryClient();
 export const WalletProvider = (({
   children,
@@ -28,9 +27,7 @@ export const WalletProvider = (({
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
-
   const [config, setConfig] = useState(walletConfig.rainbowKitConfig)
-
   useEffect(() => {
     const disposer = reaction(
       () => walletConfig.updateTicker,
@@ -42,19 +39,6 @@ export const WalletProvider = (({
   })
 
   useEffect(() => {
-    try {
-      if (typeof window != 'undefined') {
-        window.addEventListener('message', (msg) => {
-          if (msg.origin.includes('safe')) {
-            walletConfig.isInSafeApp = true
-          }
-        })
-      }
-    } catch (error) {
-    }
-  }, [])
-
-  useEffect(() => {
     if (appName) {
       walletConfig.appName = appName
     }
@@ -62,14 +46,26 @@ export const WalletProvider = (({
       walletConfig.compatibleMode = compatibleMode
     }
   }, [appName, compatibleMode])
+
+  useEffect(() => {
+    const sdk = new SafeAppsSDK()
+    // sdk.safe.getInfo().then(res => {
+    //   console.log(res)
+    // })
+    sdk.safe.getEnvironmentInfo().then(({ origin }) => {
+      if (origin) {
+        walletConfig.isInSafeApp = true
+      }
+    })
+  }, [])
+
   return (
-    //@ts-ignore
     <WagmiProvider config={config} reconnectOnMount={compatibleMode ? false : true}>
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
-          {/* @ts-ignore */}
           {children}
           <WalletConnect compatibleMode={compatibleMode} router={router} />
+          {/* <SafeProviderWrapper /> */}
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
@@ -80,7 +76,6 @@ export const WalletConnect = ({ compatibleMode = true, router }) => {
   const { reconnect } = useReconnect()
   const wallet = RootStore.Get(WalletStore);
   wallet.use();
-
   if (router && compatibleMode) {
     useEffect(() => {
       if (!wallet.account) {
@@ -88,6 +83,5 @@ export const WalletConnect = ({ compatibleMode = true, router }) => {
       }
     }, [router])
   }
-
   return <></>;
 };
