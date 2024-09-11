@@ -218,7 +218,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     if (!wallet) {
       wallet = aiem.getWallet ? aiem.getWallet() : null;
     }
-    const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet?.account?.address : null}`;
+
+    const cacheKey = `contract ${chainId}-${address}-${wallet ? wallet.account.address : null}`;
     return aiem._cache.wrap(cacheKey, () => {
       //@ts-ignore
       const pubClient = aiem.PubClient(chainId, options);
@@ -310,13 +311,12 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
               return this.cache.wrap(
                 cacheKey,
                 () => {
-                  console.log({ args })
                   return target[funcName](...args);
                 },
                 methodConfig,
               );
             }
-            console.log({ args })
+
             return target[funcName](...args);
           };
         }
