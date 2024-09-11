@@ -96,14 +96,12 @@ export class WalletStore implements Store {
     })
 
     useEffect(() => {
-      if (address) {
+      if (address && chain) {
         this.walletClient = createWalletClient({
           account: address,
           chain: this.chain,
           transport: custom(window.ethereum!)
         }).extend(publicActions)
-      } else {
-        this.walletClient = null
       }
       RootStore.Get(WalletHistoryStore).set({ isRender: true })
       this.set({
