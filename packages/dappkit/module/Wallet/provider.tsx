@@ -42,6 +42,19 @@ export const WalletProvider = (({
   })
 
   useEffect(() => {
+    try {
+      if (typeof window != 'undefined') {
+        window.addEventListener('message', (msg) => {
+          if (msg.origin.includes('safe')) {
+            walletConfig.isInSafeApp = true
+          }
+        })
+      }
+    } catch (error) {
+    }
+  }, [])
+
+  useEffect(() => {
     if (appName) {
       walletConfig.appName = appName
     }
