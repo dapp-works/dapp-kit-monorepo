@@ -15,6 +15,7 @@ export class WalletConfigStore implements Store {
   updateTicker = 1
   walletUpdateTick = 0;
   isConnect = false;
+  isInSafeApp = false;
   // This mode to resolve and walletClient and nextui in some extreme cases cause page infinite redraw bugs
   compatibleMode = true;
 
