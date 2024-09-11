@@ -1,5 +1,5 @@
 import { Chain, Wallet, useConnectModal, getDefaultConfig, WalletDetailsParams } from '@rainbow-me/rainbowkit';
-import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet } from '@rainbow-me/rainbowkit/wallets';
+import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet, safeWallet } from '@rainbow-me/rainbowkit/wallets';
 import { iotex } from 'viem/chains';
 import { ObjectPool, Store } from '../..';
 
@@ -55,7 +55,7 @@ export class WalletConfigStore implements Store {
         },
         {
           groupName: 'Others',
-          wallets: [metaMaskWallet, walletConnectWallet, iopayWallet, okxWallet, binanceWallet],
+          wallets: [metaMaskWallet, walletConnectWallet, iopayWallet, okxWallet, binanceWallet, safeWallet],
         }]
       });
     });
