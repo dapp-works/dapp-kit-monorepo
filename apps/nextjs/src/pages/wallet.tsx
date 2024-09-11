@@ -21,6 +21,7 @@ const Test = observer(() => {
   const store = RootStore.Local(() => {
     return {
       sendRawTx() {
+        console.log(RootStore.Get(WalletStore).walletClient)
         wallet.sendRawTx({
           chainId: 4689,
           address: "0x610CBDa6f0037B4141A5B949f56479106BeCb1E9",
@@ -33,10 +34,12 @@ const Test = observer(() => {
           showSuccessDialog: true
         })
       },
-      sendTx() {
+      async sendTx() {
+        console.log(RootStore.Get(WalletStore).walletClient.account?.address)
         wallet.sendTx({
           chainId: 4689,
-          tx: async () => await AIem.Get(ERC20Abi, '4689', "0xa00744882684c3e4747faefd68d283ea44099d03", RootStore.Get(WalletStore).walletClient).write.approve(["0xa00744882684c3e4747faefd68d283ea44099d03", BigInt(1e18.toString())]),
+          tx: async () =>
+            await AIem.Get(ERC20Abi, '4689', "0xa00744882684c3e4747faefd68d283ea44099d03", RootStore.Get(WalletStore).walletClient).write.approve(["0xa00744882684c3e4747faefd68d283ea44099d03", BigInt(1e18.toString())]),
           historyItem: {
             msg: 'Approve',
             type: "Swap"
