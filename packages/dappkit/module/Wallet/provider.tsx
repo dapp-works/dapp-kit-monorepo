@@ -31,12 +31,15 @@ export const WalletProvider = (({
 
   const [config, setConfig] = useState(walletConfig.rainbowKitConfig)
 
-  reaction(
-    () => walletConfig.updateTicker,
-    () => {
-      setConfig(walletConfig.rainbowKitConfig)
-    }
-  )
+  useEffect(() => {
+    const disposer = reaction(
+      () => walletConfig.updateTicker,
+      () => {
+        setConfig(walletConfig.rainbowKitConfig)
+      }
+    )
+    return () => disposer()
+  })
 
   useEffect(() => {
     if (appName) {
