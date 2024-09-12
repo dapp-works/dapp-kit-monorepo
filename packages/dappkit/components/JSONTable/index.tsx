@@ -637,7 +637,7 @@ function VirtualizedListUI<T>({
       return (
         <div
           key={rowKey ? item[rowKey] || index : index}
-          className={cn('flex items-center', virtualizedOptions?.classNames?.row, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+          className={cn('w-full flex items-center', virtualizedOptions?.classNames?.row, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
           onClick={() => {
             onRowClick?.(item);
           }}
@@ -646,7 +646,7 @@ function VirtualizedListUI<T>({
             return (
               <div
                 key={column.key}
-                className={cn('flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto', virtualizedOptions?.classNames?.rowCell)}
+                className={cn('w-full flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto', virtualizedOptions?.classNames?.rowCell)}
                 style={{
                   minWidth: column.width
                 }}
@@ -663,13 +663,13 @@ function VirtualizedListUI<T>({
 
   return (
     <div className={cn("w-full overflow-x-auto", className)}>
-      <div className='inline-block'>
-        <div className={cn("flex items-center rounded-lg bg-default-100 mb-2", virtualizedOptions?.classNames?.header)}>
+      <div className='inline-block min-w-fit w-full'>
+        <div className={cn("w-full flex items-center rounded-lg bg-default-100 mb-2", virtualizedOptions?.classNames?.header)}>
           {columns.map((column) => {
             return (
               <div
                 key={column.key}
-                className={cn("flex-grow py-2 px-4 flex items-center text-xs font-semibold whitespace-nowrap", virtualizedOptions?.classNames?.headerCell)}
+                className={cn("w-full flex-grow py-2 px-4 flex items-center text-xs font-semibold whitespace-nowrap", virtualizedOptions?.classNames?.headerCell)}
                 style={{
                   minWidth: column.width
                 }}
