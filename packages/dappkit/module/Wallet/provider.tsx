@@ -17,30 +17,16 @@ export const WalletProvider = observer((({
   appName,
   supportedChains,
   compatibleMode = true,
-  router,
-  debug = false
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
   supportedChains?: Chain[],
   compatibleMode?: boolean,
-  router?: any,
   debug?: boolean,
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
-  const [config, setConfig] = useState(walletConfig.rainbowKitConfig)
-  useEffect(() => {
-    const disposer = reaction(
-      () => walletConfig.updateTicker,
-      () => {
-        setConfig(walletConfig.rainbowKitConfig)
-      }
-    )
-    return () => disposer()
-  })
-
   useEffect(() => {
     if (appName) {
       walletConfig.appName = appName
@@ -49,43 +35,28 @@ export const WalletProvider = observer((({
       walletConfig.compatibleMode = compatibleMode
     }
   }, [appName, compatibleMode])
-
   useEffect(() => {
     const sdk = new SafeAppsSDK()
-    // sdk.safe.getInfo().then(res => {
-    //   console.log(res)
-    // })
     sdk.safe.getEnvironmentInfo().then(({ origin }) => {
       if (origin) {
         walletConfig.isInSafeApp = true
       }
     })
   }, [])
-
   return (
-    <WagmiProvider config={config} reconnectOnMount={walletConfig.reconnectOnMount}>
+    <WagmiProvider config={walletConfig.rainbowKitConfig} reconnectOnMount={walletConfig.reconnectOnMount}>
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
-          {debug && walletConfig.reconnectOnMount ? 'true' : 'false'}
           {children}
-          <WalletConnect compatibleMode={compatibleMode} router={router} />
-          {/* <SafeProviderWrapper /> */}
+          <WalletConnect />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }));
 
-export const WalletConnect = ({ compatibleMode = true, router }) => {
-  // const { reconnect } = useReconnect()
+export const WalletConnect = () => {
   const wallet = RootStore.Get(WalletStore);
   wallet.use();
-  // if (router && compatibleMode) {
-  //   useEffect(() => {
-  //     if (!wallet.account) {
-  //       reconnect()
-  //     }
-  //   }, [router])
-  // }
   return <></>;
 };
