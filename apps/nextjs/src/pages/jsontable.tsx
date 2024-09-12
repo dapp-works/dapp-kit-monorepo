@@ -8,7 +8,9 @@ import { helper } from "@dappworks/kit/utils";
 import ThemeSwitcher from "~/components/ThemeSwitcher";
 
 const HomePage = observer(() => {
-  const isMobile = RootStore.Get(DeviceDetectStore).isMobile;
+  const deviceDetectStore = RootStore.Get(DeviceDetectStore);
+  deviceDetectStore.use();
+  const { isMobile } = deviceDetectStore;
   const store = useLocalObservable(() => ({
     isLoading: false,
     dataSource: [
@@ -196,26 +198,6 @@ const HomePage = observer(() => {
                 },
                 e: [],
               },
-              {
-                a: {
-                  b: 1,
-                },
-                c: 2,
-                d: {
-                  e: 3,
-                },
-                e: [],
-              },
-              {
-                a: {
-                  b: 1,
-                },
-                c: 2,
-                d: {
-                  e: 3,
-                },
-                e: [],
-              },
             ])
             store.isLoading = false;
           }
@@ -283,9 +265,11 @@ const HomePage = observer(() => {
         cardOptions={{
           showDivider: true,
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
-          itemClassName: 'flex justify-between',
+          itemClassName: 'flex flex-col text-start',
           labelClassName: 'font-bold',
           valueClassName: 'text-red-500',
+          colSpan: 2,
+          cardGroupClassName: "space-x-2"
         }}
         emptyContent={isMobile ? <Card className='w-full h-20 flex flex-col justify-center items-center p-4 shadow-sm border text-foreground-400 rounded-lg'>No Data</Card> : undefined}
         collapsedTableConfig={{
