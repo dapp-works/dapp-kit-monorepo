@@ -1,8 +1,12 @@
 import { Button } from "@nextui-org/react";
-import { ComplexFormModalStore, DatePickerWidget, EditorWidget, getComplexFormData, JSONForm } from "@dappworks/kit/form";
+import { ComplexFormModalStore, DatePickerWidget, EditorWidget, getComplexFormData } from "@dappworks/kit/form";
 import { RootStore } from "@dappworks/kit";
 import ThemeSwitcher from "~/components/ThemeSwitcher";
 import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+
+const JSONForm = dynamic(() => import('@dappworks/kit/form').then((mod) => mod.JSONForm), { ssr: false });
 
 const HomePage = observer(() => {
   // Required field
@@ -122,19 +126,15 @@ const HomePage = observer(() => {
     },
   };
 
-  console.log('JSONForm', JSONForm);
-
   return (
     <div className="mt-4 p-4 w-full lg:w-[900px] mx-auto border">
       <ThemeSwitcher />
       <JSONForm
         className="mt-10"
         theme="primary"
-        // Required field
         formData={formData}
-        // Optional field
+        Optional field
         formConfig={formConfig}
-        // Optional field
         layoutConfig={{
           // Required field
           $type: 'GridLayout',
@@ -260,12 +260,6 @@ const HomePage = observer(() => {
           // }
 
         }}
-        // onBatchSubmit={async (data, setLoading) => {
-        //   console.log('[GridLayout onBatchSubmit]', data);
-        //   setLoading(true);
-        //   await new Promise((resolve) => setTimeout(resolve, 2000));
-        //   setLoading(false);
-        // }}
         batchSubmitButtonProps={{
           className: 'mx-auto',
           color: 'secondary',
@@ -291,9 +285,9 @@ const HomePage = observer(() => {
           }
           return v;
         }}
-      // onChange={(data) => {
-      //   console.log('[GridLayout onChange]', data);
-      // }}
+        onChange={(data) => {
+          console.log('[GridLayout onChange]', data);
+        }}
       />
 
 
