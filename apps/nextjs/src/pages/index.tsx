@@ -1,15 +1,9 @@
-import { observer, useLocalObservable } from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 import { Button, Card } from "@nextui-org/react";
-import { DeviceDetectStore } from "../store/deviceDetect";
-import { JSONTable } from "@dappworks/kit/jsontable";
-import { ComplexFormModalStore, DatePickerWidget, EditorWidget, JSONForm, getComplexFormData } from "@dappworks/kit/form";
-import { JSONMetricsView, MetricsView } from "@dappworks/kit/metrics";
-import { Copy } from '@dappworks/kit/ui';
-import { PaginationState, PromiseState, RootStore } from "@dappworks/kit";
+import { MetricsView } from "@dappworks/kit/metrics";
+import { PromiseState, RootStore } from "@dappworks/kit";
 import { ConfirmStore, DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
-import { useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
-import { helper } from "@dappworks/kit/utils";
+import { useMemo } from "react";
 import ThemeSwitcher from "~/components/ThemeSwitcher";
 
 const PromiseStateGroupTest = observer(() => {
@@ -238,248 +232,16 @@ const PromiseStateGroupTest = observer(() => {
 });
 
 const HomePage = observer(() => {
-  const isMobile = RootStore.Get(DeviceDetectStore).isMobile;
-  const store = useLocalObservable(() => ({
-    isLoading: false,
-    dataSource: [
-      {
-        a: {
-          b: 1,
-        },
-        c: 2223,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 1,
-        },
-        c: 2,
-        d: {
-          e: 3,
-        },
-        e: [],
-      },
-      {
-        a: {
-          b: 4,
-        },
-        c: 5,
-        d: {
-          e: 6,
-        },
-        e: [
-          {
-            aa: 3,
-            bb: 4,
-          },
-          {
-            aa: 5,
-            bb: 6,
-          },
-        ],
-      },
-    ]
-  }));
-  // Required field
-  const formData = {
-    personalInfo: {
-      name: '',
-      age: 18,
-      phone: '',
-      city: 'city1',
-      date: '2021-01-01',
-      dateTime: '2021-01-01T00:00:00',
-      boolean: true,
-      // boolean2: false,
-      object: {
-        a: 1,
-        b: 2,
-      },
-    },
-    extraInfo: {
-      address: '',
-      code: '',
-      jsonStr: '{"personalInfo":{"name":"","age":18,"phone":"","city":"city1","date":"2021-01-01","dateTime":"2021-01-01T00:00:00","time":"00:00:00","boolean":true},"extraInfo":{"address":"","code":""}}'
-    },
-  };
-
-  // Optional field
-  const formConfig = {
-    // Optional field
-    personalInfo: {
-      name: {
-        // Optional field
-        title: 'Name',
-        // Optional field
-        required: true,
-      },
-      age: {
-        required: true,
-        validate: (v) => {
-          if (v < 18) {
-            return 'Age must be greater than 18';
-          }
-        },
-        'ui:options': {
-          placeholder: 'Please input age',
-        },
-      },
-      phone: {
-        required: true,
-        // 'ui:options': {
-        //   disabled: true,
-        // },
-      },
-      city: {
-        // Optional field
-        selectOptions: [
-          { label: 'city 1', value: 'city1' },
-          { label: 'city 2', value: 'city2' },
-          { label: 'city 3', value: 'city3' },
-        ],
-        // isMultipleSelect: true,
-        required: true,
-        validate: (v) => {
-          if (v === 'city1') {
-            return 'City cannot be city1';
-          }
-        },
-        'ui:options': {
-          placeholder: 'Select a city',
-          description: 'This is a description',
-          // renderValue: (items) => {
-          //   const textList = items.map((item) => item.textValue);
-          //   return textList.join(', ');
-          // }
-          // disabled: true,
-        },
-      },
-      date: {
-        title: 'Date',
-        'ui:widget': DatePickerWidget,
-        'ui:options': {
-          granularity: 'day'
-        }
-      },
-      dateTime: {
-        title: 'Date Time',
-        'ui:widget': DatePickerWidget,
-        'ui:options': {
-          granularity: 'minute'
-        }
-      },
-      // boolean: {
-      //   title: 'Boolean',
-      //   'ui:options': {
-      //     // disabled: true,
-      //     nextuiClassNames: {
-      //       base: 'py-1 px-2'
-      //     }
-      //   }
-      // },
-      // boolean2: {
-      //   // description: 'This is a description',
-      //   'ui:options': {
-      //     color: 'secondary'
-      //   }
-      // }
-    },
-    // Optional field
-    extraInfo: {
-      code: {
-        required: true,
-        'ui:widget': EditorWidget,
-        'ui:options': {
-          language: 'javascript',
-          editorHeight: '240px',
-        },
-      },
-    },
-  };
-
-
   return (
     <div className="p-4 w-full lg:w-[900px] mx-auto">
       <ThemeSwitcher />
 
       <PromiseStateGroupTest />
 
-      <div className="flex items-center gap-2">
+      <div className="my-2 flex items-center gap-2">
         <Button
           color="primary"
+          size="sm"
           onClick={() => {
             DialogStore.show({
               title: 'Dialog Title',
@@ -495,6 +257,7 @@ const HomePage = observer(() => {
 
         <Button
           color="primary"
+          size="sm"
           onClick={() => {
             const confirmStore = RootStore.Get(ConfirmStore);
             confirmStore.show({
