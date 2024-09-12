@@ -36,6 +36,7 @@ const Test = observer(() => {
       },
       async sendTx() {
         console.log(RootStore.Get(WalletStore).walletClient.account?.address)
+        const res = await wallet.prepare(4689)
         wallet.sendTx({
           chainId: 4689,
           tx: async () =>
@@ -82,8 +83,7 @@ const Test = observer(() => {
 
       <Button onClick={async e => {
         console.log('prepare start')
-        const res = await wallet.prepare()
-        console.log(res)
+        store.sendTx()
         console.log('prepare end')
       }}>Prepare</Button>
 
