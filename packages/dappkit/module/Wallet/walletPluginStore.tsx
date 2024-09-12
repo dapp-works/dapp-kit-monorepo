@@ -7,6 +7,8 @@ import { ToastPlugin } from "../Toast/Toast";
 import { WalletTransactionHistoryType } from "./type";
 import { WalletStore } from ".";
 import { helper } from "../../lib/helper";
+import { Chain, toHex } from 'viem';
+import { WalletConfigStore } from './walletConfigStore';
 
 const defaultRPCList = [
   { name: 'https://babel-api.fastblocks.io', latency: 0, height: 0, custom: false },
@@ -64,6 +66,53 @@ export class WalletRpcStore implements Store {
     } catch (error) {
       console.error('Failed to add network', error);
     }
+  }
+  async switchOrAddChain(chainId: number) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: toHex(chainId) }],
+        });
+        resolve(true)
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          try {
+            await this.addToMetamaskById(chainId)
+          } catch (addError) {
+            reject(addError)
+          }
+        } else {
+          reject(switchError)
+        }
+      }
+    })
+  }
+  async addToMetamaskById(id: number) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (typeof window == 'undefined') return;
+        const chain = RootStore.Get(WalletConfigStore).supportedChains.find(i => i.id == id)
+        const res = await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            "chainId": toHex(chain.id),
+            "chainName": chain.name,
+            "nativeCurrency": {
+              "name": chain.nativeCurrency.name,
+              "symbol": chain.nativeCurrency.symbol,
+              "decimals": chain.nativeCurrency.decimals,
+            },
+            "rpcUrls": JSON.parse(JSON.stringify(chain.rpcUrls.default.http)),
+            "blockExplorerUrls": [chain.blockExplorers.default.url],
+          }]
+        });
+        console.log(res)
+        resolve(res)
+      } catch (switchError) {
+        reject(false)
+      }
+    })
   }
   refresh() {
     this.showCustomRpc = false
