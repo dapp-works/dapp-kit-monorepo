@@ -96,13 +96,6 @@ export class WalletStore implements Store {
     })
 
     useEffect(() => {
-      if (address && chain) {
-        this.walletClient = createWalletClient({
-          account: address,
-          chain: this.chain,
-          transport: custom(window.ethereum!)
-        }).extend(publicActions)
-      }
       RootStore.Get(WalletHistoryStore).set({ isRender: true })
       this.set({
         isConnect: isConnected,
@@ -120,6 +113,7 @@ export class WalletStore implements Store {
         })
         this.event.emit('walletAccount:ready');
       }
+      this.setWalletClient()
     }, [address, isConnected, chain])
 
 
@@ -129,6 +123,16 @@ export class WalletStore implements Store {
         this.balance.call()
       }, 1500)
     }, [this.updateTicker])
+  }
+
+  private setWalletClient() {
+    if (this.account && this.account) {
+      this.walletClient = createWalletClient({
+        account: this.account,
+        chain: this.chain,
+        transport: custom(window.ethereum!)
+      }).extend(publicActions)
+    }
   }
 
   //always return or return default chain
@@ -168,6 +172,7 @@ export class WalletStore implements Store {
             if (this.switchChain) {
               if (this.chain?.id == chainId) {
                 try {
+                  this.setWalletClient()
                   // //@ts-ignore
                   // const provider = new ethers.providers.Web3Provider(window?.ethereum);
                   // this.signer = provider.getSigner();
