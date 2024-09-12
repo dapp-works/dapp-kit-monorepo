@@ -7,7 +7,6 @@ import { ChevronRight } from "lucide-react";
 import { helper } from "@dappworks/kit/utils";
 import ThemeSwitcher from "~/components/ThemeSwitcher";
 
-
 const HomePage = observer(() => {
   const isMobile = RootStore.Get(DeviceDetectStore).isMobile;
   const store = useLocalObservable(() => ({
