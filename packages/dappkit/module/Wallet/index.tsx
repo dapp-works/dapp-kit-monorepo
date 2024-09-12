@@ -1,17 +1,14 @@
 import React, { useEffect } from "react";
 import { Store } from "../../store/standard/base";
-import { Account, PublicClient, type HttpTransport, WalletClient, TransactionReceipt, createWalletClient, custom, publicActions } from "viem";
+import { PublicClient, type HttpTransport, WalletClient, TransactionReceipt, createWalletClient, custom, publicActions, SwitchChainErrorType, UserRejectedRequestError } from "viem";
 import { PromiseHook } from '../../store/standard/PromiseHook';
-import { BigNumberState } from '../../store/standard/BigNumberState';
-import BigNumber from 'bignumber.js';
 import { AddressMode, WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
-import { SwitchChainMutate } from "wagmi/query";
+import { SwitchChainMutateAsync } from "wagmi/query";
 import { Config, useAccount, useConnect, useDisconnect, useReconnect, useSwitchChain, useWalletClient, } from "wagmi";
 import { Chain, useConnectModal, WalletDetailsParams } from '@rainbow-me/rainbowkit';
 import { RootStore } from "../../store";
 import { ToastPlugin } from "../Toast/Toast";
-import { http, createPublicClient } from 'viem';
 import { WalletHistoryStore, WalletRpcStore } from './walletPluginStore';
 import SafeAppsSDK, { TransactionStatus } from '@safe-global/safe-apps-sdk';
 import { ShowSuccessTxDialog } from './SuccessTxDialog'
@@ -32,7 +29,7 @@ export class WalletStore implements Store {
   isConnect = false;
   walletClient: WalletClient;
   event = new EventEmitter();
-  switchChain: SwitchChainMutate<Config, unknown> | undefined;
+  switchChain: SwitchChainMutateAsync<Config, unknown> | undefined;
   updateTicker = 0;
   addressMode: AddressMode = '0x';
   get isIoTeXChain(): boolean {
@@ -79,7 +76,7 @@ export class WalletStore implements Store {
   use() {
     // const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
-    const { switchChain } = useSwitchChain();
+    const { switchChainAsync } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
     const { disconnect } = useDisconnect();
@@ -90,7 +87,7 @@ export class WalletStore implements Store {
       // @ts-ignore 
       // walletClient,
       openConnectModal,
-      switchChain,
+      switchChain: switchChainAsync,
       disconnect
     })
 
@@ -163,35 +160,31 @@ export class WalletStore implements Store {
   }
 
   async prepare(chainId?: number): Promise<WalletStore> {
+    const walletRpcStore = RootStore.Get(WalletRpcStore)
     return new Promise<WalletStore>(async (res, rej) => {
       try {
         if (this.account) {
-          if (!chainId) {
+          console.log(this.chain?.id, 'this.chain?.id')
+          if (!chainId || (Number(this.chain?.id) == Number(chainId))) {
             res(this);
           }
-          if (Number(this.chain?.id) == Number(chainId)) {
-            console.log('has and return ')
-            res(this);
-          }
-          this.switchChain?.({ chainId: chainId ?? 4689 });
           const interval = setInterval(() => {
-            if (this.switchChain) {
-              if (this.chain?.id == chainId) {
-                try {
-                  this.useWalletClientWithCompatibleMode()
-                  // //@ts-ignore
-                  // const provider = new ethers.providers.Web3Provider(window?.ethereum);
-                  // this.signer = provider.getSigner();
-                  res(this);
-                } catch (error) {
-                }
-                clearInterval(interval);
+            if (this.chain?.id == chainId) {
+              try {
+                this.useWalletClientWithCompatibleMode()
+                res(this);
+              } catch (error) {
               }
+              clearInterval(interval);
             }
           }, 1000);
+          try {
+            await walletRpcStore.switchOrAddChain(chainId ?? 4689)
+          } catch (error) {
+            rej(error)
+          }
         } else {
           this.openConnectModal();
-          // this.connect?.({ chainId, connector: this.rainbowkitParams.connectors()[0] }) connect success but ui not change so
           const interval = setInterval(() => {
             if (this.account) {
               clearInterval(interval);
