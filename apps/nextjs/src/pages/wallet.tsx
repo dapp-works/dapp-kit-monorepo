@@ -71,6 +71,7 @@ const Test = observer(() => {
     </div>
     <Link href='/wallet2'>Wallet page2</Link>
     <MyButton />
+    <div>{wallet.account}</div>
     <div className="flex flex-col gap-2">
       <Button onClick={e => { store.sendRawTx() }}>Send Raw Tx</Button>
 

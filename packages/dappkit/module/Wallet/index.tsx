@@ -76,7 +76,7 @@ export class WalletStore implements Store {
     Object.assign(this, args);
   }
 
-  use(router?: any) {
+  use() {
     // const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
     const { switchChain } = useSwitchChain();
@@ -137,7 +137,7 @@ export class WalletStore implements Store {
   useWalletClientWithoutCompatibleMode() {
     const { data: walletClient } = useWalletClient()
     this.set({
-      walletClient,
+      walletClient
     })
   }
 
