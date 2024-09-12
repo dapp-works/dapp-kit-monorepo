@@ -9,21 +9,24 @@ import { reaction } from 'mobx';
 import { type Chain } from "viem/chains";
 import { iotex } from './type';
 import SafeAppsSDK from '@safe-global/safe-apps-sdk';
+import { observer } from 'mobx-react-lite';
 const queryClient = new QueryClient();
-export const WalletProvider = (({
+export const WalletProvider = observer((({
   children,
   theme,
   appName,
   supportedChains,
   compatibleMode = true,
-  router
+  router,
+  debug = false
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
   appName?: string,
   supportedChains?: Chain[],
   compatibleMode?: boolean,
-  router?: any
+  router?: any,
+  debug?: boolean,
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
@@ -60,9 +63,10 @@ export const WalletProvider = (({
   }, [])
 
   return (
-    <WagmiProvider config={config} reconnectOnMount={compatibleMode ? false : true}>
+    <WagmiProvider config={config} reconnectOnMount={walletConfig.reconnectOnMount}>
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
+          {debug && walletConfig.reconnectOnMount ? 'true' : 'false'}
           {children}
           <WalletConnect compatibleMode={compatibleMode} router={router} />
           {/* <SafeProviderWrapper /> */}
@@ -70,18 +74,18 @@ export const WalletProvider = (({
       </QueryClientProvider>
     </WagmiProvider>
   );
-});
+}));
 
 export const WalletConnect = ({ compatibleMode = true, router }) => {
-  const { reconnect } = useReconnect()
+  // const { reconnect } = useReconnect()
   const wallet = RootStore.Get(WalletStore);
   wallet.use();
-  if (router && compatibleMode) {
-    useEffect(() => {
-      if (!wallet.account) {
-        reconnect()
-      }
-    }, [router])
-  }
+  // if (router && compatibleMode) {
+  //   useEffect(() => {
+  //     if (!wallet.account) {
+  //       reconnect()
+  //     }
+  //   }, [router])
+  // }
   return <></>;
 };
