@@ -11,7 +11,7 @@ export const ClientLayout = ({ children }: any) => {
     <div>
       <AppProvider />
       <ThemeProvider attribute="class" enableSystem={false}>
-        <WalletProvider compatibleMode={true} supportedChains={[iotex, iotexTestnet]}>
+        <WalletProvider compatibleMode={false} supportedChains={[iotex, iotexTestnet]}>
           {children}
         </WalletProvider>
       </ThemeProvider>
