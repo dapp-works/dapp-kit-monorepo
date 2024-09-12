@@ -62,6 +62,8 @@ export type CardOptions = {
   valueClassName?: string;
   showDivider?: boolean;
   dividerClassName?: string;
+  colSpan?: number
+  cardGroupClassName?: string;
 };
 
 export type LoadingOptions = {
@@ -539,32 +541,50 @@ function CardUI<T>({
   loadingContent?: React.ReactNode;
   virtualizedOptions?: VirtualizedOptions;
 }) {
+  const colSpan = cardOptions?.colSpan || 1;
   const fetchedCountRef = useRef(-1);
   const elements = useMemo(
-    () => sortedData.map((item, index) => {
-      return (
-        <Card
-          key={rowKey ? item[rowKey] || index : index}
-          className={cn('mb-2 w-full shadow-sm p-4 rounded-lg', cardOptions?.cardClassName)}
-          isPressable={!!onRowClick}
-          onPress={() => {
-            onRowClick?.(item);
-          }}
-        >
-          {columns.map((column, i) => {
-            return (
-              <div className="w-full" key={column.key}>
-                <div className={cn('w-full', cardOptions?.itemClassName)}>
-                  <div className={cn('font-meidum text-xs text-foreground-400', cardOptions?.labelClassName)}>{column.label}</div>
-                  <div className={cn('text-xs', cardOptions?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+    () => {
+      const MyCard = ({ item }) => {
+        return (
+          <Card
+            className={cn('mb-2 w-full shadow-sm p-4 rounded-lg', cardOptions?.cardClassName)}
+            isPressable={!!onRowClick}
+            onPress={() => {
+              onRowClick?.(item);
+            }}
+          >
+            {columns.map((column, i) => {
+              return (
+                <div className="w-full" key={column.key}>
+                  <div className={cn('w-full', cardOptions?.itemClassName)}>
+                    <div className={cn('font-meidum text-xs text-foreground-400', cardOptions?.labelClassName)}>{column.label}</div>
+                    <div className={cn('text-xs', cardOptions?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                  </div>
+                  {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
                 </div>
-                {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
-              </div>
-            );
-          })}
-        </Card>
-      );
-    }),
+              );
+            })}
+          </Card>
+        );
+      }
+      if (colSpan === 1) {
+        return sortedData.map((item, index) => {
+          return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
+        });
+      } else {
+        const groupData = groupByColSpan(sortedData, colSpan);
+        return groupData.map((group, gIndex) => {
+          return (
+            <div className={cn("flex items-center justify-between space-x-1", cardOptions?.cardGroupClassName)} key={gIndex}>
+              {group.map((item, index) => {
+                return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
+              })}
+            </div>
+          );
+        });
+      }
+    },
     [sortedData]
   );
   return (
@@ -573,7 +593,7 @@ function CardUI<T>({
         <VList
           style={{ height: virtualizedOptions?.vListHeight || 400 }}
           onRangeChange={async (_, endIndex) => {
-            const count = sortedData.length;
+            const count = sortedData.length / colSpan;
             if (endIndex + 1 >= count && fetchedCountRef.current < count) {
               fetchedCountRef.current = count;
               if (virtualizedOptions?.fetchData) {
@@ -1131,4 +1151,12 @@ function CollapseBodyRow<T>({
       </tr>
     </>
   )
+}
+
+function groupByColSpan(arr: any[], colSpan: number) {
+  const result = [];
+  for (let i = 0; i < arr.length; i += colSpan) {
+    result.push(arr.slice(i, i + colSpan));
+  }
+  return result;
 }
