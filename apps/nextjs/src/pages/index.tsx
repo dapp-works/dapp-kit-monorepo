@@ -5,6 +5,7 @@ import { PromiseState, RootStore } from "@dappworks/kit";
 import { ConfirmStore, DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
 import { useMemo } from "react";
 import ThemeSwitcher from "~/components/ThemeSwitcher";
+import Test from "./wallet";
 
 const PromiseStateGroupTest = observer(() => {
   const promiseStateGroup = useMemo(() => {
@@ -53,6 +54,7 @@ const PromiseStateGroupTest = observer(() => {
   }, [])
   return (
     <Card className="my-4 p-4">
+      <Test />
       <div className="mb-4">PromiseStateGroup Test</div>
       {promiseStateGroup.render()}
       <div className="mt-4 flex items-center space-x-2">

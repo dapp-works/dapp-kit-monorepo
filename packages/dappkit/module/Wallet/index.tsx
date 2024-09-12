@@ -79,7 +79,6 @@ export class WalletStore implements Store {
   use(router?: any) {
     // const { data: walletClient, isSuccess } = useWalletClient();
     const { chain, address, isConnected } = useAccount();
-
     const { switchChain } = useSwitchChain();
     const { openConnectModal } = useConnectModal();
     const { connect } = useConnect();
@@ -113,10 +112,8 @@ export class WalletStore implements Store {
         })
         this.event.emit('walletAccount:ready');
       }
-      this.setWalletClient()
+      this.useWalletClientWithCompatibleMode()
     }, [address, isConnected, chain])
-
-
 
     useEffect(() => {
       setTimeout(() => {
@@ -125,14 +122,23 @@ export class WalletStore implements Store {
     }, [this.updateTicker])
   }
 
-  private setWalletClient() {
-    if (this.account && this.account) {
-      this.walletClient = createWalletClient({
-        account: this.account,
-        chain: this.chain,
-        transport: custom(window.ethereum!)
-      }).extend(publicActions)
+  private useWalletClientWithCompatibleMode() {
+    if (RootStore.Get(WalletConfigStore).compatibleMode) {
+      if (this.account && this.account) {
+        this.walletClient = createWalletClient({
+          account: this.account,
+          chain: this.chain,
+          transport: custom(window.ethereum!)
+        }).extend(publicActions)
+      }
     }
+  }
+
+  useWalletClientWithoutCompatibleMode() {
+    const { data: walletClient } = useWalletClient()
+    this.set({
+      walletClient,
+    })
   }
 
   //always return or return default chain
@@ -172,7 +178,7 @@ export class WalletStore implements Store {
             if (this.switchChain) {
               if (this.chain?.id == chainId) {
                 try {
-                  this.setWalletClient()
+                  this.useWalletClientWithCompatibleMode()
                   // //@ts-ignore
                   // const provider = new ethers.providers.Web3Provider(window?.ethereum);
                   // this.signer = provider.getSigner();
@@ -278,9 +284,9 @@ export class WalletStore implements Store {
       if (autoAlert) {
         const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
         console.log('sendTx', error?.message);
-        if (error?.message?.includes('user rejected transaction') || String(error).toLowerCase().includes('user rejected') || String(error).toLowerCase().includes('user denied')) {
-          toast.error('user rejected transaction');
-          onError?.(error);
+        if (error?.message?.includes('rejected') || String(error).toLowerCase().includes('rejected') || String(error).toLowerCase().includes('denied')) {
+          toast.error('User rejected transaction');
+          // onError?.(error);
           return;
         }
         if (error?.message?.includes('The Transaction may not be processed on a block yet') || error?.message?.includes('could not be found')) {
@@ -292,22 +298,23 @@ export class WalletStore implements Store {
         }
 
         if (msg) {
-          toast.error(msg as unknown as string);
-          onError?.(msg);
+          // toast.error(msg as unknown as string);
+          onError?.(new Error(msg as unknown as string || 'Transaction failed'));
         } else {
           if (error?.message.includes('viem')) {
             const messageArr = error?.message.split('\n');
             console.log('messageArr---', messageArr);
             if (messageArr.length > 0) {
-              toast.error(messageArr[0]);
-              onError?.(messageArr[0]);
+              // toast.error(messageArr[0]);
+              onError?.(new Error(messageArr[0] || 'Transaction failed'));
             }
           } else {
-            toast.error(String(error?.message || error));
-            onError?.(String(error?.message || error));
+            // toast.error(String(error?.message || error));
+            onError?.(new Error(error?.message || 'Transaction failed'));
           }
         }
       } else {
+        onError?.(error);
         throw error;
       }
     }
@@ -337,7 +344,7 @@ export class WalletStore implements Store {
     showSuccessDialog?: boolean;
     onSended?: ({ res }: { res: TransactionReceipt }) => void;
     onSuccess?: ({ res }: { res: TransactionReceipt }) => void;
-    onError?: ({ res }: { res: TransactionReceipt }) => void;
+    onError?: (error: any) => void;
   }): Promise<TransactionReceipt | undefined> {
     chainId = Number(chainId);
     const toast = RootStore.Get(ToastPlugin);
@@ -374,18 +381,19 @@ export class WalletStore implements Store {
         if (historyItem) {
           historyStore.updateHistoryStatusByTx(receipt.transactionHash, 'fail');
         }
-        onError && onError({ res: receipt });
+        onError && onError?.(new Error('The transaction failed'));
         toast.dismiss();
         toast.error('The transaction failed');
       }
       return receipt;
     } catch (error) {
       toast.dismiss();
+      onError?.(error)
       console.log(error.message);
       const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
       // Details: Transaction was rejected
-      if (error?.message?.includes('user rejected transaction') || error?.message?.includes('cancel') || String(error).toLowerCase().includes('user rejected') || String(error).toLowerCase().includes('user denied')) {
-        autoAlert && toast.error('user rejected transaction');
+      if (error?.message?.includes('rejected') || error?.message?.includes('cancel') || String(error).toLowerCase().includes('rejected') || String(error).toLowerCase().includes('user denied')) {
+        autoAlert && toast.error('User rejected transaction');
         return;
       }
       if (error?.message?.includes('Price slippage check')) {
@@ -396,18 +404,19 @@ export class WalletStore implements Store {
         const messageArr = error?.message.split('\n');
         console.log('messageArr---', messageArr);
         if (messageArr.length > 0) {
-          toast.error(messageArr[0]);
-          onError?.(messageArr[0]);
+          // toast.error(messageArr[0]);
+          onError?.(new Error(messageArr[0] ?? 'Transaction failed'));
           return;
         }
       }
 
-      if (msg) {
-        autoAlert && toast.error(msg as unknown as string);
-      } else {
-        autoAlert && toast.error(String(error.message));
-      }
+      // if (msg) {
+      //   autoAlert && toast.error(msg as unknown as string);
+      // } else {
+      //   autoAlert && toast.error(String(error.message));
+      // }
       if (!autoAlert) {
+        onError?.(error);
         throw error;
       }
     }

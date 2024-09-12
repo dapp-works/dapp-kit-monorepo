@@ -1,7 +1,7 @@
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
-import { useReconnect, WagmiProvider } from 'wagmi';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useReconnect, useWalletClient, WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
 import { WalletStore } from '.';
 import { WalletConfigStore } from './walletConfigStore'
@@ -48,15 +48,25 @@ export const WalletProvider = observer((({
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
           {children}
-          <WalletConnect />
+          {
+            compatibleMode ? <WalletConnectcompatibleMode /> : <WalletConnect />
+          }
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }));
 
+//There are problems with safeWallet calls in compatibility mode
+export const WalletConnectcompatibleMode = () => {
+  const wallet = RootStore.Get(WalletStore);
+  wallet.use();
+  return <></>;
+};
+
 export const WalletConnect = () => {
   const wallet = RootStore.Get(WalletStore);
+  wallet.useWalletClientWithoutCompatibleMode();
   wallet.use();
   return <></>;
 };
