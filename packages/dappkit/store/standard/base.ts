@@ -8,6 +8,7 @@ export abstract class Store {
   disabled?: boolean;
   autoObservable?: boolean;
   autoAsyncable?: boolean;
+  _active?: number;
 
   stores?: Store[];
 
@@ -40,6 +41,10 @@ export abstract class Store {
   JSONView?: Record<string, { name: string; render: React.FC }>;
 
   onKeyBindings?: () => { key: string; fn: () => void }[];
+
+  constructor() {
+    this._active = this._active ?? 0;
+  }
 }
 
 export type StoreClass<T extends Store> = new (...args: any[]) => T;
