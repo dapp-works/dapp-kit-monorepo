@@ -32,12 +32,7 @@ export class WalletStore implements Store {
   switchChain: SwitchChainMutateAsync<Config, unknown> | undefined;
   updateTicker = 0;
   addressMode: AddressMode = '0x';
-  get isIoTeXChain(): boolean {
-    if (this.chain && this.chain.id == 4689) {
-      return true
-    }
-    return false
-  }
+  isIoTeXChain: boolean = false;
   setAddressMode(mode: AddressMode) {
     this.addressMode = mode;
     localStorage.setItem('addressMode', mode);
@@ -96,9 +91,13 @@ export class WalletStore implements Store {
       this.set({
         isConnect: isConnected,
         account: address,
-        // @ts-ignore 
         chain,
       })
+      if (chain?.id == 4689) {
+        this.isIoTeXChain = true
+      } else {
+        this.isIoTeXChain = false
+      }
       walletConfigStore.set({
         isConnect: isConnected,
       })
