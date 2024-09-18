@@ -9,7 +9,7 @@ export default {
     "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
     "../../node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
     "../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@dappworks/kit/**/*.{js,ts,jsx,tsx,mjs}",
+    // "./node_modules/@dappworks/kit/**/*.{js,ts,jsx,tsx,mjs}",
   ],
   darkMode: "class",
   theme: {
