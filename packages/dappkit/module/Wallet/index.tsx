@@ -120,13 +120,14 @@ export class WalletStore implements Store {
 
   private useWalletClientWithCompatibleMode() {
     if (RootStore.Get(WalletConfigStore).compatibleMode) {
-      if (this.account && this.account) {
+      if (this.account) {
         this.walletClient = createWalletClient({
           account: this.account,
           chain: this.chain,
           transport: custom(window.ethereum!)
         }).extend(publicActions)
       }
+      console.log(this.walletClient, 'this.walletClientxxx')
     }
   }
 
@@ -163,24 +164,29 @@ export class WalletStore implements Store {
     return new Promise<WalletStore>(async (res, rej) => {
       try {
         if (this.account) {
-          console.log(this.chain?.id, 'this.chain?.id')
-          if (!chainId || (Number(this.chain?.id) == Number(chainId))) {
+          if ((!chainId || (Number(this.chain?.id) == Number(chainId))) && this.walletClient) {
             res(this);
           }
           const interval = setInterval(() => {
             if (this.chain?.id == chainId) {
               try {
+                console.log('useWalletClientWithCompatibleMode')
                 this.useWalletClientWithCompatibleMode()
                 res(this);
               } catch (error) {
+                console.log(error, 'myerror')
+                rej(error);
               }
               clearInterval(interval);
             }
           }, 1000);
-          try {
-            await walletRpcStore.switchOrAddChain(chainId ?? 4689)
-          } catch (error) {
-            rej(error)
+
+          if (chainId != this.chain?.id) {
+            try {
+              walletRpcStore.switchOrAddChain(chainId ?? 4689)
+            } catch (error) {
+              rej(error)
+            }
           }
         } else {
           this.openConnectModal();
@@ -352,9 +358,7 @@ export class WalletStore implements Store {
         data: data as `0x${string}`,
         value: value ? BigInt(value) : undefined,
       });
-      // console.log(hash)
       let receipt = await this.waitForTransactionReceipt({ hash });
-      console.log(receipt);
       if (historyItem) {
         historyStore.recordHistory({ ...historyItem, tx: receipt.transactionHash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
       }
@@ -379,6 +383,7 @@ export class WalletStore implements Store {
       }
       return receipt;
     } catch (error) {
+      console.log(error, 'xty')
       toast.dismiss();
       onError?.(error)
       console.log(error.message);
