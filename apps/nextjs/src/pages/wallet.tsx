@@ -26,7 +26,7 @@ const Test = observer(() => {
           chainId: 4690,
           address: "0x610CBDa6f0037B4141A5B949f56479106BeCb1E9",
           data: "0x",
-          value: 1e17.toString(),
+          value: "0x0de0b6b3a7640000",
           historyItem: {
             msg: 'Swap Test Msg',
             type: "Swap"
