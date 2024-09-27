@@ -9,6 +9,7 @@ export { StorageState } from "./store/standard/StorageState";
 export { StorageListState } from "./store/standard/StorageListState";
 export { PaginationState } from "./store/standard/PaginationState";
 export { ObjectPool } from "./store/standard/ObjectPool";
+export { AutoMan } from "./module/AutoMain";
 
 export * from "./store/standard/base";
 

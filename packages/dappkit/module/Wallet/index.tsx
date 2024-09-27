@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React from 'react';
+import { useEffect } from "react";
 import { Store } from "../../store/standard/base";
 import { PublicClient, type HttpTransport, WalletClient, TransactionReceipt, createWalletClient, custom, publicActions, SwitchChainErrorType, UserRejectedRequestError } from "viem";
 import { PromiseHook } from '../../store/standard/PromiseHook';
