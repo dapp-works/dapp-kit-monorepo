@@ -1,3 +1,4 @@
+import React from 'react'
 import { observer } from "mobx-react-lite";
 import { Button, Card } from "@nextui-org/react";
 import { MetricsView } from "@dappworks/kit/metrics";
