@@ -1,18 +1,18 @@
-import { Chain, Wallet, useConnectModal, getDefaultConfig, WalletDetailsParams } from '@rainbow-me/rainbowkit';
-import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet, safeWallet } from '@rainbow-me/rainbowkit/wallets';
-import { iotex } from 'viem/chains';
-import { ObjectPool, Store } from '../..';
+import { Chain, Wallet, useConnectModal, getDefaultConfig, WalletDetailsParams } from "@rainbow-me/rainbowkit";
+import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet, safeWallet, gateWallet } from "@rainbow-me/rainbowkit/wallets";
+import { iotex } from "viem/chains";
+import { ObjectPool, Store } from "../..";
 
 export class WalletConfigStore implements Store {
-  sid = 'WalletConfigStore';
-  autoObservable = true
+  sid = "WalletConfigStore";
+  autoObservable = true;
 
-  appName = 'Dappkit';
-  projectId = 'b69e844f38265667350efd78e3e1a5fb'
+  appName = "Dappkit";
+  projectId = "b69e844f38265667350efd78e3e1a5fb";
   // @ts-ignore
   supportedChains: Chain[];
   defaultChainId = 4689;
-  updateTicker = 1
+  updateTicker = 1;
   walletUpdateTick = 0;
   isConnect = false;
   isInSafeApp = false;
@@ -25,39 +25,40 @@ export class WalletConfigStore implements Store {
 
   set(params: Partial<WalletConfigStore>) {
     Object.assign(this, params);
-    this.updateTicker += 1
+    this.updateTicker += 1;
   }
 
   get reconnectOnMount() {
-    if (!this.compatibleMode)
-      return true
+    if (!this.compatibleMode) return true;
 
     if (!this.isConnect && this.walletUpdateTick == 0) {
-      return true
+      return true;
     }
     if (!this.isConnect && this.walletUpdateTick != 0) {
-      return false
+      return false;
     }
     if (this.isConnect) {
-      return true
+      return true;
     }
   }
 
   get rainbowKitConfig() {
-    return ObjectPool.get(`rainbowKitConfig-${this.supportedChains?.map(i => i.id).join('-')}`, () => {
+    return ObjectPool.get(`rainbowKitConfig-${this.supportedChains?.map((i) => i.id).join("-")}`, () => {
       return getDefaultConfig({
         appName: this.appName,
         projectId: this.projectId,
         //@ts-ignore
         chains: this.supportedChains,
-        wallets: [{
-          groupName: 'Recommended',
-          wallets: [iopayWallet, metaMaskWallet],
-        },
-        {
-          groupName: 'Others',
-          wallets: [metaMaskWallet, walletConnectWallet, iopayWallet, okxWallet, binanceWallet, safeWallet],
-        }]
+        wallets: [
+          {
+            groupName: "Recommended",
+            wallets: [iopayWallet, metaMaskWallet],
+          },
+          {
+            groupName: "Others",
+            wallets: [metaMaskWallet, walletConnectWallet, iopayWallet, okxWallet, binanceWallet, safeWallet, gateWallet],
+          },
+        ],
       });
     });
   }
