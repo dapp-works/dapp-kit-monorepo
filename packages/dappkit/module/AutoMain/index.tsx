@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router.js';
 import { observer } from 'mobx-react-lite';
 import { RootStore, rootStore } from '../../store';
 import { Store } from "../../store/standard/base";
