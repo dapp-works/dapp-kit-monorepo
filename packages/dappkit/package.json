@@ -59,6 +59,10 @@
     "./utils": {
       "import": "./dist/utils.mjs",
       "require": "./dist/utils.js"
+    },
+    "./jsoncomponent": {
+      "import": "./dist/jsoncomponent.mjs",
+      "require": "./dist/jsoncomponent.js"
     }
   },
   "typesVersions": {
@@ -98,6 +102,9 @@
       ],
       "utils": [
         "./dist/utils.d.mts"
+      ],
+      "jsoncomponent": [
+        "./dist/jsoncomponent.d.mts"
       ]
     }
   },
