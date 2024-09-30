@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { UiSchema } from "@rjsf/utils";
-import { FormDataOfKey, JSONFormProps } from "..";
+import { FormDataOfKey, FormDataType, JSONFormProps } from "..";
 import { CheckboxWidget } from "../../../components/JSONFormWidgets/CheckboxWidget";
 import { InputWidget } from "../../../components/JSONFormWidgets/InputWidget";
 import { SelectWidget } from "../../../components/JSONFormWidgets/SelectWidget";
@@ -15,16 +15,14 @@ import { helper } from "../../../lib/helper";
 import { cn } from "../../../lib/utils";
 import { ThemeType } from "../../../themes";
 
-export const getFormState = <T,>(
+export const getFormState = <T extends FormDataType>(
   props: JSONFormProps<T>,
   formLayout: { [x: string]: { fieldLayout?: any[] } } = {},
   theme: ThemeType = 'default'
 ) => {
   const { formData, formConfig, onSet, onChange } = props;
 
-  const formStates: {
-    [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>;
-  } = {};
+  const formStates = {};
 
   Object.keys(formData).forEach((key) => {
     const metadata = formData[key];
@@ -141,7 +139,9 @@ export const getFormState = <T,>(
     formStates[key] = form;
   });
 
-  return formStates;
+  return formStates as {
+    [F in keyof T]?: JSONSchemaFormState<FormDataOfKey<T>, UiSchema>;
+  };
 };
 
 export const BatchSubmitButton = ({ formStates, onSubmit, buttonProps }) => {

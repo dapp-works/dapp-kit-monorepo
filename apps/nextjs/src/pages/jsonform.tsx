@@ -9,7 +9,6 @@ import { useState } from "react";
 const JSONForm = dynamic(() => import('@dappworks/kit/form').then((mod) => mod.JSONForm), { ssr: false });
 
 const HomePage = observer(() => {
-  // Required field
   const formData = {
     personalInfo: {
       name: '',
@@ -32,14 +31,10 @@ const HomePage = observer(() => {
     },
   };
 
-  // Optional field
   const formConfig = {
-    // Optional field
     personalInfo: {
       name: {
-        // Optional field
         title: 'Name',
-        // Optional field
         required: true,
       },
       age: {
@@ -113,7 +108,6 @@ const HomePage = observer(() => {
       //   }
       // }
     },
-    // Optional field
     extraInfo: {
       code: {
         required: true,
@@ -133,19 +127,13 @@ const HomePage = observer(() => {
         className="mt-10"
         theme="primary"
         formData={formData}
-        Optional field
         formConfig={formConfig}
         layoutConfig={{
-          // Required field
           $type: 'GridLayout',
-          // Optional field
           $gridColumn: 2,
-          // Optional field
           personalInfo: {
-            // Optional field
             title: 'Personal Information',
             titleBoxCss: 'text-xl',
-            // Optional field
             fieldLayout: [['name', 'age'], 'phone', 'city', 'date', 'dateTime', 'boolean', 'object'],
             // submitButtonProps: {
             //   className: 'mx-auto',
@@ -232,9 +220,7 @@ const HomePage = observer(() => {
             },
 
           },
-          // Optional field
           extraInfo: {
-            // Optional field
             title: 'Extra Information',
             // colSpan: 2,
             // submitButtonProps: {
@@ -297,7 +283,6 @@ const HomePage = observer(() => {
           color="primary"
           onClick={async () => {
             const data = await getComplexFormData({
-              // Optional field
               title: 'Complex Form',
               // className: 'w-[100%] md:w-[80%] lg:w-[60%]',
               theme: 'primary',
@@ -306,10 +291,8 @@ const HomePage = observer(() => {
               // },
               modalSize: '5xl',
               formData,
-              // Optional field
               // @ts-ignore
               formConfig,
-              // Optional field
               layoutConfig: {
                 $type: 'GridLayout',
                 $gridColumn: 2,
@@ -321,7 +304,6 @@ const HomePage = observer(() => {
                   title: 'Extra Information',
                 },
               },
-              // Optional field
               onBatchSubmit: async (data, setLoading) => {
                 console.log('[getComplexFormData onBatchSubmit]:', data);
                 setLoading?.(true);
