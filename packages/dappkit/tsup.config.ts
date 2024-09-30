@@ -42,6 +42,7 @@ export default defineConfig({
     experimental: "experimental.ts",
     aiem: "aiem.ts",
     utils: "utils.ts",
-    wallet: "wallet.ts"
+    wallet: "wallet.ts",
+    jsoncomponent: "jsoncomponent.ts",
   },
 });
