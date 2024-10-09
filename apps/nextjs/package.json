@@ -17,9 +17,9 @@
   "dependencies": {
     "@acme/tailwind-config": "workspace:*",
     "@dappworks/kit": "workspace:*",
-    "@nextui-org/framer-utils": "^2.0.24",
-    "@nextui-org/react": "^2.4.6",
-    "@nextui-org/theme": "^2.2.9",
+    "@nextui-org/framer-utils": "^2.0.25",
+    "@nextui-org/react": "^2.4.8",
+    "@nextui-org/theme": "^2.2.11",
     "@rainbow-me/rainbowkit": "2.1.5",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@tremor/react": "^3.11.1",
