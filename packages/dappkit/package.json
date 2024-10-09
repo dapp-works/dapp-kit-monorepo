@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.4.234",
+  "version": "0.4.236",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -118,7 +118,7 @@
     "@iconify/react": ">=5.0.2",
     "@iotexproject/iotex-address-ts": "^1.0.4",
     "@monaco-editor/react": ">=4.0.0",
-    "@nextui-org/react": ">=2.4.2",
+    "@nextui-org/react": ">=2.4.8",
     "@radix-ui/react-dialog": ">=1.0.0",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@rainbow-me/rainbowkit": ">=2.1.5",
