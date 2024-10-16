@@ -91,15 +91,6 @@ export class WalletStore implements Store {
     })
 
     useEffect(() => {
-      const needAdd = localStorage.getItem('wallet.add.chainId')
-      if (needAdd) {
-        RootStore.Get(WalletRpcStore).addToMetamaskById(Number(needAdd)).then(res => {
-          localStorage.removeItem('wallet.add.chainId')
-        })
-      }
-    }, [])
-
-    useEffect(() => {
       RootStore.Get(WalletHistoryStore).set({ isRender: true })
       this.set({
         isConnect: isConnected,
