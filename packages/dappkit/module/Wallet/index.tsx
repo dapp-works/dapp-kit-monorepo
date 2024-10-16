@@ -17,6 +17,9 @@ import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
 import { helper } from "../../lib/helper";
 import { iotex } from "viem/chains";
+import { DialogStore } from '../Dialog';
+import { Icon } from '@iconify/react';
+import { Card, Input } from '@nextui-org/react';
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -86,6 +89,15 @@ export class WalletStore implements Store {
       switchChain: switchChainAsync,
       disconnect
     })
+
+    useEffect(() => {
+      const needAdd = localStorage.getItem('wallet.add.chainId')
+      if (needAdd) {
+        RootStore.Get(WalletRpcStore).addToMetamaskById(Number(needAdd)).then(res => {
+          localStorage.removeItem('wallet.add.chainId')
+        })
+      }
+    }, [])
 
     useEffect(() => {
       RootStore.Get(WalletHistoryStore).set({ isRender: true })
@@ -184,9 +196,69 @@ export class WalletStore implements Store {
 
           if (chainId != this.chain?.id) {
             try {
-              walletRpcStore.switchOrAddChain(chainId ?? 4689)
+              await this.walletClient.switchChain({ id: chainId })
             } catch (error) {
-              rej(error)
+              console.log(error.message)
+              if (error?.message?.includes("wallet_addEthereumChain")) {
+                const chain = RootStore.Get(WalletConfigStore).supportedChains.find(i => i.id == chainId)
+                try {
+                  await RootStore.Get(WalletRpcStore).addToMetamaskById(chainId)
+                  await this.walletClient.switchChain({ id: chainId })
+                } catch (error) {
+                  RootStore.Get(DialogStore).setData({
+                    isOpen: true,
+                    title: "Chain Addition Failed",
+                    size: '2xl',
+                    content: <div>
+                      <Card className='p-2'>
+                        <div className='p-2 flex items-center justify-center gap-4'>
+                          <div className='text-yellow-500 text-sm'>We encountered an issue while adding the chain. This might be caused by a compatibility issue with your current plugin. Please try adding the chain manually or review your plugin settings to ensure compatibility.</div>
+                        </div>
+                      </Card>
+                      <div className='flex flex-col gap-4 my-4'>
+                        <Input
+                          label="Network Name"
+                          value={chain.name}
+                          startContent={
+                            <Icon icon="fluent:rename-24-filled" width="20" height="20" />
+                          }
+                        />
+                        <Input
+                          label="Network RPC"
+                          value={chain.rpcUrls.default?.http?.[0]}
+                          startContent={
+                            <Icon icon="material-symbols:link" width="20" height="20" />
+                          }
+                        />
+                        <Input
+                          label="Chain ID"
+                          value={chain.id.toString()}
+                          startContent={
+                            <Icon icon="f7:grid-circle-fill" width="20" height="20" />
+                          }
+                        />
+                        <Input
+                          label="Native Currency Symbol"
+                          value={chain.nativeCurrency?.symbol}
+                          startContent={
+                            <Icon icon="mingcute:coin-fill" width="20" height="20" />
+                          }
+                        />
+                        <Input
+                          label="Block Explorer URL"
+                          value={chain.blockExplorers?.default?.url}
+                          startContent={
+                            <Icon icon="material-symbols:explore" width="20" height="20" />
+                          }
+                        />
+                      </div>
+                    </div>
+                  })
+                  console.log(error.message)
+                }
+              } else {
+                rej(error)
+              }
             }
           }
         } else {
@@ -363,6 +435,7 @@ export class WalletStore implements Store {
       if (historyItem) {
         historyStore.recordHistory({ ...historyItem, tx: receipt.transactionHash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
       }
+      this.updateTicker++;
       onSended ? onSended({ res: receipt }) : null;
       if (receipt.status == 'success') {
         if (historyItem) {
