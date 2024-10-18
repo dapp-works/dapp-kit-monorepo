@@ -15,7 +15,7 @@ const defaultRPCList = [
   { name: 'https://babel-api.mainnet.iotex.one', latency: 0, height: 0, },
   { name: 'https://babel-api.mainnet.iotex.io', latency: 0, height: 0, },
   { name: 'https://iotex-network.rpc.thirdweb.com', latency: 0, height: 0, },
-  { name: 'https://iotexrpc.com', latency: 0, height: 0, },
+  // { name: 'https://iotexrpc.com', latency: 0, height: 0, },
   { name: 'https://iotex.api.onfinality.io/public', latency: 0, height: 0, },
   { name: 'https://rpc.ankr.com/iotex', latency: 0, height: 0, },
 ]
