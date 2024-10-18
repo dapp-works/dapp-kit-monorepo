@@ -17,6 +17,7 @@ export const WalletProvider = observer((({
   appName,
   supportedChains,
   compatibleMode = true,
+  rainbowKitProps
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
@@ -24,6 +25,7 @@ export const WalletProvider = observer((({
   supportedChains?: Chain[],
   compatibleMode?: boolean,
   debug?: boolean,
+  rainbowKitProps?: any
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
@@ -46,7 +48,7 @@ export const WalletProvider = observer((({
   return (
     <WagmiProvider config={walletConfig.rainbowKitConfig} reconnectOnMount={walletConfig.reconnectOnMount}>
       <QueryClientProvider client={queryClient} >
-        <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()}>
+        <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()} {...rainbowKitProps}>
           {children}
           {
             compatibleMode ? <WalletConnectcompatibleMode /> : <WalletConnect />
