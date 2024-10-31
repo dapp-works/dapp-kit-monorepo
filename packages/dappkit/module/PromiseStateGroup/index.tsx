@@ -59,7 +59,9 @@ export class PromiseStateGroup {
   async callWithDialog(
     dialogOptions?: Partial<DialogStore>,
     dialogContentOptions?: DialogContentUIProps,
-    successMsg?: string) {
+    successMsg?: string,
+    autoClose: boolean = true
+  ) {
     this.showDialog(dialogOptions, dialogContentOptions);
     const {
       result,
@@ -71,7 +73,9 @@ export class PromiseStateGroup {
     if (successMsg) {
       RootStore.Get(ToastPlugin).success(successMsg)
     }
-    this.closeDialog()
+    if (autoClose) {
+      this.closeDialog()
+    }
     return {
       result,
       errMsg,
