@@ -141,6 +141,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   isLoading?: boolean;
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
+  columnSlot?: React.ReactNode;
   isHeaderSticky?: boolean;
   sortingUIOptions?: SortingUIOptions;
   collapsedTableConfig?: CollapsedTableConfig<T>;
@@ -161,6 +162,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
     rowKey,
     onRowClick,
     rowCss,
+    columnSlot,
     asCard = false,
     cardOptions,
     autoScrollToTop = false,
@@ -291,6 +293,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
         loadingOptions={loadingOptions}
         loadingContent={loadingContent}
         virtualizedOptions={virtualizedOptions}
+        columnSlot={columnSlot}
       />
     );
   }
@@ -346,6 +349,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
       pagination={pagination}
       nextuiPaginationProps={nextuiPaginationProps}
       autoScrollToTop={autoScrollToTop}
+      columnSlot={columnSlot}
     />
   )
 });
@@ -527,6 +531,7 @@ function CardUI<T>({
   loadingOptions,
   loadingContent,
   virtualizedOptions,
+  columnSlot,
 }: {
   className?: string;
   sortedData: T[];
@@ -540,6 +545,7 @@ function CardUI<T>({
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
   virtualizedOptions?: VirtualizedOptions;
+  columnSlot?: React.ReactNode;
 }) {
   const colSpan = cardOptions?.colSpan || 1;
   const fetchedCountRef = useRef(-1);
@@ -565,6 +571,7 @@ function CardUI<T>({
                 </div>
               );
             })}
+            {columnSlot}
           </Card>
         );
       }
@@ -771,7 +778,8 @@ const TableUI = observer(<T,>({
     limit: 10,
   }),
   nextuiPaginationProps = {},
-  autoScrollToTop
+  autoScrollToTop,
+  columnSlot,
 }: {
   className: string;
   classNames?: TableClassNames;
@@ -799,6 +807,7 @@ const TableUI = observer(<T,>({
   pagination?: PaginationState;
   nextuiPaginationProps?: PaginationProps | {};
   autoScrollToTop: boolean;
+  columnSlot?: React.ReactNode;
 }) => {
   const tableBoxRef = useRef<HTMLDivElement>(null);
 
@@ -883,27 +892,30 @@ const TableUI = observer(<T,>({
                   })
                   : data.map((item, index) => {
                     return (
-                      <tr
-                        key={rowKey ? item[rowKey] || index : index}
-                        className={cn(classNames.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
-                        onClick={() => {
-                          onRowClick?.(item);
-                        }}
-                      >
-                        {columns.map((column) => {
-                          return (
-                            <td
-                              key={column.key}
-                              className={cn('py-2 px-3 text-xs', classNames.td)}
-                              style={{
-                                minWidth: column.width
-                              }}
-                            >
-                              {column.render ? column.render(item) : renderFieldValue(item[column.key])}
-                            </td>
-                          )
-                        })}
-                      </tr>
+                      <>
+                        <tr
+                          key={rowKey ? item[rowKey] || index : index}
+                          className={cn(classNames.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+                          onClick={() => {
+                            onRowClick?.(item);
+                          }}
+                        >
+                          {columns.map((column) => {
+                            return (
+                              <td
+                                key={column.key}
+                                className={cn('py-2 px-3 text-xs', classNames.td)}
+                                style={{
+                                  minWidth: column.width
+                                }}
+                              >
+                                {column.render ? column.render(item) : renderFieldValue(item[column.key])}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                        <tr><td colSpan={columns.length}>{columnSlot}</td></tr>
+                      </>
                     );
                   })
               }
