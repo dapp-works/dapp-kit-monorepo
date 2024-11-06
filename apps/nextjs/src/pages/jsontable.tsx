@@ -145,6 +145,7 @@ const HomePage = observer(() => {
             skeletonClassName: 'bg-red-500'
           }
         }}
+        // columnSlot={<div className="bg-red-500 w-full h-20 flex flex-col justify-center items-center p-4 shadow-sm border text-foreground-400 rounded-lg">columnSlot</div>}
         virtualizedOptions={{
           isVirtualized: true,
           vListHeight: isMobile ? 400 : 200,
