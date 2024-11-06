@@ -914,7 +914,7 @@ const TableUI = observer(<T,>({
                             )
                           })}
                         </tr>
-                        <tr><td colSpan={columns.length}>{columnSlot}</td></tr>
+                        {columnSlot && <tr><td colSpan={columns.length}>{columnSlot}</td></tr>}
                       </>
                     );
                   })
