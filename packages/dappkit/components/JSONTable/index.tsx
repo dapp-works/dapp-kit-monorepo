@@ -53,6 +53,7 @@ type Column<T> = {
 type CollapsedTable<U> = {
   key: string;
   columns: Column<U>[];
+
 };
 
 export type CardOptions = {
@@ -141,7 +142,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   isLoading?: boolean;
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
-  columnSlot?: React.ReactNode;
+  columnSlot?: ((props: { row: T }) => React.ReactNode) | React.ReactNode;
   isHeaderSticky?: boolean;
   sortingUIOptions?: SortingUIOptions;
   collapsedTableConfig?: CollapsedTableConfig<T>;
@@ -294,6 +295,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
         loadingContent={loadingContent}
         virtualizedOptions={virtualizedOptions}
         columnSlot={columnSlot}
+
       />
     );
   }
@@ -545,7 +547,7 @@ function CardUI<T>({
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
   virtualizedOptions?: VirtualizedOptions;
-  columnSlot?: React.ReactNode;
+  columnSlot?: ((props: { row: T; }) => React.ReactNode) | React.ReactNode;
 }) {
   const colSpan = cardOptions?.colSpan || 1;
   const fetchedCountRef = useRef(-1);
@@ -571,7 +573,7 @@ function CardUI<T>({
                 </div>
               );
             })}
-            {columnSlot}
+            {typeof columnSlot === 'function' ? columnSlot({ row: item }) : columnSlot}
           </Card>
         );
       }
@@ -807,7 +809,7 @@ const TableUI = observer(<T,>({
   pagination?: PaginationState;
   nextuiPaginationProps?: PaginationProps | {};
   autoScrollToTop: boolean;
-  columnSlot?: React.ReactNode;
+  columnSlot?: ((props: { row: T; }) => React.ReactNode) | React.ReactNode;
 }) => {
   const tableBoxRef = useRef<HTMLDivElement>(null);
 
@@ -914,7 +916,15 @@ const TableUI = observer(<T,>({
                             )
                           })}
                         </tr>
-                        {columnSlot && <tr><td colSpan={columns.length}>{columnSlot}</td></tr>}
+                        {columnSlot && (
+                          <tr>
+                            <td colSpan={columns.length}>
+                              {typeof columnSlot === 'function'
+                                ? columnSlot({ row: item })
+                                : columnSlot}
+                            </td>
+                          </tr>
+                        )}
                       </>
                     );
                   })
