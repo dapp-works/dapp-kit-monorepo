@@ -265,6 +265,7 @@ const HomePage = observer(() => {
           console.log('Row Click:', item);
         }}
         asCard={isMobile}
+        autoScrollToTop
         cardOptions={{
           showDivider: true,
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
