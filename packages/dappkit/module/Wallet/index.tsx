@@ -136,10 +136,12 @@ export class WalletStore implements Store {
   }
 
   useWalletClientWithoutCompatibleMode() {
-    const { data: walletClient } = useWalletClient()
-    this.set({
-      walletClient
-    })
+    const { data: walletClient, isSuccess } = useWalletClient()
+    useEffect(() => {
+      if (isSuccess && walletClient) {
+        this.set({ walletClient })
+      }
+    }, [walletClient, isSuccess]);
   }
 
   //always return or return default chain
