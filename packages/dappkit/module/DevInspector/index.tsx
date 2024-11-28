@@ -7,6 +7,7 @@ export class DevInspectorPlugin implements Store {
   stype = "Plugin"
   autoObservable = false;
   disabled = false;
+  editor: 'vscode' | 'cursor' = 'vscode';
 
   constructor(args: Partial<DevInspectorPlugin> = {}) {
     Object.assign(this, args);
@@ -23,7 +24,7 @@ export class DevInspectorPlugin implements Store {
           if (!codeInfo?.absolutePath) return
           const { absolutePath, lineNumber, columnNumber } = codeInfo
           // you can change the url protocol if you are using in Web IDE
-          window.open(`vscode://file/${absolutePath}:${lineNumber}:${columnNumber}`)
+          window.open(`${this.editor}://file/${absolutePath}:${lineNumber}:${columnNumber}`)
         }}
       />
     );
