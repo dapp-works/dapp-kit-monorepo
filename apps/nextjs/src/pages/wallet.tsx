@@ -23,7 +23,7 @@ const Test = observer(() => {
       sendRawTx() {
         console.log(RootStore.Get(WalletStore).walletClient)
         wallet.sendRawTx({
-          chainId: 4690,
+          chainId: 4689,
           address: "0x610CBDa6f0037B4141A5B949f56479106BeCb1E9",
           data: "0x",
           value: "0x0de0b6b3a7640000",

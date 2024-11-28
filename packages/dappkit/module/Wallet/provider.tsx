@@ -17,7 +17,8 @@ export const WalletProvider = observer((({
   appName,
   supportedChains,
   compatibleMode = true,
-  rainbowKitProps
+  rainbowKitProps,
+  projectId
 }: {
   children: React.ReactNode,
   theme?: 'dark' | 'light',
@@ -25,7 +26,8 @@ export const WalletProvider = observer((({
   supportedChains?: Chain[],
   compatibleMode?: boolean,
   debug?: boolean,
-  rainbowKitProps?: any
+  rainbowKitProps?: any,
+  projectId?: string
 }) => {
   //@ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
@@ -36,7 +38,10 @@ export const WalletProvider = observer((({
     if (compatibleMode != undefined) {
       walletConfig.compatibleMode = compatibleMode
     }
-  }, [appName, compatibleMode])
+    if (projectId) {
+      walletConfig.projectId = projectId
+    }
+  }, [appName, compatibleMode, projectId])
   useEffect(() => {
     const sdk = new SafeAppsSDK()
     sdk.safe.getEnvironmentInfo().then(({ origin }) => {
