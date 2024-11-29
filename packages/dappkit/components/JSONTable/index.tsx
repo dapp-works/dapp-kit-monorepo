@@ -1,20 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Card,
-  Divider,
-  Pagination as NextuiPagination,
-  PaginationProps,
-  Spinner,
-  SpinnerProps,
-} from '@nextui-org/react';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Card, Divider, Pagination as NextuiPagination, PaginationProps, Spinner, SpinnerProps } from "@nextui-org/react";
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { PaginationState } from "../../store/standard/PaginationState";
 import { SkeletonBox } from "../Common/SkeletonBox";
 import { _ } from "../../lib/lodash";
 import { cn } from "../../lib/utils";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { VList } from 'virtua';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { VList } from "virtua";
 
 export type TableClassNames = {
   table?: string;
@@ -23,9 +16,9 @@ export type TableClassNames = {
   th?: string;
   tbody?: string;
   td?: string;
-}
+};
 
-export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | '$actions'>;
+export type HeaderKeys<T extends Record<string, any>> = Array<keyof T | "$actions">;
 
 export type ColumnConfig<T> = {
   label?: React.ReactNode;
@@ -35,7 +28,7 @@ export type ColumnConfig<T> = {
   sortKey?: string;
   order?: number;
   render?: (item: T) => any;
-}
+};
 
 export type ColumnOptions<T> = {
   [key in keyof T]?: ColumnConfig<T>;
@@ -53,22 +46,24 @@ type Column<T> = {
 type CollapsedTable<U> = {
   key: string;
   columns: Column<U>[];
-
 };
 
 export type CardOptions = {
+  cardContainerClassName?: string;
   cardClassName?: string;
   itemClassName?: string;
   labelClassName?: string;
   valueClassName?: string;
   showDivider?: boolean;
   dividerClassName?: string;
-  colSpan?: number
-  cardGroupClassName?: string;
+  virtualizedOptions?: {
+    colSpan?: number;
+    cardContainerClassName?: string;
+  };
 };
 
 export type LoadingOptions = {
-  type?: 'skeleton' | 'spinner';
+  type?: "skeleton" | "spinner";
   skeleton?: {
     boxClassName?: string;
     skeletonClassName?: string;
@@ -101,14 +96,14 @@ export type CollapsedTableConfig<T> = {
     headerKeys: string[];
     columnOptions: ColumnOptions<any>;
   }[];
-  collapsedHandlerPosition?: 'left' | 'right';
+  collapsedHandlerPosition?: "left" | "right";
   collapsedHandlerBoxCss?: string;
   openedIcon?: React.ReactNode;
   closedIcon?: React.ReactNode;
   onRowClick?: (item: any) => void;
   rowCss?: string | ((item: any) => string | undefined);
   emptyContent?: React.ReactNode;
-}
+};
 
 export type VirtualizedOptions = {
   isVirtualized?: boolean;
@@ -118,9 +113,13 @@ export type VirtualizedOptions = {
     headerCell?: string;
     row?: string;
     rowCell?: string;
-  },
+  };
+  cardOptions?: {
+    colSpan?: number;
+    cardContainerClassName?: string;
+  };
   fetchData?: () => Promise<void>;
-}
+};
 
 export interface JSONTableProps<T extends Record<string, any>> {
   className?: string;
@@ -149,7 +148,7 @@ export interface JSONTableProps<T extends Record<string, any>> {
   virtualizedOptions?: VirtualizedOptions;
 }
 
-export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<T>) => {
+export const JSONTable = <T extends Record<string, any>>(props: JSONTableProps<T>) => {
   const {
     className,
     classNames,
@@ -174,9 +173,9 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
     isHeaderSticky = false,
     sortingUIOptions,
     collapsedTableConfig,
-    virtualizedOptions
+    virtualizedOptions,
   } = props;
-  const [sortableColumnsMap, setSortableColumnsMap] = useState<{ [k: string]: 'asc' | 'desc' | 'none' }>({});
+  const [sortableColumnsMap, setSortableColumnsMap] = useState<{ [k: string]: "asc" | "desc" | "none" }>({});
   const [sortedData, setSortedData] = useState<T[]>(dataSource);
 
   const { columns, sortableColumnsDefaultValue, showCollapsedTables, collapsedTables } = useMemo(() => {
@@ -184,20 +183,20 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
 
     const allKeys = firstData ? Object.keys(firstData) : [];
     const keys = headerKeys ? headerKeys : columnOptions ? allKeys.filter((key) => !columnOptions[key]?.hidden) : allKeys;
-    if (!keys.includes('$actions') && columnOptions && columnOptions['$actions']) {
-      keys.push('$actions');
+    if (!keys.includes("$actions") && columnOptions && columnOptions["$actions"]) {
+      keys.push("$actions");
     }
 
-    const sortableColumnsDefaultValue: { [k: string]: 'asc' | 'desc' | 'none' } = {};
+    const sortableColumnsDefaultValue: { [k: string]: "asc" | "desc" | "none" } = {};
 
     let columns: Column<T>[] = keys.map((key: string) => {
       const sortable = columnOptions?.[key]?.sortable;
       if (sortable) {
-        sortableColumnsDefaultValue[key] = 'none';
+        sortableColumnsDefaultValue[key] = "none";
       }
       return {
         key,
-        label: columnOptions?.[key]?.label ?? (key === '$actions' ? '' : key),
+        label: columnOptions?.[key]?.label ?? (key === "$actions" ? "" : key),
         width: columnOptions?.[key]?.width ?? 60,
         render: columnOptions?.[key]?.render,
       };
@@ -224,8 +223,8 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
             columns.splice(index, 1);
           }
           const keys = item.headerKeys || [];
-          if (!keys.includes('$actions') && item.columnOptions && item.columnOptions['$actions']) {
-            keys.push('$actions');
+          if (!keys.includes("$actions") && item.columnOptions && item.columnOptions["$actions"]) {
+            keys.push("$actions");
           }
           return {
             key: item.key as string,
@@ -239,26 +238,26 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
               };
             }),
           };
-        })
+        });
     }
 
     const showCollapsedTables = collapsedTables.length > 0;
     if (showCollapsedTables && !virtualizedOptions?.isVirtualized) {
-      const collapsedHandlerPosition = collapsedTableConfig?.collapsedHandlerPosition || 'right';
-      if (collapsedHandlerPosition === 'right') {
+      const collapsedHandlerPosition = collapsedTableConfig?.collapsedHandlerPosition || "right";
+      if (collapsedHandlerPosition === "right") {
         columns.push({
-          key: '$collapsedHandler',
-          label: '',
+          key: "$collapsedHandler",
+          label: "",
           width: 60,
-        })
+        });
       } else {
         columns = [
           {
-            key: '$collapsedHandler',
-            label: '',
+            key: "$collapsedHandler",
+            label: "",
             width: 60,
           },
-          ...columns
+          ...columns,
         ];
       }
     }
@@ -296,9 +295,8 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
           loadingContent={loadingContent}
           virtualizedOptions={virtualizedOptions}
           columnSlot={columnSlot}
-
         />
-      )
+      );
     } else {
       return (
         <CardUI
@@ -315,7 +313,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
           pagination={pagination}
           nextuiPaginationProps={nextuiPaginationProps}
         />
-      )
+      );
     }
   } else {
     if (virtualizedOptions?.isVirtualized) {
@@ -338,7 +336,7 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
           loadingContent={loadingContent}
           virtualizedOptions={virtualizedOptions}
         />
-      )
+      );
     } else {
       return (
         <TableUI
@@ -370,13 +368,13 @@ export const JSONTable = (<T extends Record<string, any>>(props: JSONTableProps<
           autoScrollToTop={autoScrollToTop}
           columnSlot={columnSlot}
         />
-      )
+      );
     }
   }
-});
+};
 
 function renderFieldValue(v: any) {
-  if (typeof v == 'string' || typeof v == 'number') {
+  if (typeof v == "string" || typeof v == "number") {
     return v;
   }
   if (v == null) {
@@ -394,26 +392,26 @@ function sortData<T>({
 }: {
   sortKey: string | undefined;
   key: string;
-  type: 'asc' | 'desc' | 'none';
+  type: "asc" | "desc" | "none";
   sortableColumnsMap: {
-    [k: string]: 'asc' | 'desc' | 'none';
+    [k: string]: "asc" | "desc" | "none";
   };
   dataSource: T[];
 }) {
-  const sortableColumns: { [k: string]: 'asc' | 'desc' | 'none' } = {};
+  const sortableColumns: { [k: string]: "asc" | "desc" | "none" } = {};
   Object.keys(sortableColumnsMap).map((k) => {
-    sortableColumns[k] = k === key ? type : 'none';
+    sortableColumns[k] = k === key ? type : "none";
   });
   let sortedData = dataSource;
-  if (type !== 'none') {
+  if (type !== "none") {
     const result = _.orderBy(
       dataSource,
       (o) => {
         const v = _.get(o, sortKey || key);
         if (v == null) {
-          return type === 'desc' ? '' : v;
+          return type === "desc" ? "" : v;
         }
-        if (typeof v === 'string') {
+        if (typeof v === "string") {
           const _v = Number(v);
           if (isNaN(_v)) {
             return v.toLowerCase();
@@ -442,56 +440,56 @@ function SortingComponent<T>({
 }: {
   sortingUIOptions: SortingUIOptions;
   columnOptions?: ColumnOptions<T>;
-  sortableColumnsMap: { [k: string]: 'asc' | 'desc' | 'none' };
+  sortableColumnsMap: { [k: string]: "asc" | "desc" | "none" };
   item: Column<T>;
-  onSort: (e: { type: 'asc' | 'desc' | 'none'; key: string; sortKey: string }) => void;
+  onSort: (e: { type: "asc" | "desc" | "none"; key: string; sortKey: string }) => void;
 }) {
   if (sortingUIOptions?.showDropdown) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <button className={cn('outline-none p-1', sortingUIOptions?.dropdownTriggerBtnClassName)}>
-            {sortableColumnsMap[item.key] === 'desc' && <ChevronDown size={14} />}
-            {sortableColumnsMap[item.key] === 'asc' && <ChevronUp size={14} />}
-            {sortableColumnsMap[item.key] === 'none' && <ChevronsUpDown size={14} />}
+          <button className={cn("outline-none p-1", sortingUIOptions?.dropdownTriggerBtnClassName)}>
+            {sortableColumnsMap[item.key] === "desc" && <ChevronDown size={14} />}
+            {sortableColumnsMap[item.key] === "asc" && <ChevronUp size={14} />}
+            {sortableColumnsMap[item.key] === "none" && <ChevronsUpDown size={14} />}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className={cn('p-2 space-y-1 min-w-[4rem]', sortingUIOptions?.dropdownContentClassName)} collisionPadding={10} sideOffset={5}>
+        <DropdownMenuContent className={cn("p-2 space-y-1 min-w-[4rem]", sortingUIOptions?.dropdownContentClassName)} collisionPadding={10} sideOffset={5}>
           <DropdownMenuItem
-            className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
+            className={cn("text-xs font-bold cursor-pointer", sortingUIOptions?.dropdownItemClassName)}
             onClick={() => {
               onSort({
-                type: 'asc',
+                type: "asc",
                 key: item.key,
                 sortKey: columnOptions?.[item.key]?.sortKey,
               });
             }}
           >
-            {sortingUIOptions?.titles?.asc || 'ASC'}
+            {sortingUIOptions?.titles?.asc || "ASC"}
           </DropdownMenuItem>
           <DropdownMenuItem
-            className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
+            className={cn("text-xs font-bold cursor-pointer", sortingUIOptions?.dropdownItemClassName)}
             onClick={() => {
               onSort({
-                type: 'desc',
+                type: "desc",
                 key: item.key,
                 sortKey: columnOptions?.[item.key]?.sortKey,
               });
             }}
           >
-            {sortingUIOptions?.titles?.desc || 'DESC'}
+            {sortingUIOptions?.titles?.desc || "DESC"}
           </DropdownMenuItem>
           <DropdownMenuItem
-            className={cn('text-xs font-bold cursor-pointer', sortingUIOptions?.dropdownItemClassName)}
+            className={cn("text-xs font-bold cursor-pointer", sortingUIOptions?.dropdownItemClassName)}
             onClick={() => {
               onSort({
-                type: 'none',
+                type: "none",
                 key: item.key,
                 sortKey: columnOptions?.[item.key]?.sortKey,
               });
             }}
           >
-            {sortingUIOptions?.titles?.none || 'NONE'}
+            {sortingUIOptions?.titles?.none || "NONE"}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -499,37 +497,37 @@ function SortingComponent<T>({
   }
 
   return (
-    <button className={cn('outline-none p-1', sortingUIOptions?.dropdownTriggerBtnClassName)}>
-      {sortableColumnsMap[item.key] === 'none' && (
+    <button className={cn("outline-none p-1", sortingUIOptions?.dropdownTriggerBtnClassName)}>
+      {sortableColumnsMap[item.key] === "none" && (
         <ChevronsUpDown
           size={14}
           onClick={() => {
             onSort({
-              type: 'desc',
+              type: "desc",
               key: item.key,
               sortKey: columnOptions?.[item.key]?.sortKey,
             });
           }}
         />
       )}
-      {sortableColumnsMap[item.key] === 'desc' && (
+      {sortableColumnsMap[item.key] === "desc" && (
         <ChevronDown
           size={14}
           onClick={() => {
             onSort({
-              type: 'asc',
+              type: "asc",
               key: item.key,
               sortKey: columnOptions?.[item.key]?.sortKey,
             });
           }}
         />
       )}
-      {sortableColumnsMap[item.key] === 'asc' && (
+      {sortableColumnsMap[item.key] === "asc" && (
         <ChevronUp
           size={14}
           onClick={() => {
             onSort({
-              type: 'none',
+              type: "none",
               key: item.key,
               sortKey: columnOptions?.[item.key]?.sortKey,
             });
@@ -540,127 +538,119 @@ function SortingComponent<T>({
   );
 }
 
-const CardUI = observer(<T,>({
-  className,
-  sortedData,
-  columns,
-  rowKey,
-  cardOptions,
-  onRowClick,
-  emptyContent,
-  columnSlot,
-  isServerPaging,
-  showPagination,
-  pagination,
-  nextuiPaginationProps,
-  autoScrollToTop,
-}: {
-  className?: string;
-  sortedData: T[];
-  columns: Column<T>[];
-  rowKey?: string;
-  cardOptions?: CardOptions;
-  onRowClick?: (item: T) => void;
-  autoScrollToTop?: boolean;
-  emptyContent?: React.ReactNode;
-  columnSlot?: ((props: { row: T; }) => React.ReactNode) | React.ReactNode;
-  isServerPaging?: boolean;
-  showPagination: boolean;
-  pagination?: PaginationState;
-  nextuiPaginationProps?: PaginationProps | {};
-}) => {
-  const cardBoxRef = useRef<HTMLDivElement>(null);
+const CardUI = observer(
+  <T,>({
+    className,
+    sortedData,
+    columns,
+    rowKey,
+    cardOptions,
+    onRowClick,
+    emptyContent,
+    columnSlot,
+    isServerPaging,
+    showPagination,
+    pagination,
+    nextuiPaginationProps,
+    autoScrollToTop,
+  }: {
+    className?: string;
+    sortedData: T[];
+    columns: Column<T>[];
+    rowKey?: string;
+    cardOptions?: CardOptions;
+    onRowClick?: (item: T) => void;
+    autoScrollToTop?: boolean;
+    emptyContent?: React.ReactNode;
+    columnSlot?: ((props: { row: T }) => React.ReactNode) | React.ReactNode;
+    isServerPaging?: boolean;
+    showPagination: boolean;
+    pagination?: PaginationState;
+    nextuiPaginationProps?: PaginationProps | {};
+  }) => {
+    const cardBoxRef = useRef<HTMLDivElement>(null);
+    pagination = pagination
+      ? pagination
+      : useRef(
+        new PaginationState({
+          page: 1,
+          limit: 10,
+        }),
+      ).current;
 
-  useEffect(() => {
-    if (!isServerPaging) {
-      pagination.setData({
-        total: sortedData.length,
-      });
-    }
-  }, [sortedData]);
+    useEffect(() => {
+      if (!isServerPaging && pagination) {
+        pagination.setData({
+          total: sortedData.length,
+        });
+      }
+    }, [sortedData]);
 
-  const data = (isServerPaging || !showPagination) ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
+    const data = isServerPaging || !showPagination ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
-  const MyCard = ({ item }) => {
     return (
-      <Card
-        className={cn('mb-2 w-full shadow-sm p-4 rounded-lg', cardOptions?.cardClassName)}
-        isPressable={!!onRowClick}
-        onPress={() => {
-          onRowClick?.(item);
-        }}
-      >
-        {columns.map((column, i) => {
-          return (
-            <div className="w-full" key={column.key}>
-              <div className={cn('w-full', cardOptions?.itemClassName)}>
-                <div className={cn('font-meidum text-xs text-foreground-400', cardOptions?.labelClassName)}>{column.label}</div>
-                <div className={cn('text-xs', cardOptions?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+      <div className={className} ref={cardBoxRef}>
+        {sortedData.length > 0 ? (
+          <>
+            <div className={cardOptions?.cardContainerClassName}>
+              {data.map((item, index) => {
+                return (
+                  <Card
+                    key={rowKey ? item[rowKey] || index : index}
+                    className={cn("mb-2 w-full shadow-sm p-4 rounded-lg", cardOptions?.cardClassName)}
+                    isPressable={!!onRowClick}
+                    onPress={() => {
+                      onRowClick?.(item);
+                    }}
+                  >
+                    {columns.map((column, i) => {
+                      return (
+                        <div className="w-full" key={column.key}>
+                          <div className={cn("w-full", cardOptions?.itemClassName)}>
+                            <div className={cn("font-meidum text-xs text-foreground-400", cardOptions?.labelClassName)}>{column.label}</div>
+                            <div className={cn("text-xs", cardOptions?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
+                          </div>
+                          {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn("my-2", cardOptions?.dividerClassName)} />}
+                        </div>
+                      );
+                    })}
+                    {typeof columnSlot === "function" ? columnSlot({ row: item }) : columnSlot}
+                  </Card>
+                );
+              })}
+            </div>
+            {showPagination && pagination.total > pagination.limit && (
+              <div className="flex justify-center">
+                <NextuiPagination
+                  className="mt-2"
+                  showControls
+                  showShadow
+                  size="sm"
+                  radius="sm"
+                  color="primary"
+                  initialPage={1}
+                  total={Math.ceil(pagination.total / pagination.limit)}
+                  page={pagination.page}
+                  onChange={(currentPage) => {
+                    pagination.setData({
+                      page: currentPage,
+                    });
+                    if (autoScrollToTop && cardBoxRef.current) {
+                      scrollIntoTop(cardBoxRef.current);
+                    }
+                  }}
+                  {...nextuiPaginationProps}
+                />
               </div>
-              {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
-            </div>
-          );
-        })}
-        {typeof columnSlot === 'function' ? columnSlot({ row: item }) : columnSlot}
-      </Card>
+            )}
+          </>
+        ) : (
+          (emptyContent ?? <DefaultEmptyContent />)
+        )}
+      </div>
     );
-  }
-
-  const GroupUI = () => {
-    const colSpan = cardOptions?.colSpan || 1;
-    if (colSpan === 1) {
-      return data.map((item, index) => {
-        return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
-      });
-    }
-    const groupData = groupByColSpan(data, colSpan);
-    return groupData.map((group, gIndex) => {
-      return (
-        <div className={cn("flex items-center justify-between space-x-1", cardOptions?.cardGroupClassName)} key={gIndex}>
-          {group.map((item, index) => {
-            return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
-          })}
-        </div>
-      );
-    });
-  }
-
-  return (
-    <div className={className} ref={cardBoxRef}>
-      {sortedData.length > 0 ? (
-        <>
-          <GroupUI />
-          {showPagination && pagination.total > pagination.limit && (
-            <div className="flex justify-center">
-              <NextuiPagination
-                className="mt-2"
-                showControls
-                showShadow
-                size="sm"
-                radius="sm"
-                color="primary"
-                initialPage={1}
-                total={Math.ceil(pagination.total / pagination.limit)}
-                page={pagination.page}
-                onChange={(currentPage) => {
-                  pagination.setData({
-                    page: currentPage,
-                  });
-                  if (autoScrollToTop && cardBoxRef.current) {
-                    scrollIntoTop(cardBoxRef.current);
-                  }
-                }}
-                {...nextuiPaginationProps}
-              />
-            </div>
-          )}
-        </>
-      ) : (
-        emptyContent ?? <DefaultEmptyContent />
-      )}
-    </div>
-  );
-})
+  },
+);
 
 function VirtualizedCardUI<T>({
   className,
@@ -688,55 +678,55 @@ function VirtualizedCardUI<T>({
   loadingOptions?: LoadingOptions;
   loadingContent?: React.ReactNode;
   virtualizedOptions?: VirtualizedOptions;
-  columnSlot?: ((props: { row: T; }) => React.ReactNode) | React.ReactNode;
+  columnSlot?: ((props: { row: T }) => React.ReactNode) | React.ReactNode;
 }) {
-  const colSpan = cardOptions?.colSpan || 1;
+  const colSpan = virtualizedOptions?.cardOptions?.colSpan || cardOptions?.virtualizedOptions?.colSpan || 1;
   const fetchedCountRef = useRef(-1);
-  const elements = useMemo(
-    () => {
-      const MyCard = ({ item }) => {
-        return (
-          <Card
-            className={cn('mb-2 w-full shadow-sm p-4 rounded-lg', cardOptions?.cardClassName)}
-            isPressable={!!onRowClick}
-            onPress={() => {
-              onRowClick?.(item);
-            }}
-          >
-            {columns.map((column, i) => {
-              return (
-                <div className="w-full" key={column.key}>
-                  <div className={cn('w-full', cardOptions?.itemClassName)}>
-                    <div className={cn('font-meidum text-xs text-foreground-400', cardOptions?.labelClassName)}>{column.label}</div>
-                    <div className={cn('text-xs', cardOptions?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
-                  </div>
-                  {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn('my-2', cardOptions?.dividerClassName)} />}
+  const elements = useMemo(() => {
+    const MyCard = ({ item }) => {
+      return (
+        <Card
+          className={cn("mb-2 w-full shadow-sm p-4 rounded-lg", cardOptions?.cardClassName)}
+          isPressable={!!onRowClick}
+          onPress={() => {
+            onRowClick?.(item);
+          }}
+        >
+          {columns.map((column, i) => {
+            return (
+              <div className="w-full" key={column.key}>
+                <div className={cn("w-full", cardOptions?.itemClassName)}>
+                  <div className={cn("font-meidum text-xs text-foreground-400", cardOptions?.labelClassName)}>{column.label}</div>
+                  <div className={cn("text-xs", cardOptions?.valueClassName)}>{column.render ? column.render(item) : renderFieldValue(item[column.key])}</div>
                 </div>
-              );
+                {cardOptions?.showDivider && i !== columns.length - 1 && <Divider className={cn("my-2", cardOptions?.dividerClassName)} />}
+              </div>
+            );
+          })}
+          {typeof columnSlot === "function" ? columnSlot({ row: item }) : columnSlot}
+        </Card>
+      );
+    };
+    if (colSpan === 1) {
+      return sortedData.map((item, index) => {
+        return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
+      });
+    } else {
+      const groupData = groupByColSpan(sortedData, colSpan);
+      return groupData.map((group, gIndex) => {
+        return (
+          <div
+            className={cn("flex items-center justify-between space-x-1", virtualizedOptions?.cardOptions?.cardContainerClassName || cardOptions?.virtualizedOptions?.cardContainerClassName)}
+            key={gIndex}
+          >
+            {group.map((item, index) => {
+              return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
             })}
-            {typeof columnSlot === 'function' ? columnSlot({ row: item }) : columnSlot}
-          </Card>
+          </div>
         );
-      }
-      if (colSpan === 1) {
-        return sortedData.map((item, index) => {
-          return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
-        });
-      } else {
-        const groupData = groupByColSpan(sortedData, colSpan);
-        return groupData.map((group, gIndex) => {
-          return (
-            <div className={cn("flex items-center justify-between space-x-1", cardOptions?.cardGroupClassName)} key={gIndex}>
-              {group.map((item, index) => {
-                return <MyCard key={rowKey ? item[rowKey] || index : index} item={item} />;
-              })}
-            </div>
-          );
-        });
-      }
-    },
-    [sortedData]
-  );
+      });
+    }
+  }, [sortedData]);
   return (
     <div className={className}>
       {sortedData.length > 0 ? (
@@ -747,7 +737,7 @@ function VirtualizedCardUI<T>({
             if (endIndex + 1 >= count && fetchedCountRef.current < count) {
               fetchedCountRef.current = count;
               if (virtualizedOptions?.fetchData) {
-                await virtualizedOptions.fetchData()
+                await virtualizedOptions.fetchData();
               }
             }
           }}
@@ -756,7 +746,7 @@ function VirtualizedCardUI<T>({
           {isLoading ? loadingContent || DefaultLoading({ loadingOptions }) : null}
         </VList>
       ) : (
-        emptyContent ?? <DefaultEmptyContent />
+        (emptyContent ?? <DefaultEmptyContent />)
       )}
     </div>
   );
@@ -786,11 +776,13 @@ function VirtualizedListUI<T>({
   dataSource: T[];
   columns: Column<T>[];
   columnOptions: ColumnOptions<T>;
-  sortableColumnsMap: { [k: string]: 'asc' | 'desc' | 'none' };
+  sortableColumnsMap: { [k: string]: "asc" | "desc" | "none" };
   sortingUIOptions: SortingUIOptions;
-  setSortableColumnsMap: (value: React.SetStateAction<{
-    [k: string]: "asc" | "desc" | "none";
-  }>) => void;
+  setSortableColumnsMap: (
+    value: React.SetStateAction<{
+      [k: string]: "asc" | "desc" | "none";
+    }>,
+  ) => void;
   setSortedData: (value: React.SetStateAction<T[]>) => void;
   rowKey?: string;
   onRowClick?: (item: T) => void;
@@ -803,37 +795,38 @@ function VirtualizedListUI<T>({
 }) {
   const fetchedCountRef = useRef(-1);
   const elements = useMemo(
-    () => sortedData.map((item, index) => {
-      return (
-        <div
-          key={rowKey ? item[rowKey] || index : index}
-          className={cn('w-full flex items-center space-x-1', virtualizedOptions?.classNames?.row, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
-          onClick={() => {
-            onRowClick?.(item);
-          }}
-        >
-          {columns.map((column) => {
-            return (
-              <div
-                key={column.key}
-                className={cn('w-full flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto', virtualizedOptions?.classNames?.rowCell)}
-                style={{
-                  minWidth: column.width
-                }}
-              >
-                {column.render ? column.render(item) : renderFieldValue(item[column.key])}
-              </div>
-            )
-          })}
-        </div>
-      );
-    }),
-    [sortedData]
+    () =>
+      sortedData.map((item, index) => {
+        return (
+          <div
+            key={rowKey ? item[rowKey] || index : index}
+            className={cn("w-full flex items-center space-x-1", virtualizedOptions?.classNames?.row, typeof rowCss === "function" ? rowCss(item) : rowCss)}
+            onClick={() => {
+              onRowClick?.(item);
+            }}
+          >
+            {columns.map((column) => {
+              return (
+                <div
+                  key={column.key}
+                  className={cn("w-full flex-grow py-2 px-4 text-xs whitespace-nowrap overflow-auto", virtualizedOptions?.classNames?.rowCell)}
+                  style={{
+                    minWidth: column.width,
+                  }}
+                >
+                  {column.render ? column.render(item) : renderFieldValue(item[column.key])}
+                </div>
+              );
+            })}
+          </div>
+        );
+      }),
+    [sortedData],
   );
 
   return (
     <div className={cn("w-full overflow-x-auto", className)}>
-      <div className='inline-block min-w-fit w-full'>
+      <div className="inline-block min-w-fit w-full">
         <div className={cn("w-full flex items-center rounded-lg bg-default-100 space-x-1 mb-2", virtualizedOptions?.classNames?.header)}>
           {columns.map((column) => {
             return (
@@ -841,7 +834,7 @@ function VirtualizedListUI<T>({
                 key={column.key}
                 className={cn("w-full flex-grow py-2 px-4 flex items-center text-xs font-semibold whitespace-nowrap overflow-auto", virtualizedOptions?.classNames?.headerCell)}
                 style={{
-                  minWidth: column.width
+                  minWidth: column.width,
                 }}
               >
                 <span>{column.label}</span>
@@ -865,7 +858,7 @@ function VirtualizedListUI<T>({
                   />
                 )}
               </div>
-            )
+            );
           })}
         </div>
         {sortedData.length > 0 ? (
@@ -876,7 +869,7 @@ function VirtualizedListUI<T>({
               if (endIndex + 1 >= count && fetchedCountRef.current < count) {
                 fetchedCountRef.current = count;
                 if (virtualizedOptions?.fetchData) {
-                  await virtualizedOptions.fetchData()
+                  await virtualizedOptions.fetchData();
                 }
               }
             }}
@@ -885,142 +878,144 @@ function VirtualizedListUI<T>({
             {isLoading ? loadingContent || DefaultLoading({ loadingOptions }) : null}
           </VList>
         ) : (
-          emptyContent ?? <DefaultEmptyContent />
+          (emptyContent ?? <DefaultEmptyContent />)
         )}
       </div>
     </div>
-  )
+  );
 }
 
-const TableUI = observer(<T,>({
-  className,
-  classNames = {},
-  isHeaderSticky,
-  sortedData,
-  dataSource,
-  columns,
-  columnOptions,
-  sortableColumnsMap,
-  sortingUIOptions,
-  setSortableColumnsMap,
-  setSortedData,
-  isLoading,
-  loadingContent,
-  loadingOptions,
-  emptyContent,
-  rowCss,
-  onRowClick,
-  showCollapsedTables,
-  collapsedTableConfig,
-  collapsedTables,
-  rowKey,
-  isServerPaging,
-  showPagination,
-  pagination = new PaginationState({
-    page: 1,
-    limit: 10,
-  }),
-  nextuiPaginationProps = {},
-  autoScrollToTop,
-  columnSlot,
-}: {
-  className: string;
-  classNames?: TableClassNames;
-  isHeaderSticky: boolean;
-  sortedData: T[];
-  dataSource: T[];
-  columns: Column<T>[];
-  columnOptions?: ColumnOptions<T>;
-  sortableColumnsMap: { [k: string]: 'asc' | 'desc' | 'none' };
-  sortingUIOptions: SortingUIOptions;
-  setSortableColumnsMap: (value: React.SetStateAction<{ [k: string]: 'asc' | 'desc' | 'none'; }>) => void;
-  setSortedData: (value: React.SetStateAction<T[]>) => void;
-  isLoading: boolean;
-  loadingContent?: React.ReactNode;
-  loadingOptions?: LoadingOptions;
-  emptyContent?: React.ReactNode;
-  rowCss?: string | ((item: T) => string | undefined);
-  onRowClick?: (item: T) => void;
-  showCollapsedTables: boolean;
-  collapsedTableConfig?: CollapsedTableConfig<T>;
-  collapsedTables: CollapsedTable<any>[];
-  rowKey?: string;
-  isServerPaging?: boolean;
-  showPagination: boolean;
-  pagination?: PaginationState;
-  nextuiPaginationProps?: PaginationProps | {};
-  autoScrollToTop: boolean;
-  columnSlot?: ((props: { row: T; }) => React.ReactNode) | React.ReactNode;
-}) => {
-  const tableBoxRef = useRef<HTMLDivElement>(null);
+const TableUI = observer(
+  <T,>({
+    className,
+    classNames = {},
+    isHeaderSticky,
+    sortedData,
+    dataSource,
+    columns,
+    columnOptions,
+    sortableColumnsMap,
+    sortingUIOptions,
+    setSortableColumnsMap,
+    setSortedData,
+    isLoading,
+    loadingContent,
+    loadingOptions,
+    emptyContent,
+    rowCss,
+    onRowClick,
+    showCollapsedTables,
+    collapsedTableConfig,
+    collapsedTables,
+    rowKey,
+    isServerPaging,
+    showPagination,
+    pagination,
+    nextuiPaginationProps = {},
+    autoScrollToTop,
+    columnSlot,
+  }: {
+    className: string;
+    classNames?: TableClassNames;
+    isHeaderSticky: boolean;
+    sortedData: T[];
+    dataSource: T[];
+    columns: Column<T>[];
+    columnOptions?: ColumnOptions<T>;
+    sortableColumnsMap: { [k: string]: "asc" | "desc" | "none" };
+    sortingUIOptions: SortingUIOptions;
+    setSortableColumnsMap: (value: React.SetStateAction<{ [k: string]: "asc" | "desc" | "none" }>) => void;
+    setSortedData: (value: React.SetStateAction<T[]>) => void;
+    isLoading: boolean;
+    loadingContent?: React.ReactNode;
+    loadingOptions?: LoadingOptions;
+    emptyContent?: React.ReactNode;
+    rowCss?: string | ((item: T) => string | undefined);
+    onRowClick?: (item: T) => void;
+    showCollapsedTables: boolean;
+    collapsedTableConfig?: CollapsedTableConfig<T>;
+    collapsedTables: CollapsedTable<any>[];
+    rowKey?: string;
+    isServerPaging?: boolean;
+    showPagination: boolean;
+    pagination?: PaginationState;
+    nextuiPaginationProps?: PaginationProps | {};
+    autoScrollToTop: boolean;
+    columnSlot?: ((props: { row: T }) => React.ReactNode) | React.ReactNode;
+  }) => {
+    const tableBoxRef = useRef<HTMLDivElement>(null);
+    pagination = pagination
+      ? pagination
+      : useRef(
+        new PaginationState({
+          page: 1,
+          limit: 10,
+        }),
+      ).current;
 
-  useEffect(() => {
-    if (!isServerPaging) {
-      pagination.setData({
-        total: dataSource.length,
-      });
-    }
-  }, [dataSource]);
+    useEffect(() => {
+      if (!isServerPaging) {
+        pagination.setData({
+          total: dataSource.length,
+        });
+      }
+    }, [dataSource]);
 
-  const data = (isServerPaging || !showPagination) ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
+    const data = isServerPaging || !showPagination ? sortedData : sortedData.slice(pagination.offset, pagination.offset + pagination.limit);
 
-  return (
-    <>
-      <div className={cn('relative w-full', className)} ref={tableBoxRef}>
-        <table className={cn('w-full h-auto table-auto', classNames.table)}>
-          <thead className={cn(classNames.thead, { 'sticky top-0 z-30 [&>tr]:first:shadow-small [&>tr]:first:rounded-lg': isHeaderSticky })}>
-            <tr className={classNames.tr}>
-              {columns.map((item) => (
-                <th
-                  key={item.key}
-                  className={cn('px-3 h-10 text-xs font-semibold whitespace-nowrap bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', classNames.th)}
-                  style={{
-                    minWidth: item.width
-                  }}
-                >
-                  <div className="flex items-center">
-                    <span>{item.label}</span>
-                    {!!sortableColumnsMap[item.key] && (
-                      <SortingComponent
-                        sortingUIOptions={sortingUIOptions}
-                        columnOptions={columnOptions}
-                        sortableColumnsMap={sortableColumnsMap}
-                        item={item}
-                        onSort={({ type, key, sortKey }) => {
-                          const { sortableColumns, sortedData } = sortData({
-                            type,
-                            key,
-                            sortKey,
-                            sortableColumnsMap,
-                            dataSource,
-                          });
-                          setSortableColumnsMap(sortableColumns);
-                          setSortedData(sortedData);
-                        }}
-                      />
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-            <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
-          </thead>
-          {isLoading ? (
-            <tbody className={classNames.tbody}>
+    return (
+      <>
+        <div className={cn("relative w-full", className)} ref={tableBoxRef}>
+          <table className={cn("w-full h-auto table-auto", classNames.table)}>
+            <thead className={cn(classNames.thead, { "sticky top-0 z-30 [&>tr]:first:shadow-small [&>tr]:first:rounded-lg": isHeaderSticky })}>
               <tr className={classNames.tr}>
-                <td
-                  className={classNames.td}
-                  colSpan={columns.length}
-                >
-                  {loadingContent || DefaultLoading({ loadingOptions })}
-                </td>
+                {columns.map((item) => (
+                  <th
+                    key={item.key}
+                    className={cn("px-3 h-10 text-xs font-semibold whitespace-nowrap bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none", classNames.th)}
+                    style={{
+                      minWidth: item.width,
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <span>{item.label}</span>
+                      {!!sortableColumnsMap[item.key] && (
+                        <SortingComponent
+                          sortingUIOptions={sortingUIOptions}
+                          columnOptions={columnOptions}
+                          sortableColumnsMap={sortableColumnsMap}
+                          item={item}
+                          onSort={({ type, key, sortKey }) => {
+                            const { sortableColumns, sortedData } = sortData({
+                              type,
+                              key,
+                              sortKey,
+                              sortableColumnsMap,
+                              dataSource,
+                            });
+                            setSortableColumnsMap(sortableColumns);
+                            setSortedData(sortedData);
+                          }}
+                        />
+                      )}
+                    </div>
+                  </th>
+                ))}
               </tr>
-            </tbody>
-          ) : data.length > 0 ? (
-            <tbody className={classNames.tbody}>
-              {
-                showCollapsedTables ?
-                  data.map(item => {
+              <tr aria-hidden="true" className="w-px h-px block ml-[0.25rem] mt-[0.25rem]"></tr>
+            </thead>
+            {isLoading ? (
+              <tbody className={classNames.tbody}>
+                <tr className={classNames.tr}>
+                  <td className={classNames.td} colSpan={columns.length}>
+                    {loadingContent || DefaultLoading({ loadingOptions })}
+                  </td>
+                </tr>
+              </tbody>
+            ) : data.length > 0 ? (
+              <tbody className={classNames.tbody}>
+                {showCollapsedTables
+                  ? data.map((item) => {
                     return (
                       <CollapseBodyRow
                         classNames={classNames}
@@ -1031,14 +1026,14 @@ const TableUI = observer(<T,>({
                         collapsedTableConfig={collapsedTableConfig}
                         collapsedTables={collapsedTables}
                       />
-                    )
+                    );
                   })
                   : data.map((item, index) => {
                     return (
                       <>
                         <tr
                           key={rowKey ? item[rowKey] || index : index}
-                          className={cn(classNames.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+                          className={cn(classNames.tr, typeof rowCss === "function" ? rowCss(item) : rowCss)}
                           onClick={() => {
                             onRowClick?.(item);
                           }}
@@ -1047,86 +1042,79 @@ const TableUI = observer(<T,>({
                             return (
                               <td
                                 key={column.key}
-                                className={cn('py-2 px-3 text-xs', classNames.td)}
+                                className={cn("py-2 px-3 text-xs", classNames.td)}
                                 style={{
-                                  minWidth: column.width
+                                  minWidth: column.width,
                                 }}
                               >
                                 {column.render ? column.render(item) : renderFieldValue(item[column.key])}
                               </td>
-                            )
+                            );
                           })}
                         </tr>
                         {columnSlot && (
                           <tr>
-                            <td colSpan={columns.length}>
-                              {typeof columnSlot === 'function'
-                                ? columnSlot({ row: item })
-                                : columnSlot}
-                            </td>
+                            <td colSpan={columns.length}>{typeof columnSlot === "function" ? columnSlot({ row: item }) : columnSlot}</td>
                           </tr>
                         )}
                       </>
                     );
-                  })
-              }
-            </tbody>
-          ) : (
-            <tbody className={classNames.tbody}>
-              <tr className={classNames.tr}>
-                <td
-                  className={classNames.td}
-                  colSpan={columns.length}
-                >
-                  {emptyContent ?? <DefaultEmptyContent />}
-                </td>
-              </tr>
-            </tbody>
-          )}
-        </table>
-      </div>
-      {showPagination && pagination.total > pagination.limit && (
-        <div className="flex justify-center">
-          <NextuiPagination
-            className="mt-2"
-            showControls
-            showShadow
-            size="sm"
-            radius="sm"
-            color="primary"
-            initialPage={1}
-            total={Math.ceil(pagination.total / pagination.limit)}
-            page={pagination.page}
-            onChange={(currentPage) => {
-              pagination.setData({
-                page: currentPage,
-              });
-              if (autoScrollToTop && tableBoxRef.current) {
-                scrollIntoTop(tableBoxRef.current);
-              }
-            }}
-            {...nextuiPaginationProps}
-          />
+                  })}
+              </tbody>
+            ) : (
+              <tbody className={classNames.tbody}>
+                <tr className={classNames.tr}>
+                  <td className={classNames.td} colSpan={columns.length}>
+                    {emptyContent ?? <DefaultEmptyContent />}
+                  </td>
+                </tr>
+              </tbody>
+            )}
+          </table>
         </div>
-      )}
-    </>
-  );
-})
+        {showPagination && pagination.total > pagination.limit && (
+          <div className="flex justify-center">
+            <NextuiPagination
+              className="mt-2"
+              showControls
+              showShadow
+              size="sm"
+              radius="sm"
+              color="primary"
+              initialPage={1}
+              total={Math.ceil(pagination.total / pagination.limit)}
+              page={pagination.page}
+              onChange={(currentPage) => {
+                pagination.setData({
+                  page: currentPage,
+                });
+                if (autoScrollToTop && tableBoxRef.current) {
+                  scrollIntoTop(tableBoxRef.current);
+                }
+              }}
+              {...nextuiPaginationProps}
+            />
+          </div>
+        )}
+      </>
+    );
+  },
+);
 
 function DefaultLoading({ loadingOptions }: { loadingOptions?: LoadingOptions }) {
-  const type = loadingOptions?.type || 'skeleton';
+  const type = loadingOptions?.type || "skeleton";
   const skeletonOptions = loadingOptions?.skeleton;
   const spinnerOptions = loadingOptions?.spinner;
   const spinnerProps = spinnerOptions?.spinnerProps || {};
 
-  if (type === 'skeleton') {
-    return <SkeletonBox className={cn('mt-2 flex-col', skeletonOptions?.boxClassName)} skClassName={cn('h-[30px] rounded', skeletonOptions?.skeletonClassName)} line={skeletonOptions?.line || 5} />;
+  if (type === "skeleton") {
+    return <SkeletonBox className={cn("mt-2 flex-col", skeletonOptions?.boxClassName)} skClassName={cn("h-[30px] rounded", skeletonOptions?.skeletonClassName)} line={skeletonOptions?.line || 5} />;
   }
 
   return (
-    <div className={cn('w-full h-[60px] flex justify-center items-center', spinnerOptions?.boxClassName)}>
+    <div className={cn("w-full h-[60px] flex justify-center items-center", spinnerOptions?.boxClassName)}>
       <Spinner size="sm" color="primary" {...spinnerProps} />
-      <div className={cn('ml-2 text-[#64748B] text-sm', spinnerOptions?.textClassName)}>{spinnerOptions?.text || 'Loading...'}</div>
+      <div className={cn("ml-2 text-[#64748B] text-sm", spinnerOptions?.textClassName)}>{spinnerOptions?.text || "Loading..."}</div>
     </div>
   );
 }
@@ -1140,7 +1128,7 @@ function scrollIntoTop(target: HTMLElement) {
     const { top } = target.getBoundingClientRect();
     window.scrollTo({
       top: top + window.scrollY - 100,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   }
 }
@@ -1157,11 +1145,11 @@ function CollapseBodyRow<T>({
   classNames?: TableClassNames;
   item: T;
   columns: Column<T>[];
-  rowCss?: string | ((item: T) => string | undefined),
+  rowCss?: string | ((item: T) => string | undefined);
   onRowClick?: (item: T) => void;
   collapsedTableConfig?: {
     classNames?: TableClassNames;
-    collapsedHandlerPosition?: 'left' | 'right';
+    collapsedHandlerPosition?: "left" | "right";
     collapsedHandlerBoxCss?: string;
     openedIcon?: React.ReactNode;
     closedIcon?: React.ReactNode;
@@ -1172,11 +1160,11 @@ function CollapseBodyRow<T>({
   collapsedTables: CollapsedTable<any>[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const collapsedHandlerPosition = collapsedTableConfig?.collapsedHandlerPosition || 'right';
+  const collapsedHandlerPosition = collapsedTableConfig?.collapsedHandlerPosition || "right";
 
   const { OpenedIcon, ClosedIcon } = useMemo(() => {
     const defaultOpenedIcon = <ChevronDown size={18} />;
-    const defaultClosedIcon = collapsedHandlerPosition === 'left' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />;
+    const defaultClosedIcon = collapsedHandlerPosition === "left" ? <ChevronRight size={18} /> : <ChevronLeft size={18} />;
     return {
       OpenedIcon: collapsedTableConfig?.openedIcon || defaultOpenedIcon,
       ClosedIcon: collapsedTableConfig?.closedIcon || defaultClosedIcon,
@@ -1186,23 +1174,22 @@ function CollapseBodyRow<T>({
   return (
     <>
       <tr
-        className={cn('text-xs cursor-pointer', classNames?.tr, typeof rowCss === 'function' ? rowCss(item) : rowCss)}
+        className={cn("text-xs cursor-pointer", classNames?.tr, typeof rowCss === "function" ? rowCss(item) : rowCss)}
         onClick={(e: any) => {
           onRowClick?.(item);
         }}
       >
         {columns.map((column) => {
-          if (column.key === '$collapsedHandler') {
+          if (column.key === "$collapsedHandler") {
             return (
               <td
                 className={classNames?.td}
                 style={{
-                  minWidth: column.width
+                  minWidth: column.width,
                 }}
               >
                 <div
                   className={cn("w-6 h-6 flex items-center justify-center rounded-sm hover:bg-[#f3f3f4] dark:hover:bg-[#1e1e1e]", collapsedTableConfig?.collapsedHandlerBoxCss)}
-
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsOpen((v) => !v);
@@ -1218,7 +1205,7 @@ function CollapseBodyRow<T>({
               key={column.key}
               className={cn("py-2 px-3 text-xs", classNames?.td)}
               style={{
-                minWidth: column.width
+                minWidth: column.width,
               }}
             >
               {column.render ? column.render(item) : renderFieldValue(item[column.key])}
@@ -1226,7 +1213,7 @@ function CollapseBodyRow<T>({
           );
         })}
       </tr>
-      <tr className={cn(classNames?.tr, isOpen ? 'table-row' : 'hidden')}>
+      <tr className={cn(classNames?.tr, isOpen ? "table-row" : "hidden")}>
         <td colSpan={columns.length} className={cn("py-2 px-3 text-xs", classNames?.td)}>
           {collapsedTables.map((ex) => {
             const exColumns = ex.columns;
@@ -1239,9 +1226,9 @@ function CollapseBodyRow<T>({
                       return (
                         <th
                           key={exC.key}
-                          className={cn('px-3 h-10 text-xs text-left font-semibold bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none', collapsedTableConfig?.classNames?.th)}
+                          className={cn("px-3 h-10 text-xs text-left font-semibold bg-default-100 first:rounded-l-lg last:rounded-r-lg outline-none", collapsedTableConfig?.classNames?.th)}
                           style={{
-                            minWidth: exC.width
+                            minWidth: exC.width,
                           }}
                         >
                           {exC.label}
@@ -1253,55 +1240,51 @@ function CollapseBodyRow<T>({
                 </thead>
                 {exData.length > 0 ? (
                   <tbody className={collapsedTableConfig?.classNames?.tbody}>
-                    {
-                      exData.map((exItem) => (
-                        <tr
-                          key={exItem.key}
-                          className={cn('text-xs',
-                            collapsedTableConfig?.classNames?.tr,
-                            typeof collapsedTableConfig?.rowCss === 'function'
-                              ? collapsedTableConfig?.rowCss({
-                                ...exItem,
-                                $parent: item,
-                              })
-                              : collapsedTableConfig?.rowCss
-                          )}
-                          onClick={(e: any) => {
-                            collapsedTableConfig?.onRowClick?.({
+                    {exData.map((exItem) => (
+                      <tr
+                        key={exItem.key}
+                        className={cn(
+                          "text-xs",
+                          collapsedTableConfig?.classNames?.tr,
+                          typeof collapsedTableConfig?.rowCss === "function"
+                            ? collapsedTableConfig?.rowCss({
                               ...exItem,
                               $parent: item,
-                            });
-                          }}
-                        >
-                          {exColumns?.map((exC) => {
-                            return (
-                              <td
-                                key={exC.key}
-                                className={cn('py-2 px-3 text-xs', collapsedTableConfig?.classNames?.td)}
-                                style={{
-                                  minWidth: exC.width
-                                }}
-                              >
-                                {exC.render
-                                  ? exC.render({
-                                    ...exItem,
-                                    $parent: item,
-                                  })
-                                  : renderFieldValue(exItem[exC.key])}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))
-                    }
+                            })
+                            : collapsedTableConfig?.rowCss,
+                        )}
+                        onClick={(e: any) => {
+                          collapsedTableConfig?.onRowClick?.({
+                            ...exItem,
+                            $parent: item,
+                          });
+                        }}
+                      >
+                        {exColumns?.map((exC) => {
+                          return (
+                            <td
+                              key={exC.key}
+                              className={cn("py-2 px-3 text-xs", collapsedTableConfig?.classNames?.td)}
+                              style={{
+                                minWidth: exC.width,
+                              }}
+                            >
+                              {exC.render
+                                ? exC.render({
+                                  ...exItem,
+                                  $parent: item,
+                                })
+                                : renderFieldValue(exItem[exC.key])}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
                   </tbody>
                 ) : (
                   <tbody className={collapsedTableConfig?.classNames?.tbody}>
                     <tr className={collapsedTableConfig?.classNames?.tr}>
-                      <td
-                        className={collapsedTableConfig?.classNames?.td}
-                        colSpan={columns.length}
-                      >
+                      <td className={collapsedTableConfig?.classNames?.td} colSpan={columns.length}>
                         {collapsedTableConfig?.emptyContent ?? <DefaultEmptyContent />}
                       </td>
                     </tr>
@@ -1313,7 +1296,7 @@ function CollapseBodyRow<T>({
         </td>
       </tr>
     </>
-  )
+  );
 }
 
 function groupByColSpan(arr: any[], colSpan: number) {
