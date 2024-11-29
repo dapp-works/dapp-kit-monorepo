@@ -154,6 +154,10 @@ const HomePage = observer(() => {
         //   classNames: {
         //     row: 'border-t-1 border-[#E5E7EB] dark:border-[#23222d] hover:bg-[#ff8080] dark:hover:bg-[#18181B]',
         //   },
+        //   cardOptions: {
+        //     colSpan: 2,
+        //     cardContainerClassName: "space-x-2"
+        //   },
         //   fetchData: async () => {
         //     if (store.dataSource.length > 60) {
         //       return;
@@ -250,7 +254,7 @@ const HomePage = observer(() => {
         }}
         // showPagination={false}
         pagination={new PaginationState({
-          limit: 5,
+          limit: 4,
           onPageChange: (page) => {
             console.log('Page Change:', page);
           }
@@ -268,12 +272,15 @@ const HomePage = observer(() => {
         autoScrollToTop
         cardOptions={{
           showDivider: true,
+          cardContainerClassName: "grid grid-cols-2 gap-2",
           cardClassName: 'shadow-sm bg-[#f9f9f9] dark:bg-[#18181B]',
           itemClassName: 'flex flex-col text-start',
           labelClassName: 'font-bold',
           valueClassName: 'text-red-500',
-          colSpan: 2,
-          cardGroupClassName: "space-x-2"
+          // virtualizedOptions: {
+          //   colSpan: 2,
+          //   cardContainerClassName: "space-x-2"
+          // }
         }}
         emptyContent={isMobile ? <Card className='w-full h-20 flex flex-col justify-center items-center p-4 shadow-sm border text-foreground-400 rounded-lg'>No Data</Card> : undefined}
       // collapsedTableConfig={{
