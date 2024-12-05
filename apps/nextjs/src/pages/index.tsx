@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from "mobx-react-lite";
 import { Button, Card } from "@nextui-org/react";
-import { MetricsView } from "@dappworks/kit/metrics";
+// import { MetricsView } from "@dappworks/kit/metrics";
 import { PromiseState, RootStore } from "@dappworks/kit";
 import { ConfirmStore, DialogStore, PromiseStateGroup } from "@dappworks/kit/plugins";
 import { useMemo } from "react";
@@ -286,7 +286,7 @@ const HomePage = observer(() => {
         </Button>
       </div>
 
-      <MetricsView
+      {/* <MetricsView
         data={{
           type: 'KPICard',
           title: 'Data Messages',
@@ -303,7 +303,7 @@ const HomePage = observer(() => {
           chartType: 'area',
           chartClassName: 'h-[200px]',
         }}
-      />
+      /> */}
     </div>
   );
 })
