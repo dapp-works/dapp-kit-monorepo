@@ -136,7 +136,7 @@ export class WalletConfigStore implements Store {
         wallets: [
           {
             groupName: "Recommended",
-            wallets: [iopayWallet, metaMaskWallet, ledgerWallet],
+            wallets: [iopayWallet, metaMaskWallet], //ledgerWallet
           },
           {
             groupName: "Others",
