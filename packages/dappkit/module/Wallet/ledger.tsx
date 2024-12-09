@@ -2,17 +2,26 @@ import Transport from "@ledgerhq/hw-transport";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import Eth from "@ledgerhq/hw-app-eth";
 import { ethers } from "ethers";
+import { ObjectPool } from "../../store/standard/ObjectPool";
+import { RootStore } from "../../store";
+import { WalletStore } from ".";
 
+let _transport: Transport | null = null;
 export async function createTransport(): Promise<Transport> {
-  console.log('createTransport!!!!!');
-  try {
-    const res = await TransportWebUSB.create();
-    console.log('createTransport res', res);
-    return res;
-  } catch (error) {
-    console.error('Error creating transport', error);
-    throw error;
-  }
+  return ObjectPool.get('transport', async () => {
+    if (_transport) {
+      return _transport;
+    }
+    try {
+      const res = await TransportWebUSB.create();
+      console.log('createTransport res', res);
+      _transport = res;
+      return res;
+    } catch (error) {
+      console.error('Error creating transport', error);
+      throw error;
+    }
+  });
 }
 
 export async function getAddress(transport: Transport, path: string): Promise<string> {
@@ -26,6 +35,38 @@ export function waiter(duration: number): Promise<void> {
     setTimeout(resolve, duration);
   });
 }
+
+export const GlobalLedgerProvider = ObjectPool.get('provider', async () => {
+  return new ethers.providers.JsonRpcProvider("https://babel-api.mainnet.iotex.io");
+});
+
+export const GlobalLedgerSigner = ObjectPool.get('signer', async () => {
+  const transport = await createTransport();
+  return new LedgerSigner(transport, await GlobalLedgerProvider, "44'/304'/0'/0/0");
+});
+
+export const ConnectLedger = async () => {
+  RootStore.Get(WalletStore).isLedger = true;
+  const signer = await GlobalLedgerSigner;
+  const interval = setInterval(async () => {
+    const address = await signer.getAddress()
+    if (address) {
+      RootStore.Get(WalletStore).set({
+        account: address as `0x${string}`,
+        isConnect: true,
+      });
+      clearInterval(interval);
+      return signer;
+    }
+  }, 1000);
+};
+
+export const DisconnectLedger = () => {
+  RootStore.Get(WalletStore).set({
+    isConnect: false,
+    isLedger: false,
+  });
+};
 
 export class LedgerSigner extends ethers.Signer {
   readonly path: string
