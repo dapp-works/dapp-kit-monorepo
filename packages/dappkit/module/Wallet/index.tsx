@@ -20,6 +20,7 @@ import { iotex } from "viem/chains";
 import { DialogStore } from '../Dialog';
 import { Icon } from '@iconify/react';
 import { Card, Input } from '@nextui-org/react';
+import { GlobalLedgerSigner } from './ledger';
 
 export class WalletStore implements Store {
   sid = 'wallet';
@@ -30,6 +31,7 @@ export class WalletStore implements Store {
   get isInSafeApp() {
     return RootStore.Get(WalletConfigStore).isInSafeApp
   }
+  isLedger = false;
   isConnect = false;
   walletClient: WalletClient;
   event = new EventEmitter();
@@ -170,13 +172,15 @@ export class WalletStore implements Store {
     return new Promise<WalletStore>(async (res, rej) => {
       try {
         if (this.account) {
+          if (this.isLedger) {
+            res(this)
+          }
           if ((!chainId || (Number(this.chain?.id) == Number(chainId))) && this.walletClient) {
             res(this);
           }
           const interval = setInterval(() => {
             if (this.chain?.id == chainId) {
               try {
-                console.log('useWalletClientWithCompatibleMode')
                 this.useWalletClientWithCompatibleMode()
                 res(this);
               } catch (error) {
@@ -189,7 +193,7 @@ export class WalletStore implements Store {
 
           if (chainId != this.chain?.id) {
             try {
-              await this.walletClient.switchChain({ id: chainId })
+              await this.walletClient?.switchChain({ id: chainId })
             } catch (error) {
               console.log(error.message)
               if (error?.message?.includes("wallet_addEthereumChain")) {
@@ -417,13 +421,25 @@ export class WalletStore implements Store {
       await RootStore.Get(WalletStore).prepare(chainId);
       if (loadingText) toast.loading(loadingText);
       const historyStore = RootStore.Get(WalletHistoryStore)
-      // @ts-ignore
-      const hash = await this.walletClient.sendTransaction({
-        account: this.account,
-        to: address as `0x${string}`,
-        data: data as `0x${string}`,
-        value: value ? BigInt(value) : undefined,
-      });
+      let hash;
+      if (this.isLedger) {
+        const ledger = await GlobalLedgerSigner;
+        console.log(ledger, 'ledger signer')
+        hash = await ledger.sendTransaction({
+          to: address as `0x${string}`,
+          data: data as `0x${string}`,
+          value: value ? BigInt(value) : undefined,
+          from: this.account,
+        });
+      } else {
+        // @ts-ignore
+        hash = await this.walletClient.sendTransaction({
+          account: this.account,
+          to: address as `0x${string}`,
+          data: data as `0x${string}`,
+          value: value ? BigInt(value) : undefined,
+        });
+      }
       let receipt = await this.waitForTransactionReceipt({ hash });
       if (historyItem) {
         historyStore.recordHistory({ ...historyItem, tx: receipt.transactionHash, timestamp: Date.now(), status: 'loading', chainId: Number(chainId) });
@@ -484,5 +500,13 @@ export class WalletStore implements Store {
         throw error;
       }
     }
+  }
+  async signMessage(message: string) {
+    if (this.isLedger) {
+      const ledger = await GlobalLedgerSigner;
+      return ledger.signMessage(message);
+    }
+    // @ts-ignore
+    return this.walletClient.signMessage(message);
   }
 }

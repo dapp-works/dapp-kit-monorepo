@@ -21,7 +21,7 @@ const Test = observer(() => {
   const store = RootStore.Local(() => {
     return {
       sendRawTx() {
-        console.log(RootStore.Get(WalletStore).walletClient)
+        // console.log(RootStore.Get(WalletStore).walletClient)
         wallet.sendRawTx({
           chainId: 4689,
           address: "0x610CBDa6f0037B4141A5B949f56479106BeCb1E9",
@@ -81,6 +81,8 @@ const Test = observer(() => {
       <Button onClick={e => { store.sendRawTx() }}>Send Raw Tx</Button>
 
       <Button onClick={e => { store.sendTx() }}>Send Tx</Button>
+
+      <Button onClick={e => { wallet.signMessage('test') }}>Sign Message</Button>
 
       <Button onClick={e => { store.changeChain(true) }}>Change Iotex Chain</Button>
       <Button onClick={e => { store.changeChain(false) }}>Change Other Chain</Button>
