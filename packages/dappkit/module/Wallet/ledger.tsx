@@ -72,15 +72,13 @@ export const ConnectLedger = async () => {
           account: address as `0x${string}`,
           isConnect: true,
         });
-        const transport = await createTransport();
-
-        RootStore.Get(WalletStore).walletClient = createWalletClient({
-          account: address as `0x${string}`,
-          chain: iotex,
-          //@ts-ignore
-          transport: (transport)
-        }).extend(publicActions)
-
+        // const transport = await createTransport();
+        // RootStore.Get(WalletStore).walletClient = createWalletClient({
+        //   account: address as `0x${string}`,
+        //   chain: iotex,
+        //   //@ts-ignore
+        //   transport: (transport)
+        // }).extend(publicActions)
         clearInterval(interval);
         return signer;
       }
