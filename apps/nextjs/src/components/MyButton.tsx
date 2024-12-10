@@ -16,7 +16,9 @@ const MyButton = observer(() => {
       {
         wallet.isLedger && wallet.isConnect
         &&
-        <Button onClick={e => { ConnectLedger() }}>{wallet.account}</Button>
+        <Button onClick={e => {
+          ConnectLedger()
+        }}>{wallet.account}</Button>
       }
 
       <Dropdown backdrop="blur">
