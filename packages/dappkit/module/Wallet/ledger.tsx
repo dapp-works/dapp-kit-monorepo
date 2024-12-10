@@ -5,23 +5,26 @@ import { ethers } from "ethers";
 import { ObjectPool } from "../../store/standard/ObjectPool";
 import { RootStore } from "../../store";
 import { WalletStore } from ".";
+import { ToastPlugin } from "../Toast/Toast";
+import { createWalletClient, custom, publicActions } from "viem";
+import { iotex } from "viem/chains";
 
 let _transport: Transport | null = null;
+let _signer: LedgerSigner | null = null;
+
 export async function createTransport(): Promise<Transport> {
-  return ObjectPool.get('transport', async () => {
-    if (_transport) {
-      return _transport;
-    }
-    try {
-      const res = await TransportWebUSB.create();
-      console.log('createTransport res', res);
-      _transport = res;
-      return res;
-    } catch (error) {
-      console.error('Error creating transport', error);
-      throw error;
-    }
-  });
+  if (_transport) {
+    return _transport;
+  }
+  try {
+    const res = await TransportWebUSB.create();
+    console.log('createTransport res', res);
+    _transport = res;
+    return res;
+  } catch (error) {
+    console.error('Error creating transport', error);
+    throw error;
+  }
 }
 
 export async function getAddress(transport: Transport, path: string): Promise<string> {
@@ -40,23 +43,49 @@ export const GlobalLedgerProvider = ObjectPool.get('provider', async () => {
   return new ethers.providers.JsonRpcProvider("https://babel-api.mainnet.iotex.io");
 });
 
-export const GlobalLedgerSigner = ObjectPool.get('signer', async () => {
-  const transport = await createTransport();
-  return new LedgerSigner(transport, await GlobalLedgerProvider, "44'/304'/0'/0/0");
-});
+export const GlobalLedgerSigner = async () => {
+  try {
+    if (_signer) {
+      return _signer;
+    }
+    const transport = await createTransport();
+    _signer = new LedgerSigner(transport, await GlobalLedgerProvider, "44'/304'/0'/0/0");
+    return _signer;
+  } catch (error) {
+    console.error('Error creating ledger signer', error);
+    RootStore.Get(ToastPlugin).error(error.message ?? 'Failed to connect to Ledger');
+    RootStore.Get(WalletStore).isLedger = false;
+    return null;
+  }
+}
 
 export const ConnectLedger = async () => {
   RootStore.Get(WalletStore).isLedger = true;
-  const signer = await GlobalLedgerSigner;
+  console.log('ConnectLedger');
+  const signer = await GlobalLedgerSigner();
+  console.log('signer', signer);
   const interval = setInterval(async () => {
-    const address = await signer.getAddress()
-    if (address) {
-      RootStore.Get(WalletStore).set({
-        account: address as `0x${string}`,
-        isConnect: true,
-      });
-      clearInterval(interval);
-      return signer;
+    try {
+      const address = await signer?.getAddress()
+      if (address) {
+        RootStore.Get(WalletStore).set({
+          account: address as `0x${string}`,
+          isConnect: true,
+        });
+        const transport = await createTransport();
+
+        RootStore.Get(WalletStore).walletClient = createWalletClient({
+          account: address as `0x${string}`,
+          chain: iotex,
+          //@ts-ignore
+          transport: (transport)
+        }).extend(publicActions)
+
+        clearInterval(interval);
+        return signer;
+      }
+    } catch (error) {
+      console.error('Error getting address', error);
     }
   }, 1000);
 };
