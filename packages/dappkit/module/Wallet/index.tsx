@@ -423,7 +423,7 @@ export class WalletStore implements Store {
       const historyStore = RootStore.Get(WalletHistoryStore)
       let hash;
       if (this.isLedger) {
-        const ledger = await GlobalLedgerSigner;
+        const ledger = await GlobalLedgerSigner();
         console.log(ledger, 'ledger signer')
         hash = await ledger.sendTransaction({
           to: address as `0x${string}`,
@@ -503,7 +503,7 @@ export class WalletStore implements Store {
   }
   async signMessage(message: string) {
     if (this.isLedger) {
-      const ledger = await GlobalLedgerSigner;
+      const ledger = await GlobalLedgerSigner();
       return ledger.signMessage(message);
     }
     // @ts-ignore
