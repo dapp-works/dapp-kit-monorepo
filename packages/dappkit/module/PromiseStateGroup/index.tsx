@@ -69,6 +69,11 @@ export class PromiseStateGroup {
     } = await this.call()
     if (errMsg) {
       RootStore.Get(ToastPlugin).error(errMsg)
+      this.closeDialog()
+      return {
+        result,
+        errMsg,
+      }
     }
     if (successMsg) {
       RootStore.Get(ToastPlugin).success(successMsg)
