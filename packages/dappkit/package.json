@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.5.13",
+  "version": "0.5.14",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -150,7 +150,9 @@
     "react-hot-toast": ">=2.0.0",
     "typed-emitter": ">=2.0.0",
     "wagmi": ">=2.12.7",
-    "viem": ">=2.21.1"
+    "viem": ">=2.21.1",
+    "@ledgerhq/hw-app-eth": "^6.42.1",
+    "@ledgerhq/hw-transport-webusb": "^6.29.4"
   },
   "author": "uuz",
   "license": "ISC",
