@@ -170,7 +170,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       this.loading.setValue(true);
       const res = await this.function.apply(this.context, args);
       this.setValue(res);
-      if (this.autoAlert && this.successMsg && res) {
+      if (this.successMsg && res) {
         toast.success(this.successMsg);
       }
       return res;
