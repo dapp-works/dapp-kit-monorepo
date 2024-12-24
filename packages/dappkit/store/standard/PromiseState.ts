@@ -18,11 +18,14 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   sid = "PromiseState";
   key?: string;
   loading = new BooleanState();
-  //@ts-ignore
+  // @ts-ignore
   value?: Awaited<U> = null;
   defaultValue: any = null;
   function: T;
   transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
+  // 401 403
+  signOut: () => void;
+  onError: (error: any) => void;
 
   autoAlert = true;
   autoUpdate = false;
@@ -184,16 +187,18 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
           this.errMsg = message;
           toast.error(message);
         }
+        this.onError?.(error);
       } else {
         this.event.emit("error", error);
-        throw error;
+        if (this.onError) {
+          this.onError(error);
+        } else {
+          throw error;
+        }
       }
     } finally {
       this.event.emit("finally");
       this.loading.setValue(false);
     }
   }
-
-  // 401 403
-  signOut: () => void;
 }
