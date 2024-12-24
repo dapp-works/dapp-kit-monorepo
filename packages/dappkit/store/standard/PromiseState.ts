@@ -24,8 +24,8 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   function: T;
   transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
   // 401 403
-  signOut: () => void;
-  onError: (error: any) => void;
+  signOut?: () => void | null = null;
+  onError?: (error: any) => void | null = null;
 
   autoAlert = true;
   autoUpdate = false;
