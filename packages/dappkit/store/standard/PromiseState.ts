@@ -175,6 +175,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       }
       return res;
     } catch (error) {
+      console.log("this.autoAlert=>", this.autoAlert);
       if (this.autoAlert) {
         const message = error.message;
         if (message.includes("UNAUTHORIZED")) {
@@ -189,10 +190,10 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
         }
         this.onError?.(error);
       } else {
-        this.event.emit("error", error);
         if (this.onError) {
           this.onError(error);
         } else {
+          this.event.emit("error", error);
           throw error;
         }
       }
