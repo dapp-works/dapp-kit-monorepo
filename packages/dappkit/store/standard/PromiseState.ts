@@ -95,7 +95,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     };
   }
 
-  //@ts-ignore
+  // @ts-ignore
   async waitItem(): Promise<Awaited<U>[0]> {
     await this.wait();
     return this.current;
@@ -175,7 +175,6 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       }
       return res;
     } catch (error) {
-      console.log("this.autoAlert=>", this.autoAlert);
       if (this.autoAlert) {
         const message = error.message;
         if (message.includes("UNAUTHORIZED")) {
