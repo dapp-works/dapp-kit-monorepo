@@ -18,11 +18,14 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   sid = "PromiseState";
   key?: string;
   loading = new BooleanState();
-  //@ts-ignore
+  // @ts-ignore
   value?: Awaited<U> = null;
   defaultValue: any = null;
   function: T;
   transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
+  // 401 403
+  signOut?: () => void | null = null;
+  onError?: (error: any) => void | null = null;
 
   autoAlert = true;
   autoUpdate = false;
@@ -92,7 +95,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
     };
   }
 
-  //@ts-ignore
+  // @ts-ignore
   async waitItem(): Promise<Awaited<U>[0]> {
     await this.wait();
     return this.current;
@@ -167,7 +170,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
       this.loading.setValue(true);
       const res = await this.function.apply(this.context, args);
       this.setValue(res);
-      if (this.autoAlert && this.successMsg && res) {
+      if (this.successMsg && res) {
         toast.success(this.successMsg);
       }
       return res;
@@ -184,16 +187,18 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
           this.errMsg = message;
           toast.error(message);
         }
+        this.onError?.(error);
       } else {
-        this.event.emit("error", error);
-        throw error;
+        if (this.onError) {
+          this.onError(error);
+        } else {
+          this.event.emit("error", error);
+          throw error;
+        }
       }
     } finally {
       this.event.emit("finally");
       this.loading.setValue(false);
     }
   }
-
-  // 401 403
-  signOut: () => void;
 }
