@@ -425,12 +425,14 @@ export class WalletStore implements Store {
       if (this.isLedger) {
         const ledger = await GlobalLedgerSigner();
         console.log(ledger, 'ledger signer')
-        hash = await ledger.sendTransaction({
+        const tx = await ledger.sendTransaction({
           to: address as `0x${string}`,
           data: data as `0x${string}`,
           value: value ? BigInt(value) : undefined,
           from: this.account,
+          type: 0
         });
+        hash = tx?.hash;
       } else {
         // @ts-ignore
         hash = await this.walletClient.sendTransaction({
