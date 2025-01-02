@@ -23,8 +23,6 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   defaultValue: any = null;
   function: T;
   transform?: (value: any) => Promise<Awaited<U>> | Awaited<U> = null;
-  // 401 403
-  signOut?: () => void | null = null;
   onError?: (error: any) => void | null = null;
 
   autoAlert = true;
@@ -35,6 +33,7 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
 
   successMsg: string = "";
   errMsg: string = "";
+  showUnauthorizedAlert = false;
 
   loadingLock = true;
 
@@ -179,10 +178,9 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
         const message = error.message;
         if (message.includes("UNAUTHORIZED")) {
           toast.dismiss();
-          // toast.error(message, {
-          //   id: "UNAUTHORIZED",
-          // });
-          this.signOut?.();
+          if (this.showUnauthorizedAlert) {
+            toast.error(message);
+          }
         } else {
           this.errMsg = message;
           toast.error(message);
