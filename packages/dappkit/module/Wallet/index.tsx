@@ -468,18 +468,19 @@ export class WalletStore implements Store {
       }
       return receipt;
     } catch (error) {
-      console.log(error, 'xty')
       toast.dismiss();
       onError?.(error)
-      console.log(error.message);
+      console.log(error);
       const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
       // Details: Transaction was rejected
       if (error?.message?.includes('rejected') || error?.message?.includes('cancel') || String(error).toLowerCase().includes('rejected') || String(error).toLowerCase().includes('user denied')) {
         autoAlert && toast.error('User rejected transaction');
+        onError?.(error);
         return;
       }
       if (error?.message?.includes('Price slippage check')) {
         autoAlert && toast.error('The latest pool price has changed, please try to increase the slippage tolerance or reload the page.');
+        onError?.(error);
         return;
       }
       if (error?.message.includes('viem')) {
