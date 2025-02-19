@@ -5,8 +5,8 @@ export class BaseStore<T extends IBaseEntity<T>> {
   public static instances = new Map<EntityType<any>, BaseStore<any>>();
 
   protected constructor(
-    protected repository: Repository<T>,
-    protected entityType: EntityType<T>,
+    public repository: Repository<T>,
+    public entityType: EntityType<T>,
   ) {
     return new Proxy(this, {
       get: (target, prop) => {
@@ -27,10 +27,8 @@ export class BaseStore<T extends IBaseEntity<T>> {
   static Get<T extends IBaseEntity<T>>(entityType: EntityType<T>): BaseStore<T> {
     if (!this.instances.has(entityType)) {
       const repo = remult.repo(entityType);
-      // @ts-ignore
       this.instances.set(entityType, new BaseStore<T>(repo, entityType));
     }
-    // @ts-ignore
     return this.instances.get(entityType)!;
   }
 }
