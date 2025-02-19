@@ -3,6 +3,13 @@ import { Repository, FindOptions, LiveQuery, EntityFilter, FieldMetadata, ValueC
 import { IBaseEntity, IListResult, IQueryOptions, LiveQueryCallback } from "./types";
 import { useEffect } from "react";
 import { Debounce } from "./utils";
+import { getMetadata } from "./decorators";
+
+interface SearchMetadata {
+  operator?: "contains" | "equals" | "startsWith" | "endsWith" | "range";
+  type?: "string" | "number" | "boolean" | "date";
+  options?: { value: string; label: string }[];
+}
 
 export class ListStore<T extends IBaseEntity<T>> {
   queryOptions: IQueryOptions<T> = {
@@ -21,7 +28,7 @@ export class ListStore<T extends IBaseEntity<T>> {
   }
 
   buildQuery(options?: IQueryOptions<T>) {
-    const { page = 1, pageSize = 10, searchText, where, orderBy } = options!;
+    const { page = 1, pageSize = 10, searchText, where, orderBy, ...rest } = options || this.queryOptions;
 
     const query: FindOptions<T> = {
       where,
@@ -30,25 +37,73 @@ export class ListStore<T extends IBaseEntity<T>> {
       orderBy,
     };
 
-    // Build search conditions
+    const conditions: any[] = [];
+    if (where) conditions.push(where);
+
+    // Handle global search text
     if (searchText) {
       const fields = this.repository.metadata.fields as { [K in keyof T]: FieldMetadata<T, any> };
-
       const searchableFields = Object.entries(fields)
-        .filter(([_, field]) => {
-          return field.dbName!!;
-        })
+        .filter(([_, field]) => field.dbName !== undefined)
         .map(([key]) => key);
 
       if (searchableFields.length > 0) {
         const searchConditions = searchableFields.map((field) => ({
           [field]: { $contains: searchText },
         }));
-
-        const searchFilter = { $or: searchConditions } as EntityFilter<T>;
-
-        query.where = where ? ({ $and: [where, searchFilter] } as EntityFilter<T>) : searchFilter;
+        conditions.push({ $or: searchConditions });
       }
+    }
+
+    // Handle field-specific search conditions from metadata
+    const searchMetadata = getMetadata(this.repository.metadata.entityType, "SEARCH") as { name: string; metadata: SearchMetadata }[];
+    const searchFields = new Map<string, SearchMetadata>(searchMetadata.map(({ name, metadata }) => [name, metadata]));
+
+    Object.entries(rest).forEach(([key, value]) => {
+      if (!value || value === "") return;
+
+      if (key.endsWith("Min") || key.endsWith("Max")) {
+        const baseField = key.replace(/Min$|Max$/, "");
+        const fieldMeta = searchFields.get(baseField) || ({} as SearchMetadata);
+        const fieldType = fieldMeta.type || "string";
+        const operator = key.endsWith("Min") ? "$gte" : "$lte";
+        const convertedValue = fieldType === "number" ? Number(value) : value;
+
+        conditions.push({
+          [baseField]: { [operator]: convertedValue },
+        });
+      } else {
+        const fieldMeta = searchFields.get(key) || ({} as SearchMetadata);
+        const operator = fieldMeta.operator || "equals";
+        const type = fieldMeta.type || "string";
+
+        switch (operator) {
+          case "contains":
+            conditions.push({ [key]: { $contains: value } });
+            break;
+          case "startsWith":
+            conditions.push({ [key]: { $startsWith: value } });
+            break;
+          case "endsWith":
+            conditions.push({ [key]: { $endsWith: value } });
+            break;
+          case "equals":
+            if (type === "boolean") {
+              conditions.push({ [key]: value === "true" });
+            } else {
+              conditions.push({ [key]: value });
+            }
+            break;
+          case "range":
+            // Range is handled by Min/Max above
+            break;
+        }
+      }
+    });
+
+    if (conditions.length > 0) {
+      query.where = conditions.length === 1 ? conditions[0] : ({ $and: conditions } as EntityFilter<T>);
+      // console.log('Final Query:', JSON.stringify(query.where, null, 2));
     }
 
     return query;
@@ -162,7 +217,20 @@ export class ListStore<T extends IBaseEntity<T>> {
       if (state.searchText || state.pageSize) {
         state.page = 1;
       }
-      Object.assign(this.queryOptions, state);
+
+      // Handle range query parameters
+      const newState = { ...state };
+      Object.entries(state).forEach(([key, value]) => {
+        if (key.endsWith("Min") || key.endsWith("Max")) {
+          if (value === "") {
+            // @ts-ignore
+            delete newState[key];
+          }
+        }
+      });
+
+      // console.log('Setting Query:', newState);
+      Object.assign(this.queryOptions, newState);
     });
   }
 
@@ -181,10 +249,12 @@ export class ListStore<T extends IBaseEntity<T>> {
   }
 
   async reset(): Promise<IListResult<T>> {
-    this.queryOptions = {
-      page: 1,
-      pageSize: 10,
-    };
+    runInAction(() => {
+      // Clear all query options except pageSize
+      const { pageSize } = this.queryOptions;
+      this.queryOptions = { page: 1, pageSize };
+      // console.log('Reset Query Options:', this.queryOptions);
+    });
     return this.list(this.queryOptions);
   }
 }
