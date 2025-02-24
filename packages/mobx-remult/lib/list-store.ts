@@ -150,11 +150,10 @@ export class ListStore<T extends IBaseEntity<T>> {
 
     try {
       const query = this.buildQuery(options);
-      const [items, total] = await Promise.all([this.repository.find(query), this.repository.count(query.where)]);
+      const items = await this.repository.find(query);
 
       const result = {
         data: items,
-        total,
         page: query.page!,
         pageSize: query.limit!,
       };
@@ -167,6 +166,11 @@ export class ListStore<T extends IBaseEntity<T>> {
       this.setState({ loading: false });
       throw error;
     }
+  }
+
+  async total(options?: IQueryOptions<T>): Promise<number> {
+    const query = this.buildQuery(options);
+    return this.repository.count(query.where);
   }
 
   async create(data: Partial<T>): Promise<T> {
