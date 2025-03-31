@@ -412,7 +412,7 @@ function sortData<T>({
           return type === "desc" ? "" : v;
         }
         if (typeof v === "string") {
-          const _v = Number(v);
+          const _v = Number(v.replace("%", "").replace("$", "").replace(/,/g, ""));
           if (isNaN(_v)) {
             return v.toLowerCase();
           } else {
