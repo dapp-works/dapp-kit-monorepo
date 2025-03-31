@@ -473,7 +473,7 @@ export class WalletStore implements Store {
       console.log(error);
       const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
       // Details: Transaction was rejected
-      if (error?.message?.includes('rejected') || error?.message?.includes('cancel') || String(error).toLowerCase().includes('rejected') || String(error).toLowerCase().includes('user denied')) {
+      if (error?.message?.includes('rejected') || error?.message?.includes('cancel') || String(error).toLowerCase().includes('cancel') || String(error).toLowerCase().includes('rejected') || String(error).toLowerCase().includes('user denied')) {
         autoAlert && toast.error('User rejected transaction');
         onError?.(error);
         return;
