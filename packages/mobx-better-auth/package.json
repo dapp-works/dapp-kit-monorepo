@@ -1,0 +1,47 @@
+{
+  "name": "@dappworks/mobx-better-auth",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "module": "./dist/index.mjs",
+  "files": [
+    "dist"
+  ],
+  "directories": {
+    "lib": "lib"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.mts"
+      ]
+    }
+  },
+  "scripts": {
+    "dev": "npm run build -- --watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup --format esm --dts",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "lodash-es": ">=4.17.21",
+    "mobx": ">=6.0.0",
+    "react": ">=18.0.0"
+  },
+  "author": "uuz",
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^7.2.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
