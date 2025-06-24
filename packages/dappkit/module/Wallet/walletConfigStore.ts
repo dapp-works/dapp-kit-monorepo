@@ -46,6 +46,7 @@ export class WalletConfigStore implements Store {
   get rainbowKitConfig() {
     return ObjectPool.get(`rainbowKitConfig-${this.supportedChains?.map((i) => i.id).join("-")}`, () => {
       return getDefaultConfig({
+        pollingInterval: 2500,
         appName: this.appName,
         projectId: this.projectId,
         //@ts-ignore
