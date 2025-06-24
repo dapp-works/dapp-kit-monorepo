@@ -10,7 +10,14 @@ import { type Chain } from "viem/chains";
 import { iotex } from './type';
 import SafeAppsSDK from '@safe-global/safe-apps-sdk';
 import { observer } from 'mobx-react-lite';
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 2500,
+      refetchIntervalInBackground: false,
+    },
+  },
+});
 export const WalletProvider = observer((({
   children,
   theme,
