@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/kit",
-  "version": "0.5.28",
+  "version": "0.5.30",
   "description": "",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -158,7 +158,7 @@
   "license": "ISC",
   "devDependencies": {
     "currency.js": "^2.0.4",
-    "tsup": "^7.2.0"
+    "tsup": "7.2.0"
   },
   "publishConfig": {
     "access": "public",

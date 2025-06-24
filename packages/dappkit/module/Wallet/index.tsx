@@ -130,7 +130,8 @@ export class WalletStore implements Store {
         this.walletClient = createWalletClient({
           account: this.account,
           chain: this.chain,
-          transport: custom(window.ethereum!)
+          transport: custom(window.ethereum!),
+          pollingInterval: 2500,
         }).extend(publicActions)
       }
       console.log(this.walletClient, 'this.walletClientxxx')
