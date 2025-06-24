@@ -65,7 +65,8 @@ export class Cache {
 
 export type GetOptions = {
   multicall?: boolean;
-  rpcUrls?: Chain["rpcUrls"]
+  rpcUrls?: Chain["rpcUrls"];
+  pollingInterval?: number;
 };
 
 export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<string, Chain>, Addrs extends { [K in keyof Contracts]?: { [key: string]: `${string}-0x${string}` } }> {
@@ -185,7 +186,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
       chain.rpcUrls = options.rpcUrls
     }
     //@ts-ignore
-    return this._cache.wrap(`publicClient-${String(chainId)}-${chain.rpcUrls.default.http}-${options?.multicall}`, () => {
+    return this._cache.wrap(`publicClient-${String(chainId)}-${chain.rpcUrls.default.http}-${options?.multicall}-${options?.pollingInterval}`, () => {
       //@ts-ignore
       return createPublicClient({
         //@ts-ignore
@@ -197,7 +198,13 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
             },
           }
           : {}),
-
+        ...(options?.pollingInterval
+          ? {
+            pollingInterval: options.pollingInterval,
+          }
+          : {
+            pollingInterval: 2500
+          }),
         //@ts-ignore
         transport: http(),
       });
