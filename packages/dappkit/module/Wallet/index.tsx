@@ -114,7 +114,7 @@ export class WalletStore implements Store {
         })
         this.event.emit('walletAccount:ready');
       }
-      this.useWalletClientWithCompatibleMode()
+      // this.useWalletClientWithCompatibleMode()
     }, [address, isConnected, chain])
 
     useEffect(() => {
@@ -139,7 +139,11 @@ export class WalletStore implements Store {
   }
 
   useWalletClientWithoutCompatibleMode() {
-    const { data: walletClient, isSuccess } = useWalletClient()
+    const { data: walletClient, isSuccess } = useWalletClient({
+      query: {
+        refetchInterval: 2500
+      }
+    })
     useEffect(() => {
       if (isSuccess && walletClient) {
         this.set({ walletClient })
@@ -151,11 +155,15 @@ export class WalletStore implements Store {
   get publicClient(): PublicClient<HttpTransport, Chain, any, any> {
     if (this.chain && this.supportedChains.some(i => i.id === this.chain.id)) {
       if (this.chain.id == 4689) {
-        return AIem.PubClient('4689', { rpcUrls: { default: { http: [RootStore.Get(WalletRpcStore).curRpc.value] } }, multicall: true })
+        return AIem.PubClient('4689', {
+          rpcUrls: { default: { http: [RootStore.Get(WalletRpcStore).curRpc.value] } },
+          multicall: true,
+          pollingInterval: 2500
+        })
       }
-      return AIem.PubClient(this.chain.id.toString())
+      return AIem.PubClient(this.chain.id.toString(), { pollingInterval: 2500 })
     } else {
-      return AIem.PubClient('4689')
+      return AIem.PubClient('4689', { pollingInterval: 2500 })
     }
   }
 
