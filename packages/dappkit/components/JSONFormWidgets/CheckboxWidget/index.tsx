@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { JSX, useMemo, useState } from "react";
 import { Checkbox, CheckboxProps } from "@nextui-org/react";
 import { WidgetProps } from "@rjsf/utils";
 import { Check } from "lucide-react";

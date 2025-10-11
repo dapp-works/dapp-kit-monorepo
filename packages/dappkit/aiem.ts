@@ -7,6 +7,7 @@ import {
   type WalletClient,
   type Transport,
   type Account,
+  type MulticallBatchOptions,
   encodeFunctionData,
   http,
   getContract,
@@ -25,7 +26,7 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-(iotexTestnet.contracts = {
+((iotexTestnet.contracts = {
   multicall3: {
     //@ts-ignore
     address: "0xb5cecd6894c6f473ec726a176f1512399a2e355d",
@@ -33,7 +34,7 @@ BigInt.prototype.toJSON = function () {
   },
 }),
   //@ts-ignore
-  (mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"]);
+  (mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"]));
 //@ts-ignore
 mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"];
 
@@ -64,7 +65,7 @@ export class Cache {
 }
 
 export type GetOptions = {
-  multicall?: boolean;
+  multicall?: boolean | MulticallBatchOptions;
   rpcUrls?: Chain["rpcUrls"];
   pollingInterval?: number;
 };
@@ -181,30 +182,30 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
   }
 
   PubClient<C extends keyof Chains>(chainId: C, options: GetOptions = { multicall: true }): PublicClient<HttpTransport, Chain, any, any> {
-    const chain = this.chainMap[chainId]
+    const chain = this.chainMap[chainId];
     if (options.rpcUrls) {
-      chain.rpcUrls = options.rpcUrls
+      chain.rpcUrls = options.rpcUrls;
     }
     //@ts-ignore
-    return this._cache.wrap(`publicClient-${String(chainId)}-${chain.rpcUrls.default.http}-${options?.multicall}-${options?.pollingInterval}`, () => {
+    return this._cache.wrap(`publicClient-${String(chainId)}-${chain.rpcUrls.default.http}-${JSON.stringify(options?.multicall)}-${options?.pollingInterval}`, () => {
       //@ts-ignore
       return createPublicClient({
         //@ts-ignore
         chain,
         ...(options?.multicall
           ? {
-            batch: {
-              multicall: true,
-            },
-          }
+              batch: {
+                multicall: typeof options.multicall === "boolean" ? true : options.multicall,
+              },
+            }
           : {}),
         ...(options?.pollingInterval
           ? {
-            pollingInterval: options.pollingInterval,
-          }
+              pollingInterval: options.pollingInterval,
+            }
           : {
-            pollingInterval: 2500
-          }),
+              pollingInterval: 2500,
+            }),
         //@ts-ignore
         transport: http(),
       });
@@ -373,8 +374,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
         //@ts-ignore
         decimals = await this.cache.wrap(`${chainId}-${address}-decimals`, async () => {
           //@ts-ignore
-          return this.Get(ERC20ABI, chainId, address).read.decimals()
-        })
+          return this.Get(ERC20ABI, chainId, address).read.decimals();
+        });
       }
       const wrap = helper.number.warpBigNumber(value, decimals, { format: "0,0.000000", fallback: "" });
       const price = await this.getPrice({ chainId, address: address.toLowerCase() });
@@ -440,8 +441,8 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
 
                     break;
                   case "custom":
-                    const func = fieldMetadata.func
-                    call = () => func(instance)
+                    const func = fieldMetadata.func;
+                    call = () => func(instance);
                     break;
                   case "entity":
                     const targetMetadata = getFieldMetadata(instance, fieldMetadata.targetKey);
@@ -496,10 +497,10 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
                   const cacheKey = `call ${instance.chainId}-${instance.address}-${key}-${JSON.stringify(sel[key])}`;
                   promises.push(
                     new Promise(async (resolve) => {
-                      const value = await this.cache.wrap(cacheKey, async () => call().catch(i => null), fieldMetadata.options)
+                      const value = await this.cache.wrap(cacheKey, async () => call().catch((i) => null), fieldMetadata.options);
                       obj[key] = value;
                       resolve(value);
-                    })
+                    }),
                   );
                 } else {
                   promises.push(
@@ -552,14 +553,12 @@ type QuerySelect<E> = {
 
 export type QueryReturnType<E, S extends QuerySelect<E>> = {
   [K in keyof E]: K extends keyof S
-  ? E[K] extends (...args: any[]) => any
-  ? Awaited<ReturnType<E[K]>>
-  : E[K] extends object
-  ? S[K] extends object
-  ? QueryReturnType<E[K], S[K]>
-  : E[K]
-  : E[K]
-  : E[K];
-
+    ? E[K] extends (...args: any[]) => any
+      ? Awaited<ReturnType<E[K]>>
+      : E[K] extends object
+        ? S[K] extends object
+          ? QueryReturnType<E[K], S[K]>
+          : E[K]
+        : E[K]
+    : E[K];
 };
-
