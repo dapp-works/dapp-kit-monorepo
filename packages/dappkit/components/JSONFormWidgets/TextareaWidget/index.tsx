@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useRef } from 'react';
+import React, { JSX, ReactNode, useMemo, useRef } from 'react';
 import { InputProps, InputSlots, SlotsToClasses, Textarea } from '@nextui-org/react';
 import { WidgetProps } from '@rjsf/utils';
 import { cn } from "../../../lib/utils";

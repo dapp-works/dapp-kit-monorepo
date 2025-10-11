@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { JSX, useCallback, useMemo, useState } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import { Select, SelectItem, SelectProps, SelectSlots, SlotsToClasses } from "@nextui-org/react";
 import { cn } from "../../../lib/utils";
