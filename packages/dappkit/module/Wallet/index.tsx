@@ -361,7 +361,7 @@ export class WalletStore implements Store {
       if (autoAlert) {
         const msg = /reason="[A-Za-z0-9_ :"]*/g.exec(error?.message);
         console.log('sendTx', error?.message);
-        if (error?.message?.includes('rejected') || String(error).toLowerCase().includes('rejected') || String(error).toLowerCase().includes('denied')) {
+        if (error?.message?.includes('rejected') || String(error).toLowerCase().includes('rejected') || error?.message?.includes('cancel') || String(error).toLowerCase().includes('cancel') || String(error).toLowerCase().includes('denied')) {
           toast.error('User rejected transaction');
           // onError?.(error);
           return;

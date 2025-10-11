@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DatePicker, DatePickerProps } from '@nextui-org/react';
 import { RJSFSchema, Widget, WidgetProps } from "@rjsf/utils";

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { JSX, useRef, useState } from "react";
 import MonacoEditor, { EditorProps } from "@monaco-editor/react";
 import { WidgetProps } from "@rjsf/utils";
 import { Button } from "@nextui-org/react";
