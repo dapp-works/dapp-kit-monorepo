@@ -313,9 +313,10 @@ export class WalletStore implements Store {
     autoAlert = true,
     loadingText,
     successText,
-    onError,
     historyItem,
     showSuccessDialog = false,
+    onSuccess,
+    onError,
   }: {
     chainId: number | string;
     tx: any;
@@ -324,6 +325,7 @@ export class WalletStore implements Store {
     successText?: string;
     showSuccessDialog?: boolean;
     historyItem?: Pick<WalletTransactionHistoryType, 'msg' | 'type'>;
+    onSuccess?: ({ receipt }: { receipt: TransactionReceipt }) => Promise<void>;
     onError?: (error: any) => void;
   }) {
     const toast = RootStore.Get(ToastPlugin);
@@ -339,6 +341,9 @@ export class WalletStore implements Store {
       }
       const receipt = await this.waitForTransactionReceipt({ hash });
       if (receipt.status == 'success') {
+        if (onSuccess) {
+          await onSuccess({ receipt });
+        }
         toast.dismiss();
         toast.success('The transaction was successful');
         if (historyItem) {
