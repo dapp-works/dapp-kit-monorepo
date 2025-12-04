@@ -12,6 +12,7 @@ import {
   http,
   getContract,
   createPublicClient,
+  defineChain,
 } from "viem";
 import { iotex, mainnet, bsc, polygon, iotexTestnet } from "viem/chains";
 import TTLCache from "@isaacs/ttlcache";
@@ -26,7 +27,7 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-((iotexTestnet.contracts = {
+(iotexTestnet.contracts = {
   multicall3: {
     //@ts-ignore
     address: "0xb5cecd6894c6f473ec726a176f1512399a2e355d",
@@ -34,9 +35,36 @@ BigInt.prototype.toJSON = function () {
   },
 }),
   //@ts-ignore
-  (mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"]));
+  (mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"]);
 //@ts-ignore
 mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"];
+//@ts-ignore
+export const iotexBabelNightly = /*#__PURE__*/ defineChain({
+  id: 4_691,
+  name: "IoTeX Babel Nightly",
+  network: "iotex-babel-nightly",
+  nativeCurrency: {
+    decimals: 18,
+    name: "IoTeX",
+    symbol: "IOTX",
+  },
+  iconUrl: "https://cdn-dapp-works.s3.us-east-1.amazonaws.com/1dd84d927ae959c508392be62e6eb549.png",
+  rpcUrls: {
+    default: {
+      http: ["https://babel-nightly.iotex.io"],
+      webSocket: ["wss://babel-nightly.iotex.io"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "IoTeXScan", url: "https://testnet.iotexscan.io" },
+  },
+  // contracts: {
+  //   multicall3: {
+  //     address: '0xb5cecD6894c6f473Ec726A176f1512399A2e355d',
+  //   },
+  // },
+  testnet: true,
+});
 
 export { Fields } from "./lib/decorators";
 
@@ -81,6 +109,7 @@ export class AIem<Contracts extends Record<string, Abi>, Chains extends Record<s
     [bsc.id]: bsc,
     [polygon.id]: polygon,
     [iotexTestnet.id]: iotexTestnet,
+    [iotexBabelNightly.id]: iotexBabelNightly,
   };
   nameMap?: Addrs;
   contracts: {
