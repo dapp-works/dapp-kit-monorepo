@@ -1,15 +1,16 @@
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useReconnect, useWalletClient, WagmiProvider } from 'wagmi';
+import React, { useEffect } from 'react';
+import { WagmiProvider } from 'wagmi';
 import { RootStore } from "../../store";
 import { WalletStore } from '.';
 import { WalletConfigStore } from './walletConfigStore'
-import { reaction } from 'mobx';
 import { type Chain } from "viem/chains";
 import { iotex } from './type';
 import SafeAppsSDK from '@safe-global/safe-apps-sdk';
 import { observer } from 'mobx-react-lite';
+import { AutoConnectIopayWallet } from './AutoConnectIopayWallet';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -18,6 +19,7 @@ const queryClient = new QueryClient({
     },
   },
 });
+
 export const WalletProvider = observer((({
   children,
   theme,
@@ -36,7 +38,7 @@ export const WalletProvider = observer((({
   rainbowKitProps?: any,
   projectId?: string
 }) => {
-  //@ts-ignore
+  // @ts-ignore
   const walletConfig = RootStore.Get(WalletConfigStore, { args: { supportedChains: supportedChains ?? [iotex] } });
   useEffect(() => {
     if (appName) {
@@ -62,6 +64,7 @@ export const WalletProvider = observer((({
       <QueryClientProvider client={queryClient} >
         <RainbowKitProvider locale="en" theme={theme == 'dark' ? darkTheme() : lightTheme()} {...rainbowKitProps}>
           {children}
+          <AutoConnectIopayWallet />
           {
             compatibleMode ? <WalletConnectcompatibleMode /> : <WalletConnect />
           }

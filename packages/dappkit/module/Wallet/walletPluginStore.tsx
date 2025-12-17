@@ -7,8 +7,8 @@ import { ToastPlugin } from "../Toast/Toast";
 import { WalletTransactionHistoryType } from "./type";
 import { WalletStore } from ".";
 import { helper } from "../../lib/helper";
-import { Chain, toHex } from 'viem';
 import { WalletConfigStore } from './walletConfigStore';
+import { toHex } from 'viem';
 
 const defaultRPCList = [
   { name: 'https://babel-api.fastblocks.io', latency: 0, height: 0, custom: false },
@@ -19,6 +19,7 @@ const defaultRPCList = [
   { name: 'https://iotex.api.onfinality.io/public', latency: 0, height: 0, },
   // { name: 'https://rpc.ankr.com/iotex', latency: 0, height: 0, },
 ]
+
 export class WalletRpcStore implements Store {
   sid = 'WalletPluginStore';
   autoObservable = true
