@@ -11,7 +11,7 @@ export const AutoConnectIopayWallet = () => {
   // Memoize iopay detection to avoid repeated calculations
   const isIopayEnvironment = useMemo(() => {
     if (typeof window === 'undefined') return false;
-    return helper.env.isIopayMobile() && !!window.ethereum;
+    return helper.env.isIopayMobile && !!window.ethereum;
   }, []);
 
   // Memoize iopay connector lookup

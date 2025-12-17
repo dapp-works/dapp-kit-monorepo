@@ -13,11 +13,30 @@ const valMap = {
 
 export const helper = {
   env: {
-    isIopayMobile: () => navigator.userAgent && (navigator.userAgent.includes("IoPayAndroid") || navigator.userAgent.includes("IoPayiOs")),
-    isBrowser: () => typeof window === "object",
+    isBrower: typeof window === "undefined" ? false : true,
+    isIopayMobile: global?.navigator?.userAgent && (global?.navigator?.userAgent.includes("IoPayAndroid") || global?.navigator?.userAgent.includes("IoPayiOs")),
     onBrowser(func) {
       if (this.isBrowser()) {
         func();
+      }
+    },
+    isPc() {
+      const userAgentInfo = global?.navigator?.userAgent;
+      const Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+      let flag = true;
+      for (let v = 0; v < Agents.length; v++) {
+        if (userAgentInfo?.indexOf(Agents[v] || "") > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    },
+    isInIframe() {
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
       }
     },
   },
@@ -314,7 +333,7 @@ export const helper = {
         if (addressMode == "io" && helper.address.validateEthAddress(address)) {
           return from(address).string();
         }
-      } catch (error) { }
+      } catch (error) {}
       return address;
     },
     validateEthAddress: (address: string) => /^0x[a-fA-F0-9]{40}$/.test(address),
