@@ -14,14 +14,9 @@ const valMap = {
 export const helper = {
   env: {
     isBrower: typeof window === "undefined" ? false : true,
-    isIopayMobile: global?.navigator?.userAgent && (global?.navigator?.userAgent.includes("IoPayAndroid") || global?.navigator?.userAgent.includes("IoPayiOs")),
-    onBrowser(func) {
-      if (this.isBrowser()) {
-        func();
-      }
-    },
+    isIopayMobile: typeof window === "undefined" ? false : window.navigator?.userAgent?.includes("IoPayAndroid") || window?.navigator?.userAgent?.includes("IoPayiOs"),
     isPc() {
-      const userAgentInfo = global?.navigator?.userAgent;
+      const userAgentInfo = typeof window === "undefined" ? "" : window?.navigator?.userAgent;
       const Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
       let flag = true;
       for (let v = 0; v < Agents.length; v++) {
@@ -34,6 +29,7 @@ export const helper = {
     },
     isInIframe() {
       try {
+        if (typeof window === "undefined") return false;
         return window.self !== window.top;
       } catch (e) {
         return true;
