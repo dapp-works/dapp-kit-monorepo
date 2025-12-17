@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import { RootStore } from "../../../store";
 import { DialogStore } from "../../../module/Dialog";
+
 interface IProps {
   msg: string,
   hash: string,

@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
-import { Button, Checkbox, Chip, Input, Listbox, ListboxItem, Popover, PopoverContent, PopoverTrigger, Radio, RadioGroup, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from '@nextui-org/react';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { Button, Checkbox, Input, Popover, PopoverContent, PopoverTrigger, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from '@nextui-org/react';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useEffect } from 'react';
 import { RootStore } from "../../../store";
@@ -10,7 +10,6 @@ import { ToastPlugin } from '../../Toast/Toast';
 
 
 const RpcList = observer(() => {
-  const wallet = RootStore.Get(WalletStore)
   const rpcStore = RootStore.Get(WalletRpcStore)
   useEffect(() => {
     rpcStore.testRpc()
