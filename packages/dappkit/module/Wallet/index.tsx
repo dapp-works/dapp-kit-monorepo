@@ -6,8 +6,8 @@ import { PromiseHook } from '../../store/standard/PromiseHook';
 import { AddressMode, WalletTransactionHistoryType } from "./type";
 import EventEmitter from "events";
 import { SwitchChainMutateAsync } from "wagmi/query";
-import { Config, useAccount, useConnect, useDisconnect, useReconnect, useSwitchChain, useWalletClient, } from "wagmi";
-import { Chain, useConnectModal, WalletDetailsParams } from '@rainbow-me/rainbowkit';
+import { Config, useAccount, useConnect, useDisconnect, useSwitchChain, useWalletClient, } from "wagmi";
+import { Chain, useConnectModal } from '@rainbow-me/rainbowkit';
 import { RootStore } from "../../store";
 import { ToastPlugin } from "../Toast/Toast";
 import { WalletHistoryStore, WalletRpcStore } from './walletPluginStore';
@@ -16,7 +16,6 @@ import { ShowSuccessTxDialog } from './SuccessTxDialog'
 import { WalletConfigStore } from "./walletConfigStore";
 import { AIem } from "../../aiem";
 import { helper } from "../../lib/helper";
-import { iotex } from "viem/chains";
 import { DialogStore } from '../Dialog';
 import { Icon } from '@iconify/react';
 import { Card, Input } from '@nextui-org/react';
@@ -126,11 +125,12 @@ export class WalletStore implements Store {
 
   private useWalletClientWithCompatibleMode() {
     if (RootStore.Get(WalletConfigStore).compatibleMode) {
-      if (this.account) {
+      if (this.account && this.chain) {
+        // @ts-ignore - Type instantiation is too deep, but the code works correctly
         this.walletClient = createWalletClient({
           account: this.account,
           chain: this.chain,
-          transport: custom(window.ethereum!),
+          transport: custom(window.ethereum! as any),
           pollingInterval: 2500,
         }).extend(publicActions)
       }

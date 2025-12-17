@@ -6,8 +6,6 @@ import { ObjectPool } from "../../store/standard/ObjectPool";
 import { RootStore } from "../../store";
 import { WalletStore } from ".";
 import { ToastPlugin } from "../Toast/Toast";
-import { createWalletClient, custom, publicActions } from "viem";
-import { iotex } from "viem/chains";
 
 let _transport: Transport | null = null;
 let _signer: LedgerSigner | null = null;

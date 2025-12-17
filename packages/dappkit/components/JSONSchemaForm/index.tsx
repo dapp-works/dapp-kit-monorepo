@@ -64,7 +64,8 @@ const renderLayout = (layout: any[], fields: { [k: string]: React.ReactElement }
   });
 };
 
-const ObjectFieldTemplate = ({ title, idSchema: { $id }, properties, uiSchema: { layout } }: ObjectFieldTemplateProps) => {
+const ObjectFieldTemplate = ({ title, idSchema, properties, uiSchema: { layout } }: ObjectFieldTemplateProps & { idSchema: { $id: string } }) => {
+  const { $id } = idSchema;
   const [opened, setOpened] = useState(false);
   const fields = Object.fromEntries(properties.map((item) => [item.name, item.content]));
   return (
