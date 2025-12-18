@@ -13,8 +13,12 @@ const valMap = {
 
 export const helper = {
   env: {
-    isBrower: typeof window === "undefined" ? false : true,
-    isIopayMobile: typeof window === "undefined" ? false : window.navigator?.userAgent?.includes("IoPayAndroid") || window?.navigator?.userAgent?.includes("IoPayiOs"),
+    isBrower() {
+      return typeof window !== "undefined";
+    },
+    isIopayMobile() {
+      return typeof window !== "undefined" && window.navigator?.userAgent?.toLowerCase().includes("iopay");
+    },
     isPc() {
       const userAgentInfo = typeof window === "undefined" ? "" : window?.navigator?.userAgent;
       const Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
