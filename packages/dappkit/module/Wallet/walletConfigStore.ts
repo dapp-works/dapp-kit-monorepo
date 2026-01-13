@@ -1,6 +1,7 @@
 import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { walletConnectWallet, metaMaskWallet, iopayWallet, okxWallet, binanceWallet, safeWallet, gateWallet } from "@rainbow-me/rainbowkit/wallets";
 import { ObjectPool, Store } from "../..";
+import { http } from "viem";
 
 export class WalletConfigStore implements Store {
   sid = "WalletConfigStore";
@@ -43,12 +44,26 @@ export class WalletConfigStore implements Store {
 
   get rainbowKitConfig() {
     return ObjectPool.get(`rainbowKitConfig-${this.supportedChains?.map((i) => i.id).join("-")}`, () => {
+      // Create transports object using each chain's default RPC URL
+      const transports = this.supportedChains.reduce(
+        (acc, chain) => {
+          // Use the chain's default RPC URL (first one in the list)
+          const rpcUrl = chain.rpcUrls?.default?.http?.[0];
+          if (rpcUrl) {
+            acc[chain.id] = http(rpcUrl);
+          }
+          return acc;
+        },
+        {} as Record<number, ReturnType<typeof http>>,
+      );
+
       return getDefaultConfig({
         pollingInterval: 2500,
         appName: this.appName,
         projectId: this.projectId,
         //@ts-ignore
         chains: this.supportedChains,
+        transports, // Explicitly set transports to use our custom RPC URLs
         wallets: [
           {
             groupName: "Recommended",
