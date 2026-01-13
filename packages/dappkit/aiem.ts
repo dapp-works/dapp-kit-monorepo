@@ -26,18 +26,20 @@ import { ERC20ABI } from "./constants/abi";
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
-
-(iotexTestnet.contracts = {
+iotexTestnet.contracts = {
   multicall3: {
     //@ts-ignore
     address: "0xb5cecd6894c6f473ec726a176f1512399a2e355d",
     blockCreated: 24347592,
   },
-}),
-  //@ts-ignore
-  (mainnet.rpcUrls.default.http = ["https://rpc.ankr.com/eth"]);
+};
+//@ts-ignore
+mainnet.rpcUrls.default.http = ["https://eth.llamarpc.com"];
 //@ts-ignore
 mainnet.rpcUrls.default.webSocket = ["wss://ethereum-rpc.publicnode.com"];
+//@ts-ignore
+bsc.rpcUrls.default.http = ["https://bsc-rpc.publicnode.com"];
+
 //@ts-ignore
 export const iotexBabelNightly = /*#__PURE__*/ defineChain({
   id: 4_691,
