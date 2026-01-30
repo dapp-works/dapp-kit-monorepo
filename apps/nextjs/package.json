@@ -12,8 +12,7 @@
     "start": "pnpm with-env next start",
     "type-check": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --",
-    "analyze": "ANALYZE=true next build",
-    "gen": "prisma generate --schema=../../packages/db/prisma/schema.prisma"
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@acme/tailwind-config": "workspace:*",
