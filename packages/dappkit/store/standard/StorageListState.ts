@@ -23,6 +23,7 @@ export class StorageListState<T = any> {
 
 
   load() {
+    if (typeof window === 'undefined') return null;
     try {
       const value = localStorage.getItem(this.key);
       if (value) {
@@ -47,6 +48,7 @@ export class StorageListState<T = any> {
   }
 
   private save() {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.setItem(this.key, JSON.stringify(this.list));
     } catch (error) {
@@ -54,6 +56,7 @@ export class StorageListState<T = any> {
   }
 
   clear() {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.removeItem(this.key);
       this.list = [];
