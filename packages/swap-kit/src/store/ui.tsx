@@ -6,8 +6,8 @@ import type { ERC20 } from '../contracts/erc20';
  * the component library. Call setSwapUI() once at app init (see Phase 2 wiring).
  */
 export interface SwapUIComponents {
-  SettingModal: ComponentType;
-  ImportTokenModal: ComponentType<{ tokens: ERC20[] }>;
+  SettingModal: ComponentType<any>;
+  ImportTokenModal: ComponentType<any>;
 }
 
 export const SwapUI: { components: SwapUIComponents | null } = { components: null };

@@ -255,4 +255,14 @@ export class TokenInputStore implements Store {
       this.fromAmount.loading = false;
     }
   }
+
+  // Balance/symbol refresh, called from token input/select components. Not
+  // routing glue (that lives app-side); kept here as it's pure store state.
+  checkTokenValid(router: any, pathname?: string) {
+    this.fromToken?.balance.call();
+    this.toToken?.balance.call();
+    this.fromToken?.symbol.call();
+    this.toToken?.symbol.call();
+    if (!this.wallet.account || router?.pathname == '/add/[...address]') return;
+  }
 }
