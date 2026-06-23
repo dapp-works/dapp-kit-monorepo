@@ -1,0 +1,137 @@
+import { RootStore } from '@dappworks/kit';
+import { DialogStore, ToastPlugin } from '@dappworks/kit/plugins';
+import { makeAutoObservable, observable } from 'mobx';
+export class KV {
+  //@ts-ignore
+  static datas = observable();
+}
+
+export abstract class ContractBase {
+  // chainId?: number;
+  // address?: string;
+}
+
+export type ContractClass<T extends ContractBase> = new (args: Partial<T>) => T;
+
+export type PromiseHookData<T extends (...args: any[]) => Promise<any>, U = ReturnType<T>> = { 
+  value: Awaited<U>; 
+  get: T; 
+  call: T; 
+  loading: boolean 
+};
+
+export class PromiseHook {
+  static entities = observable([]);
+  static isShowErrorTips = false;
+  static Get<T extends ContractBase>(
+    cls: ContractClass<T>,
+  ): (args: { args: Partial<T>; id?: string; select?: { [key in keyof Partial<T>]: boolean }; unselect?: { [key in keyof Partial<T>]: boolean } }) => Promise<T & { refresh: () => Promise<void> }> {
+    try {
+      return async ({ args, select, id, unselect }) => {
+        let instance: any;
+        //@ts-ignore
+        if (!id || !this.entities[id]) {
+          instance = new cls(args);
+
+          instance.refresh = async () => {
+            const hooks = Object.entries(instance)
+              .filter((i) => {
+                if (!this.isPromiseHook(instance[i[0]])) return false;
+                if (select && !select[i[0]]) return false;
+                if (unselect && unselect[i[0]]) return false;
+                return true;
+              })
+              .map((i) => {
+                const hook = instance[i[0]];
+                return hook;
+              });
+
+            await Promise.all(hooks.map((i) => i.call()));
+          };
+          if (id) {
+            //@ts-ignore
+            this.entities[id] = instance;
+          }
+        } else {
+          instance = this.entities[id!];
+        }
+
+        await instance.refresh();
+        return instance;
+      };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static isPromiseHook(target) {
+    return target?._type == 'promiseHook';
+  }
+
+  //ttl : ms
+  static wrap<T extends (...args: any[]) => Promise<any>, U = ReturnType<T>>({ func, defaultValue }: { func: T; defaultValue?: Awaited<U> }): PromiseHookData<T, U> {
+    let context;
+    const call = (...args: Parameters<T>) => {
+      context.loading = true;
+      if (!context._call) {
+        context._call = func(...args)
+          .then((i) => {
+            context.value = i;
+            context._call = null;
+            context.loading = false;
+            return i;
+          })
+          .catch((i) => {
+            console.error(i, func);
+            context.value = defaultValue;
+            context._call = null;
+            context.loading = false;
+            if (i.message.includes('HTTP request failed.') || i.message.includes('viem')) {
+              if (PromiseHook.isShowErrorTips) return;
+              RootStore.Get(ToastPlugin).error('Network error, please check your network or change rpc');
+              
+              PromiseHook.isShowErrorTips = true;
+              setTimeout(() => {
+                PromiseHook.isShowErrorTips = false;
+              }, 5000);
+            } else {
+              throw i;
+            }
+          });
+      }
+
+      return context._call;
+    };
+    const get = async (...args: Parameters<T>) => {
+      if (!context.value) {
+        return call(...args);
+      }
+      return context.value;
+    };
+
+    if (!context) {
+      context = observable({
+        _type: 'promiseHook',
+        _value: defaultValue,
+        get value() {
+          return context['_value'];
+        },
+        set value(val) {
+          context['_value'] = val;
+        },
+        get,
+        loading: false,
+        call,
+        defaultValue,
+        toJSON() {
+          return context.value;
+        },
+        toString() {
+          return context.value;
+        },
+      });
+    }
+
+    return context;
+  }
+}
