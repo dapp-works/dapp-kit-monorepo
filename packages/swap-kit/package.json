@@ -1,5 +1,5 @@
 {
-  "name": "@iotexproject/swap-kit",
+  "name": "@dappworks/swap-kit",
   "version": "0.0.0",
   "description": "Shared IoTeX swap engine (store, contract layer, UI) consumed by hub and mimo. Built on the @dappworks/kit store framework (peer); app injects token data source, config, helpers and UI; behavioural differences are toggled via features.",
   "type": "module",
