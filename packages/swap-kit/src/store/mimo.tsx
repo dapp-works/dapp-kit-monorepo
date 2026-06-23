@@ -198,7 +198,10 @@ export class MimoStore implements Store {
             },
           ];
 
-          if (this.swapType.value == SWAP_SDK.UNISWAP_UNIVERSAL_ROUTER && !this.tokenInput.fromToken?.isEther) {
+          // wrap/unwrap never needs a Permit2 signature (the quote has no
+          // permitData); skip the UniversalRouter signing path for it,
+          // otherwise signPermit destructures an undefined permitData.
+          if (this.swapType.value == SWAP_SDK.UNISWAP_UNIVERSAL_ROUTER && !this.tokenInput.fromToken?.isEther && !this.hasWToken) {
             group = [this.tokenInput.fromToken!.approve, Permit2.signPermit, this.onSwap];
             groupOptions = [
               {
