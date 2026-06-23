@@ -19,7 +19,7 @@ export class StorageState<T> {
   }
 
   load() {
-    const value = global?.localStorage?.getItem(this.key);
+    const value = globalThis?.localStorage?.getItem(this.key);
     this.value = StorageState.safeParse(value);
     if (this.value == null) {
       this.value = this.default;
@@ -31,7 +31,7 @@ export class StorageState<T> {
     if (value !== null || value !== undefined) {
       this.value = value;
     }
-    global?.localStorage.setItem(this.key, JSON.stringify(value));
+    globalThis?.localStorage.setItem(this.key, JSON.stringify(value));
   }
 
   setValue(value?: T) {
