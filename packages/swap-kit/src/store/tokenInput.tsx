@@ -1,5 +1,5 @@
 import { BigNumberInputState, PromiseState, RootStore, Store } from '@dappworks/kit';
-import { WalletStore } from '@dappworks/kit/wallet';
+import { WalletStore } from '@dappworks/ui-kit/wallet';
 import { MimoStore } from './mimo';
 import BigNumber from 'bignumber.js';
 import { ERC20 } from '../contracts/erc20';

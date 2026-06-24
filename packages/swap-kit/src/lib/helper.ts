@@ -3,7 +3,7 @@ import { BigNumberState, RootStore } from '@dappworks/kit';
 import { getAddress } from 'viem';
 import numeral from 'numeral';
 import BigNumber from 'bignumber.js';
-import { WalletStore } from '@dappworks/kit/wallet';
+import { WalletStore } from '@dappworks/ui-kit/wallet';
 import BN from 'bignumber.js';
 import { cache } from '@dappworks/kit/utils';
 import dayjs from 'dayjs';

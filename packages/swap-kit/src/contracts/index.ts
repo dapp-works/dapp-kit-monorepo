@@ -16,7 +16,7 @@ import {
   Permit2,
 } from './abi';
 import { Account, Chain, getContract, Transport, WalletClient } from 'viem';
-import { WalletStore } from '@dappworks/kit/wallet';
+import { WalletStore } from '@dappworks/ui-kit/wallet';
 import { AIem } from '@dappworks/kit/aiem';
 
 export class Contracts {

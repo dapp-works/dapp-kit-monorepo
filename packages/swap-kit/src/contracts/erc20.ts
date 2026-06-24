@@ -1,5 +1,5 @@
 import { BigNumberInputState, PromiseState, RootStore } from '@dappworks/kit';
-import { WalletStore } from '@dappworks/kit/wallet';
+import { WalletStore } from '@dappworks/ui-kit/wallet';
 import axios from 'axios';
 import { _ } from '../lib/lodash';
 import { hooks } from '../lib/hooks';

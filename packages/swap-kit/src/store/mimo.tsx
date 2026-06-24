@@ -1,6 +1,6 @@
 import { PromiseState, RootStore, Store } from '@dappworks/kit';
 import { visibilityAwareInterval } from '../lib/visibility';
-import { WalletStore } from '@dappworks/kit/wallet';
+import { WalletStore } from '@dappworks/ui-kit/wallet';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { ERC20, ERC20Service, wrappedToken } from '../contracts/erc20';
