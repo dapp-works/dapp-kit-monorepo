@@ -1,4 +1,4 @@
-import { WalletStore } from "@dappworks/kit/wallet"
+import { WalletStore } from "@dappworks/ui-kit/wallet"
 import { RootStore } from "@dappworks/kit"
 
 export const hooks = {

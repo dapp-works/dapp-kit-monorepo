@@ -2,7 +2,7 @@ import { PromiseState, RootStore } from "@dappworks/kit";
 import { PromiseHook } from "../contract";
 import { hooks } from "../lib/hooks";
 import { Contracts } from ".";
-import { WalletStore } from "@dappworks/kit/wallet";
+import { WalletStore } from "@dappworks/ui-kit/wallet";
 import BigNumber from "bignumber.js";
 import { ERC20 } from "./erc20";
 import { AllowanceTransfer, PermitSingle } from '@uniswap/permit2-sdk';

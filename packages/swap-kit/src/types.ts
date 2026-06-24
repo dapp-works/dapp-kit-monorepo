@@ -15,8 +15,8 @@ export interface TokenItem {
 
 /**
  * Injection point #1 - wallet adapter.
- * hub backs this with @dappworks/ui-kit/wallet, mimo with @dappworks/kit/wallet;
- * behaviour is identical, only the import path differs.
+ * Both hub and mimo back this with @dappworks/ui-kit/wallet (the engine imports
+ * WalletStore from there directly), so a single WalletStore singleton is shared.
  */
 export interface SwapWalletAdapter {
   account: () => `0x${string}` | undefined

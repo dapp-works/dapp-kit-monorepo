@@ -1,6 +1,6 @@
 {
   "name": "@dappworks/swap-kit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Shared IoTeX swap engine (store, contract layer, UI) consumed by hub and mimo. Built on the @dappworks/kit store framework (peer); app injects token data source, config, helpers and UI; behavioural differences are toggled via features.",
   "type": "module",
   "main": "./dist/index.js",
@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@dappworks/kit": "0.5.46",
+    "@dappworks/ui-kit": "0.0.67",
     "@types/lodash": "^4.14.195",
     "@types/numeral": "^2.0.5",
     "tsup": "^8.2.4",
@@ -45,6 +46,7 @@
   },
   "peerDependencies": {
     "@dappworks/kit": ">=0.5.46",
+    "@dappworks/ui-kit": ">=0.0.67",
     "@uniswap/permit2-sdk": "^1.3.0",
     "@uniswap/sdk-core": "^4.2.0",
     "@uniswap/v3-sdk": "^3.10.0",
