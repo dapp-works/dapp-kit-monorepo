@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router.js';
 import { observer } from 'mobx-react-lite';
-import { RootStore, rootStore } from '../../store';
+import { rootStore } from '../../store';
 import { Store } from "../../store/standard/base";
-import { WalletStore } from '../Wallet';
 import React from 'react';
 
 export class AutoMan implements Store {
@@ -12,7 +11,13 @@ export class AutoMan implements Store {
   autoObservable?: boolean | undefined;
 
   provider = observer(() => {
-    const wallet = RootStore.Get(WalletStore);
+    // Soft reference to the optional wallet store. Importing WalletStore statically here
+    // pulled the entire wallet dependency tree (rainbowkit/wagmi/@ledgerhq/viem) into the
+    // package root entry, breaking builds for consumers that never use `@dappworks/kit/wallet`.
+    // Read it from the registry by sid instead so the wallet chunk stays out of the root graph.
+    // @ts-ignore
+    const wallet: { updateTicker?: number } | undefined = rootStore.instance?.['wallet'];
+    const walletTicker = wallet?.updateTicker;
     const router = useRouter();
     useEffect(() => {
       console.log('automan proverider')
@@ -29,7 +34,7 @@ export class AutoMan implements Store {
       console.log({ autoUpdate });
 
       autoUpdate.forEach((i) => !i.loading.value && i.call());
-    }, [wallet.updateTicker, router.asPath]);
+    }, [walletTicker, router.asPath]);
     return <></>;
   });
 
