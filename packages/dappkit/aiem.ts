@@ -81,10 +81,17 @@ export class Cache {
 
     const result = fn();
     if (result instanceof Promise) {
-      const promiseResult = result.then((res) => {
-        this.kv.set(key, res, config);
-        return res;
-      });
+      const promiseResult = result
+        .then((res) => {
+          this.kv.set(key, res, config);
+          return res;
+        })
+        .catch((err) => {
+          // a rejected promise must not hold the key for the rest of the ttl,
+          // otherwise every later caller replays the same failure and fn is never retried
+          this.kv.delete(key);
+          throw err;
+        });
       this.kv.set(key, promiseResult, config);
       return promiseResult;
     } else {

@@ -37,6 +37,9 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
 
   loadingLock = true;
 
+  // the promise of the call currently in flight, shared with concurrent callers
+  _inflight: Promise<Awaited<U>> | null = null;
+
   // event plugin
   event = new EventEmitter();
 
@@ -163,9 +166,24 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   }
 
   async call(...args: Parameters<T>): Promise<Awaited<U>> {
+    // loadingLock already stops a concurrent call from firing a second request,
+    // but it used to return undefined. Hand those callers the pending promise so
+    // getOrCall is idempotent for the duration of one fetch.
+    if (this.loadingLock && this.loading.value == true) {
+      return this._inflight ?? undefined;
+    }
+    const inflight = this._run(...args);
+    this._inflight = inflight;
+    try {
+      return await inflight;
+    } finally {
+      if (this._inflight === inflight) this._inflight = null;
+    }
+  }
+
+  private async _run(...args: Parameters<T>): Promise<Awaited<U>> {
     const toast = RootStore.Get(ToastPlugin);
     try {
-      if (this.loadingLock && this.loading.value == true) return;
       this.loading.setValue(true);
       const res = await this.function.apply(this.context, args);
       this.setValue(res);
