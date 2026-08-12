@@ -168,9 +168,11 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
   async call(...args: Parameters<T>): Promise<Awaited<U>> {
     // loadingLock already stops a concurrent call from firing a second request,
     // but it used to return undefined. Hand those callers the pending promise so
-    // getOrCall is idempotent for the duration of one fetch.
-    if (this.loadingLock && this.loading.value == true) {
-      return this._inflight ?? undefined;
+    // getOrCall is idempotent for the duration of one fetch. _inflight is the
+    // source of truth: a loading flag set without a pending promise is stale
+    // state, so fall through and run rather than resolving to undefined.
+    if (this.loadingLock && this.loading.value == true && this._inflight) {
+      return this._inflight;
     }
     const inflight = this._run(...args);
     this._inflight = inflight;
