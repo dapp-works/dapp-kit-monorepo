@@ -160,15 +160,34 @@ export class ERC20 {
     },
   });
 
+  /**
+   * One real-time price endpoint. Returns undefined when the request itself failed,
+   * so the caller can tell "no price for this token" (a falsy body) apart from "the
+   * endpoint is down" and fall through accordingly.
+   */
+  private async realTimePrice(path: 'v2_token_price' | 'v3_token_price') {
+    const token = this.isEther ? this.UniswapSDKTokenInstance.address.toLowerCase() : this.address.toLowerCase();
+    try {
+      const res = await axios.get(`${publicConfig.MIMO_GATEWAY_API_URL}/${path}?token=${token}`);
+      return res.data;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
   priceUSD = PromiseHook.wrap({
     func: async (useRealTime = false) => {
       if (useRealTime) {
-        const res = await axios.get(`${publicConfig.MIMO_GATEWAY_API_URL}/v2_token_price?token=${this.isEther ? this.UniswapSDKTokenInstance.address.toLowerCase() : this.address.toLowerCase()}`);
-        if (!res.data) {
-          const v3Res = await axios.get(`${publicConfig.MIMO_GATEWAY_API_URL}/v3_token_price?token=${this.isEther ? this.UniswapSDKTokenInstance.address.toLowerCase() : this.address.toLowerCase()}`);
-          return v3Res.data
-        }
-        return res.data
+        // v2 and v3 pools are indexed separately, so a token missing from one side is
+        // normal and the v3 read is the intended fallback. It used to only run when v2
+        // answered with an empty body, which meant a v2 outage rejected instead of
+        // falling back — and `priceUSD.call(true)` is fired without an await on every
+        // token selection, so that rejection went unhandled and surfaced as an error
+        // report from the swap pages rather than a missing price hint.
+        const v2Price = await this.realTimePrice('v2_token_price');
+        if (v2Price) return v2Price;
+        const v3Price = await this.realTimePrice('v3_token_price');
+        if (v3Price !== undefined) return v3Price;
       }
       return this.price || ERC20Service.getToken({ address: this.address.toLowerCase() }).then((i) => i?.current_price);
     },
