@@ -906,13 +906,19 @@ export class MimoStore implements Store {
       this.debounceUpdatePrice()
     }, [RootStore.Get(WalletStore).account]);
 
-    reaction(
-      () => RootStore.Get(WalletStore).updateTicker,
-      async (val) => {
-        this.loadAllData();
-        this.debounceUpdatePrice()
-      },
-    );
+    // Subscribe once per mount and dispose on unmount. Calling reaction() in the
+    // hook body registered a new subscription on every render of the consumer and
+    // never released any, so each wallet ticker ran loadAllData / price refresh
+    // once per accumulated subscription.
+    useEffect(() => {
+      return reaction(
+        () => RootStore.Get(WalletStore).updateTicker,
+        async (val) => {
+          this.loadAllData();
+          this.debounceUpdatePrice()
+        },
+      );
+    }, []);
   }
 
   addToRecentSearches(token: ERC20) {
