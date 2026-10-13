@@ -50,7 +50,7 @@ export const iotexBabelNightly = /*#__PURE__*/ defineChain({
     name: "IoTeX",
     symbol: "IOTX",
   },
-  iconUrl: "https://cdn-dapp-works.s3.us-east-1.amazonaws.com/1dd84d927ae959c508392be62e6eb549.png",
+  iconUrl: "https://cdn.iotex.io/dapp/1dd84d927ae959c508392be62e6eb549.png",
   rpcUrls: {
     default: {
       http: ["https://babel-nightly.iotex.io"],
